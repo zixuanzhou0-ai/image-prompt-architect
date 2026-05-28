@@ -50,7 +50,9 @@ Run:
 python evals/check_image_output_records.py --require-real-records
 ```
 
-The script must pass. Output paths must exist locally or use stable `http(s)` URLs. Task gates must pass. `final_score` must meet the rubric threshold.
+The script must pass. Output paths must exist locally or use stable `http(s)` URLs. Task gates must pass. `image_score` values must be `0`, `1`, `2`, or `"not_applicable"`. `final_score` must equal the sum of numeric `image_score` values and meet the rubric threshold.
+
+`observed_failures` may be empty for an individual record only when no visible failure was found, but v1.0 must include at least two records with non-empty `observed_failures` and concrete `revision_prompt` values.
 
 ## Adapter Evidence
 
@@ -87,7 +89,15 @@ The script must pass. Output paths must exist locally or use stable `http(s)` UR
     "text_accuracy": 2,
     "text_layout_legibility": 2,
     "subject_fidelity": 2,
-    "composition_match": 1
+    "edit_preservation": "not_applicable",
+    "composition_match": 1,
+    "style_coherence": 2,
+    "constraint_handling": 2,
+    "model_specific_fit": 2,
+    "revision_usefulness": 2,
+    "identity_continuity": "not_applicable",
+    "product_geometry_material_fidelity": "not_applicable",
+    "iteration_improvement": 1
   },
   "task_gate_results": {
     "text_accuracy": true,
@@ -96,6 +106,6 @@ The script must pass. Output paths must exist locally or use stable `http(s)` UR
   "human_rater": "reviewer initials or handle",
   "observed_failures": ["Footer text is slightly too small."],
   "revision_prompt": "Keep the headline exact and enlarge the footer text by 20%.",
-  "final_score": 19
+  "final_score": 16
 }
 ```

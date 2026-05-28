@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.11.0 - 2026-05-29
+
+- Hardened `evals/check_image_output_records.py` so real scored records with object/list fields validate cleanly instead of triggering type errors.
+- Added image-output record validator tests for placeholder mode, `--require-real-records`, dict/list scored records, missing fields, failed task gates, missing output paths, score thresholds, invalid score values, and final-score consistency.
+- Added stricter v1.0 scored-record checks for `image_score` values, task-gate-to-score consistency, `skill_output_date` format, required case coverage, and revision-loop evidence.
+- Updated `scripts/check_adapter_eval_status.py` to use type-safe missing-value detection.
+- Kept image-output records placeholder-only; v1.0 remains blocked until real model outputs are captured and scored.
+
 ## 0.10.0 - 2026-05-29
 
 - Added `evals/check_image_output_records.py` for v1.0-style scored record validation.

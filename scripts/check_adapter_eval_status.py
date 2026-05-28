@@ -44,6 +44,17 @@ TASK_REQUIRED_GATES = {
     "product_photography": ["product_geometry_material_fidelity", "subject_fidelity"],
     "model_port": ["model_specific_fit"],
 }
+PLACEHOLDER_STRINGS = {"", "unknown", "not_recorded"}
+
+
+def missing(value) -> bool:
+    if value is None:
+        return True
+    if isinstance(value, str):
+        return value.strip().lower() in PLACEHOLDER_STRINGS
+    if isinstance(value, dict):
+        return len(value) == 0
+    return False
 
 
 def adapter_block(markdown: str, heading_hint: str) -> str:
@@ -68,12 +79,12 @@ def main() -> int:
         case_id = str(record.get("case_id", "unknown"))
         for field in REQUIRED_SCORED_FIELDS:
             value = record.get(field)
-            if value in {None, "", "unknown"} or value == {}:
+            if missing(value):
                 warnings.append(f"{case_id}: scored image-output record has missing `{field}`")
-        if "prompt_before" not in record or record.get("prompt_before") in {None, "", "unknown"}:
+        if missing(record.get("prompt_before")):
             warnings.append(f"{case_id}: scored image-output record has missing `prompt_before`")
         output_path = record.get("output_image_path")
-        if isinstance(output_path, str) and output_path not in {"", "unknown"} and not re.match(r"^https?://", output_path):
+        if isinstance(output_path, str) and not missing(output_path) and not re.match(r"^https?://", output_path):
             path = (ROOT / output_path).resolve()
             if not path.exists():
                 warnings.append(f"{case_id}: output_image_path does not exist: {output_path}")
