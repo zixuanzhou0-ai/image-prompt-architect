@@ -8,6 +8,7 @@ This intentionally avoids a YAML dependency and only parses the simple
 from __future__ import annotations
 
 import importlib.util
+import json
 import re
 import sys
 from pathlib import Path
@@ -16,6 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CASES_FILE = ROOT / "evals" / "prompt_cases.yml"
 REPORT_FILE = ROOT / "evals" / "report.md"
+SKILL_OUTPUTS_FILE = ROOT / "evals" / "skill_outputs.json"
 LINTER_FILE = ROOT / "skills" / "image-prompt-architect" / "scripts" / "prompt_lint.py"
 
 
@@ -79,6 +81,35 @@ def model_to_architecture(case_id: str, target_model: str) -> str:
     return "auto"
 
 
+def load_skill_outputs() -> dict[str, str]:
+    if not SKILL_OUTPUTS_FILE.exists():
+        return {}
+    data = json.loads(SKILL_OUTPUTS_FILE.read_text(encoding="utf-8"))
+    outputs: dict[str, str] = {}
+    for record in data.get("records", []):
+        case_id = record.get("case_id")
+        prompt = record.get("skill_output_prompt")
+        if case_id and prompt:
+            outputs[str(case_id)] = str(prompt)
+    return outputs
+
+
+def feature_hits(prompt: str, features: str) -> tuple[int, int]:
+    if not features:
+        return 0, 0
+    parts = [part.strip().lower() for part in re.split(r"[,;]", features) if part.strip()]
+    haystack = prompt.lower()
+    hits = 0
+    for part in parts:
+        tokens = re.findall(r"[a-zA-Z0-9#]+", part)
+        if not tokens:
+            continue
+        required = tokens[:2] if len(tokens) > 1 else tokens
+        if any(token in haystack for token in required):
+            hits += 1
+    return hits, len(parts)
+
+
 def lint_score(linter, prompt: str, architecture: str, target_model: str):
     if not prompt:
         return None
@@ -87,14 +118,16 @@ def lint_score(linter, prompt: str, architecture: str, target_model: str):
 
 def make_report(cases: list[dict[str, object]]) -> str:
     linter = load_linter()
+    skill_outputs = load_skill_outputs()
     lines = [
         "# Prompt Eval Report",
         "",
         "Generated from `evals/prompt_cases.yml` using structural prompt lint only.",
+        "`Skill` columns use `evals/skill_outputs.json` manual captures when present; this is not a Codex router simulator.",
         "Image-output scoring still requires `evals/image_output_protocol.md`.",
         "",
-        "| Case | Model | Mode | Source | Rewrite | Delta | Critical | Warnings | Expected Risks |",
-        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |",
+        "| Case | Model | Mode | Source | Candidate | Candidate Delta | Skill | Skill Delta | Features | Expected Risks |",
+        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- |",
     ]
 
     for case in cases:
@@ -103,20 +136,25 @@ def make_report(cases: list[dict[str, object]]) -> str:
         expected_mode = str(case.get("expected_mode", "unknown"))
         source_prompt = str(case.get("source_prompt", ""))
         rewritten_prompt = str(case.get("rewritten_prompt_candidate", ""))
+        skill_prompt = skill_outputs.get(case_id, "")
+        expected_features = str(case.get("expected_rewrite_features", ""))
         architecture = model_to_architecture(case_id, target_model)
         source_result = lint_score(linter, source_prompt, architecture, target_model)
         rewritten_result = lint_score(linter, rewritten_prompt, architecture, target_model)
+        skill_result = lint_score(linter, skill_prompt, architecture, target_model)
         risks = case.get("expected_risks", [])
         risk_text = "; ".join(risks) if isinstance(risks, list) else str(risks)
         risk_text = re.sub(r"\|", "/", risk_text)
         source_score = source_result.score if source_result else ""
         rewrite_score = rewritten_result.score if rewritten_result else ""
-        delta = rewritten_result.score - source_result.score if source_result and rewritten_result else ""
-        critical = len(source_result.critical) if source_result else ""
-        warnings = len(source_result.warnings) if source_result else ""
+        rewrite_delta = rewritten_result.score - source_result.score if source_result and rewritten_result else ""
+        skill_score = skill_result.score if skill_result else ""
+        skill_delta = skill_result.score - source_result.score if source_result and skill_result else ""
+        hits, total = feature_hits(skill_prompt or rewritten_prompt, expected_features)
+        feature_text = f"{hits}/{total}" if total else ""
         lines.append(
             f"| `{case_id}` | `{target_model}` | `{expected_mode}` | {source_score} | "
-            f"{rewrite_score} | {delta} | {critical} | {warnings} | {risk_text} |"
+            f"{rewrite_score} | {rewrite_delta} | {skill_score} | {skill_delta} | {feature_text} | {risk_text} |"
         )
 
     lines.append("")

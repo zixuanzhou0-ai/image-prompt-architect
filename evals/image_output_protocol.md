@@ -2,6 +2,8 @@
 
 Use this protocol when model access exists and a prompt-level eval can be extended into a real output eval.
 
+Score generated images with `image_output_rubric.md`.
+
 ## Required Fields
 
 - `case_id`

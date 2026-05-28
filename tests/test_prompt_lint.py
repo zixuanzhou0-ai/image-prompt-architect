@@ -140,6 +140,12 @@ def test_midjourney_legacy_cw_warns():
     assert any("Legacy or deprecated" in warning for warning in result.warnings)
 
 
+def test_midjourney_legacy_style_warns():
+    result = prompt_lint.lint(fixture("warn_midjourney_legacy_style.txt"), "compact", "midjourney")
+    assert not result.critical
+    assert any("Legacy or deprecated" in warning for warning in result.warnings)
+
+
 def test_midjourney_unknown_param_warns_by_default():
     result = prompt_lint.lint(fixture("warn_midjourney_unknown_future_param.txt"), "compact", "midjourney")
     assert not result.critical
@@ -177,7 +183,7 @@ def test_flux_negative_prompt_is_critical():
 def test_flux_plain_negation_is_detected_and_escalated():
     result = prompt_lint.lint(fixture("bad_flux_plain_negation.txt"), "auto", "flux")
     assert result.model_policy["plain_negation_phrases"]
-    assert any("plain negation" in item for item in result.critical)
+    assert any("object-exclusion negation" in item for item in result.critical)
 
 
 def test_flux_single_plain_negation_warns_but_does_not_fail():
@@ -189,8 +195,22 @@ def test_flux_single_plain_negation_warns_but_does_not_fail():
 
 def test_flux_multiple_plain_negations_are_critical():
     result = prompt_lint.lint(fixture("bad_flux_multiple_plain_negation_phrases.txt"), "compact", "flux")
-    assert len(result.model_policy["plain_negation_phrases"]) >= 2
-    assert any("multiple plain negation" in item for item in result.critical)
+    assert len(result.model_policy["object_negation_phrases"]) >= 2
+    assert any("multiple object-exclusion negation" in item for item in result.critical)
+
+
+def test_flux_soft_modifier_negations_warn_only():
+    result = prompt_lint.lint(fixture("warn_flux_soft_modifier_negation.txt"), "compact", "flux")
+    assert result.model_policy["soft_negation_phrases"]
+    assert not result.model_policy["object_negation_phrases"]
+    assert not result.critical
+    assert any("soft modifier negation" in warning for warning in result.warnings)
+
+
+def test_flux_object_exclusion_negations_are_critical():
+    result = prompt_lint.lint(fixture("bad_flux_object_exclusion_negations.txt"), "compact", "flux")
+    assert len(result.model_policy["object_negation_phrases"]) >= 2
+    assert any("object-exclusion" in item for item in result.critical)
 
 
 def test_flux_invalid_hex_is_critical():
@@ -205,6 +225,12 @@ def test_good_flux_structured_has_no_critical_errors():
 
 def test_good_flux_positive_replacements_have_no_negation_warning():
     result = prompt_lint.lint(fixture("good_flux_positive_replacements.txt"), "compact", "flux")
+    assert not result.critical
+    assert not result.model_policy["plain_negation_phrases"]
+
+
+def test_good_flux_positive_replacements_extended_have_no_negation_warning():
+    result = prompt_lint.lint(fixture("good_flux_positive_replacements_extended.txt"), "compact", "flux")
     assert not result.critical
     assert not result.model_policy["plain_negation_phrases"]
 
@@ -292,8 +318,33 @@ def test_chinese_no_spaces_sections_are_supported():
     assert not result.missing
 
 
+def test_chinese_product_no_spaces_sections_are_supported():
+    result = prompt_lint.lint(fixture("good_chinese_product_no_spaces.txt"), "seven-layer", "dreamina")
+    assert not result.critical
+    assert not result.missing
+
+
+def test_chinese_poster_no_spaces_sections_are_supported():
+    result = prompt_lint.lint(fixture("good_chinese_poster_no_spaces.txt"), "seven-layer", "dreamina")
+    assert not result.critical
+    assert not result.missing
+
+
+def test_chinese_system_series_is_supported():
+    result = prompt_lint.lint(fixture("good_chinese_series_system.txt"), "system", "dreamina")
+    assert not result.critical
+    assert result.coverage["identity_lock"]
+    assert result.coverage["shot_slots"]
+
+
 def test_chinese_filler_only_sections_are_rejected():
     result = prompt_lint.lint(fixture("bad_chinese_filler_only.txt"), "seven-layer", "dreamina")
+    assert result.critical
+    assert any("filler-only" in item for item in result.critical)
+
+
+def test_chinese_generic_praise_only_sections_are_rejected():
+    result = prompt_lint.lint(fixture("bad_chinese_generic_praise_only.txt"), "seven-layer", "dreamina")
     assert result.critical
     assert any("filler-only" in item for item in result.critical)
 

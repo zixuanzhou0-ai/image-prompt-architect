@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.7.0 - 2026-05-29
+
+- Added skill-output prompt captures and skill/candidate delta reporting.
+- Added image-output rubric and linked it from the image-output protocol.
+- Expanded Chinese no-space fixtures for product, poster, and series prompts.
+- Added Chinese generic-praise-only rejection coverage.
+- Refined FLUX negation severity into object-exclusion vs soft modifier warnings.
+- Added Midjourney legacy `--style` fixture coverage.
+- Expanded trigger smoke cases with Chinese examples.
+- Added output artifact storage guidance for future real image-output evals.
+- Added adapter/eval metadata status check for future real image-output records.
+
 ## 0.6.0 - 2026-05-29
 
 - Added CJK-aware section content validation for continuous Chinese prompt text.

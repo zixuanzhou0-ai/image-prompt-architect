@@ -99,6 +99,12 @@ GENERIC_FILLER = {
     "漂亮",
     "精美",
     "大师作品",
+    "质感",
+    "高级",
+    "氛围感",
+    "神图",
+    "超清",
+    "细节丰富",
 }
 
 CONCRETE_NOUNS = {
@@ -143,6 +149,18 @@ CONCRETE_NOUNS = {
     "雨",
     "窗",
     "石板",
+    "手表",
+    "表盘",
+    "海报",
+    "标题",
+    "产品",
+    "玻璃瓶",
+    "泵头",
+    "纸张",
+    "列车",
+    "站台",
+    "窗户",
+    "雨巷",
 }
 
 PLACEHOLDER_RE = re.compile(r"^\s*(?:\.\.\.|tbd|todo|\[.*?\]|<.*?>|-)?\s*$", re.I)
@@ -206,6 +224,7 @@ MJ_FLAG_PARAMS = {
     "--video",
 }
 FLUX_NEGATION_RE = re.compile(r"\b(?:no|without|not|avoid)\s+[^,.;\n]+", re.I)
+FLUX_SOFT_NEGATION_RE = re.compile(r"\b(?:not|no)\s+(?:overly|too|excessively)\s+[^,.;\n]+", re.I)
 
 
 @dataclass
@@ -477,14 +496,20 @@ def check_model_policy(text: str, model: str, strict_model_params: bool = False)
     elif model == "flux":
         bad_hex = malformed_hex_codes(text)
         negation_hits = FLUX_NEGATION_RE.findall(text)
+        soft_negation_hits = FLUX_SOFT_NEGATION_RE.findall(text)
+        object_negation_hits = [hit for hit in negation_hits if hit not in soft_negation_hits]
         policy["malformed_hex_codes"] = bad_hex
         policy["plain_negation_phrases"] = negation_hits
+        policy["soft_negation_phrases"] = soft_negation_hits
+        policy["object_negation_phrases"] = object_negation_hits
         if has_negative_block or "--no" in haystack:
             critical.append("FLUX: prefer positive replacement language; most FLUX models do not support negative prompts.")
-        if len(negation_hits) >= 2:
-            critical.append(f"FLUX prompt uses multiple plain negation phrases; rewrite as positive replacements: {', '.join(negation_hits)}.")
-        elif negation_hits:
-            warnings.append(f"FLUX prompt uses plain negation; prefer a positive replacement: {', '.join(negation_hits)}.")
+        if len(object_negation_hits) >= 2:
+            critical.append(f"FLUX prompt uses multiple object-exclusion negation phrases; rewrite as positive replacements: {', '.join(object_negation_hits)}.")
+        elif object_negation_hits:
+            warnings.append(f"FLUX prompt uses plain negation; prefer a positive replacement: {', '.join(object_negation_hits)}.")
+        if soft_negation_hits:
+            warnings.append(f"FLUX prompt uses soft modifier negation; positive wording is still safer: {', '.join(soft_negation_hits)}.")
         if bad_hex:
             critical.append(f"FLUX color steering has malformed hex code(s): {', '.join(bad_hex)}.")
     elif model == "gpt-image":

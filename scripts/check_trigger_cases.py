@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CASES = ROOT / "tests" / "trigger_cases.yml"
 
 PROMPT_TEXT_TERMS = re.compile(
-    r"\b(prompt|rewrite|port|model adaptation|seven-layer|visual bible|style bible|prompt text)\b",
+    r"(\b(prompt|rewrite|port|model adaptation|seven-layer|visual bible|style bible|prompt text)\b|提示词|图像提示|生图 prompt|正向提示词|七层结构|修图 prompt)",
     re.I,
 )
 
@@ -57,6 +57,7 @@ def main() -> int:
         print("\n".join(errors))
         return 1
     print(f"Trigger smoke check passed: {len(should_trigger)} trigger, {len(should_not_trigger)} non-trigger cases.")
+    print("Reminder: this is a keyword smoke test, not a Codex router simulator.")
     return 0
 
 

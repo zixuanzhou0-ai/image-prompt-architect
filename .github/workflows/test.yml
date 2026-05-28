@@ -23,6 +23,7 @@ jobs:
       - run: python scripts/check_trigger_cases.py
       - run: python evals/run_prompt_eval.py
       - run: git diff --exit-code evals/report.md
+      - run: python scripts/check_adapter_eval_status.py
       - name: Strict lint good fixtures
         run: |
           python - <<'PY'

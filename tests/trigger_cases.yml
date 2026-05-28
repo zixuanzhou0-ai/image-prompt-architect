@@ -14,6 +14,11 @@ should_trigger:
   - "Create a seven-layer prompt for a product photo."
   - "Diagnose this prompt for missing camera and material controls."
   - "Build prompt text for a consistent 4-frame character series."
+  - "为这个产品图写一段适合 GPT Image 的提示词。"
+  - "把这个 Midjourney prompt 改成 FLUX 正向提示词。"
+  - "诊断这个图像提示词为什么太空泛。"
+  - "给我一个七层结构的海报生图 prompt。"
+  - "把这段修图 prompt 改得更明确，要求保留人物身份。"
 
 should_not_trigger:
   - "Generate an image of a cat."
@@ -31,5 +36,10 @@ should_not_trigger:
   - "What model made this image?"
   - "Crop this image to 4:5."
   - "Design a landing page hero."
+  - "生成一张猫的图片。"
+  - "帮我把这张照片调亮。"
+  - "分析这张图里有什么。"
+  - "给我的品牌做一套视觉系统。"
+  - "把这张图裁成 4:5。"
 
 note: "Manual review fixture unless Codex trigger simulation is available."
