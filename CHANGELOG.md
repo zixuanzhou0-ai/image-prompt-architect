@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.0 - 2026-05-28
+
+- Blocked framework-label keyword stuffing from counting as seven-layer/system coverage.
+- Added Markdown, colon-label, and Chinese heading parsing for prompt sections.
+- Expanded Midjourney parameter parsing and parameter-value punctuation checks.
+- Added FLUX plain-negation detection with escalation for repeated negation phrases.
+- Added GPT Image edit, text-rendering, reproducibility, and reference-role warnings.
+- Expanded lint fixtures and tests from 17 to 27 test cases.
+- Updated CI to strict-lint every `good_*.txt` and `bad_*.txt` fixture.
+- Added tag-based install commands and adapter update/fixture naming policies.
+- Expanded eval scaffolding and image-output protocol documentation.
+
 ## 0.3.0 - 2026-05-28
 
 - Made strict lint mode fail on critical model-policy and section-quality errors.

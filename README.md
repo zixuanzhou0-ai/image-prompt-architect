@@ -4,6 +4,8 @@ Image Prompt Architect is a Codex plugin for designing, rewriting, critiquing, a
 
 It is not an image generator. It is a prompt architecture workflow for users who want better prompt text, model-specific adaptation, cinematic series bibles, or prompt diagnosis.
 
+Current version: `0.4.0` developer preview.
+
 ## What It Does
 
 - Builds single-image prompts with a seven-layer structure.
@@ -38,18 +40,18 @@ image-prompt-architect/
 Clone the repository:
 
 ```bash
-git clone https://github.com/zixuanzhou0-ai/image-prompt-architect.git
+git clone --branch v0.4.0 https://github.com/zixuanzhou0-ai/image-prompt-architect.git
 ```
 
 If your Codex CLI supports marketplace sources, try:
 
 ```bash
-codex plugin marketplace add zixuanzhou0-ai/image-prompt-architect --ref main
+codex plugin marketplace add zixuanzhou0-ai/image-prompt-architect --ref v0.4.0
 codex plugin marketplace list
 codex plugin marketplace upgrade
 ```
 
-If that command is not available in your environment, use Option B below. This repository is a plugin project root, not a curated marketplace index.
+For unreleased development snapshots, replace `v0.4.0` with `main`. If that command is not available in your environment, use Option B below. This repository is a plugin project root, not a curated marketplace index.
 
 ### Option B: Use The Skill Directly
 

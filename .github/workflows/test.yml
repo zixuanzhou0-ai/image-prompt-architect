@@ -3,6 +3,7 @@ name: test
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
@@ -17,19 +18,89 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install pytest
       - run: python -m pytest
-      - run: python skills/image-prompt-architect/scripts/prompt_lint.py tests/fixtures/good_seven_layer.txt --architecture seven-layer --model generic --strict
-      - run: python skills/image-prompt-architect/scripts/prompt_lint.py tests/fixtures/good_system_series.txt --architecture system --model generic --strict
-      - run: python skills/image-prompt-architect/scripts/prompt_lint.py tests/fixtures/good_midjourney.txt --model midjourney --strict
+      - name: Strict lint good fixtures
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          script = Path("skills/image-prompt-architect/scripts/prompt_lint.py")
+
+          def model_for(name: str) -> str:
+              if "midjourney" in name:
+                  return "midjourney"
+              if "flux" in name:
+                  return "flux"
+              if "gpt_image" in name:
+                  return "gpt-image"
+              if "dreamina" in name or "chinese" in name or "bilingual" in name:
+                  return "dreamina"
+              return "generic"
+
+          def architecture_for(name: str) -> str:
+              if "system" in name:
+                  return "system"
+              if any(term in name for term in ("seven_layer", "heading", "template", "keyword_stuffing")):
+                  return "seven-layer"
+              return "auto"
+
+          for fixture in sorted(Path("tests/fixtures").glob("good_*.txt")):
+              cmd = [
+                  sys.executable,
+                  str(script),
+                  str(fixture),
+                  "--architecture",
+                  architecture_for(fixture.stem),
+                  "--model",
+                  model_for(fixture.stem),
+                  "--strict",
+              ]
+              subprocess.run(cmd, check=True)
+          PY
       - run: |
-          if python skills/image-prompt-architect/scripts/prompt_lint.py tests/fixtures/bad_flux_negative.txt --model flux --strict; then
-            echo "bad_flux_negative unexpectedly passed strict lint"
-            exit 1
-          fi
-          if python skills/image-prompt-architect/scripts/prompt_lint.py tests/fixtures/bad_midjourney_negative_block.txt --model midjourney --strict; then
-            echo "bad_midjourney_negative_block unexpectedly passed strict lint"
-            exit 1
-          fi
-          if python skills/image-prompt-architect/scripts/prompt_lint.py tests/fixtures/bad_empty_heading_skeleton.txt --architecture seven-layer --strict; then
-            echo "bad_empty_heading_skeleton unexpectedly passed strict lint"
-            exit 1
-          fi
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          script = Path("skills/image-prompt-architect/scripts/prompt_lint.py")
+
+          def model_for(name: str) -> str:
+              if "midjourney" in name:
+                  return "midjourney"
+              if "flux" in name:
+                  return "flux"
+              if "gpt_image" in name:
+                  return "gpt-image"
+              if "dreamina" in name or "chinese" in name or "bilingual" in name:
+                  return "dreamina"
+              return "generic"
+
+          def architecture_for(name: str) -> str:
+              if "system" in name:
+                  return "system"
+              if any(term in name for term in ("seven_layer", "heading", "template", "keyword_stuffing")):
+                  return "seven-layer"
+              return "auto"
+
+          failed = []
+          for fixture in sorted(Path("tests/fixtures").glob("bad_*.txt")):
+              cmd = [
+                  sys.executable,
+                  str(script),
+                  str(fixture),
+                  "--architecture",
+                  architecture_for(fixture.stem),
+                  "--model",
+                  model_for(fixture.stem),
+                  "--strict",
+              ]
+              result = subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+              if result.returncode == 0:
+                  failed.append(str(fixture))
+          if failed:
+              print("Bad fixtures unexpectedly passed strict lint:")
+              print("\n".join(failed))
+              sys.exit(1)
+          PY

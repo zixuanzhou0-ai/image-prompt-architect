@@ -12,30 +12,57 @@ from typing import Iterable
 
 
 SEVEN_REQUIRED = {
-    "subject": [r"subject", r"主体", r"person", r"character", r"product", r"object"],
-    "environment": [r"environment", r"环境", r"location", r"street", r"room", r"landscape", r"background"],
-    "lighting": [r"lighting", r"atmosphere", r"光影", r"氛围", r"sunlight", r"moonlight", r"neon", r"volumetric", r"backlit"],
-    "material": [r"material", r"texture", r"材质", r"silk", r"metal", r"glass", r"stone", r"grain", r"reflection"],
-    "composition": [r"composition", r"camera", r"构图", r"lens", r"shot", r"framing", r"depth of field", r"bokeh"],
-    "style": [r"style", r"风格", r"cinematic", r"film", r"illustration", r"render", r"editorial"],
-    "context_tone": [r"context", r"intent", r"tone", r"语感", r"内涵", r"emotion", r"narrative", r"nostalgia"],
-    "output_constraints": [r"output constraints", r"aspect ratio", r"avoid / replacement", r"must include", r"分辨率", r"比例"],
+    "subject": [r"person", r"character", r"product", r"object", r"woman", r"man", r"人物", r"一位", r"产品"],
+    "environment": [r"location", r"street", r"room", r"landscape", r"background", r"club", r"kitchen", r"forest", r"city", r"老街", r"房间"],
+    "lighting": [r"sunlight", r"moonlight", r"neon", r"volumetric", r"backlit", r"softbox", r"rim light", r"overcast", r"光线", r"逆光"],
+    "material": [r"texture", r"silk", r"metal", r"glass", r"stone", r"grain", r"reflection", r"ceramic", r"brass", r"材质", r"纹理"],
+    "composition": [r"camera", r"lens", r"shot", r"framing", r"depth of field", r"bokeh", r"35mm", r"50mm", r"构图", r"镜头"],
+    "style": [r"cinematic", r"film", r"illustration", r"render", r"editorial", r"noir", r"documentary", r"电影感", r"胶片"],
+    "context_tone": [r"emotion", r"narrative", r"nostalgia", r"melancholy", r"loneliness", r"restrained", r"情绪", r"叙事", r"克制"],
+    "output_constraints": [r"aspect ratio", r"avoid / replacement", r"must include", r"exactly", r"--ar", r"分辨率", r"比例", r"避免"],
+}
+
+SEVEN_SECTION_ALIASES = {
+    "subject": [r"subject", r"主体", r"人物", r"对象"],
+    "environment": [r"environment", r"setting", r"spatial", r"环境", r"空间", r"场景"],
+    "lighting": [r"lighting", r"atmosphere", r"光影", r"氛围"],
+    "material": [r"material", r"texture", r"材质", r"纹理"],
+    "composition": [r"composition", r"camera", r"构图", r"镜头"],
+    "style": [r"style", r"medium", r"风格", r"介质"],
+    "context_tone": [r"context", r"intent", r"tone", r"语感", r"内涵", r"情绪"],
+    "output_constraints": [r"output constraints", r"constraints", r"输出", r"限制", r"约束"],
 }
 
 SYSTEM_REQUIRED = {
-    "premise": [r"premise system", r"前提系统", r"series of", r"a set of"],
-    "identity_lock": [r"identity lock", r"身份锁定", r"must never change"],
-    "continuity": [r"continuity", r"连续性", r"must remain fixed"],
-    "variation_budget": [r"variation budget", r"变化预算", r"may change"],
-    "spatial": [r"spatial system", r"空间系统"],
-    "character": [r"character system", r"人物系统"],
-    "color": [r"color system", r"色彩系统"],
-    "medium": [r"medium system", r"介质系统"],
-    "composition": [r"composition system", r"构图系统"],
-    "lighting": [r"lighting", r"atmosphere", r"光影"],
+    "premise": [r"series of", r"a set of", r"film stills", r"visual bible", r"系列", r"套图"],
+    "identity_lock": [r"must never change", r"same face", r"same costume", r"identity drift", r"身份锁定", r"不漂移"],
+    "continuity": [r"must remain fixed", r"continuity", r"fixed anchors", r"保持一致", r"连续性"],
+    "variation_budget": [r"may change", r"limit each frame", r"variation", r"变化预算", r"每帧"],
+    "spatial": [r"reservoir", r"street", r"school", r"bus", r"village", r"landscape", r"空间", r"地点"],
+    "character": [r"student", r"character", r"gesture", r"costume", r"人物", r"表情", r"动作"],
+    "color": [r"cobalt", r"cyan", r"palette", r"color", r"shadow", r"色彩", r"调色"],
+    "medium": [r"35mm", r"film", r"telecine", r"grain", r"scan", r"介质", r"胶片"],
+    "composition": [r"wide", r"frame", r"lens", r"negative space", r"composition", r"构图", r"镜头"],
+    "lighting": [r"overcast", r"sunset", r"reflection", r"haze", r"light", r"光影", r"氛围"],
+    "narrative": [r"narrative", r"emotion", r"confession", r"hesitation", r"叙事", r"情绪"],
+    "quality_exclusion": [r"no modern", r"avoid", r"exclusion", r"forbidden", r"禁止", r"排除"],
+    "shot_slots": [r"frame 01", r"frame 02", r"per-shot", r"shot", r"分镜"],
+}
+
+SYSTEM_SECTION_ALIASES = {
+    "premise": [r"premise", r"前提"],
+    "identity_lock": [r"identity lock", r"身份锁定"],
+    "continuity": [r"continuity", r"连续性"],
+    "variation_budget": [r"variation budget", r"变化预算"],
+    "spatial": [r"spatial", r"空间"],
+    "character": [r"character", r"人物"],
+    "color": [r"color", r"palette", r"色彩"],
+    "medium": [r"medium", r"介质"],
+    "composition": [r"composition", r"构图"],
+    "lighting": [r"lighting", r"atmosphere", r"光影", r"氛围"],
     "narrative": [r"narrative", r"emotion", r"叙事", r"情绪"],
-    "quality_exclusion": [r"quality", r"exclusion", r"avoid", r"禁止", r"排除"],
-    "shot_slots": [r"shot slot", r"frame 01", r"per-shot", r"分镜"],
+    "quality_exclusion": [r"quality", r"exclusion", r"avoid", r"质量", r"排除"],
+    "shot_slots": [r"shot slots?", r"frame", r"分镜"],
 }
 
 COMPACT_REQUIRED = {
@@ -44,6 +71,14 @@ COMPACT_REQUIRED = {
     "visual_style": [r"style", r"cinematic", r"film", r"noir", r"editorial", r"photo", r"illustration", r"电影感", r"人像"],
     "camera_or_composition": [r"camera", r"lens", r"shot", r"composition", r"35mm", r"50mm", r"85mm", r"foreground", r"portrait"],
     "lighting_or_mood": [r"light", r"lamp", r"shadow", r"mood", r"melancholy", r"atmosphere", r"smoky", r"overcast", r"克制"],
+}
+
+COMPACT_SECTION_ALIASES = {
+    "subject": [r"subject", r"主体", r"人物"],
+    "setting": [r"setting", r"environment", r"场景", r"环境"],
+    "visual_style": [r"visual style", r"style", r"风格"],
+    "camera_or_composition": [r"camera", r"composition", r"构图", r"镜头"],
+    "lighting_or_mood": [r"lighting", r"mood", r"atmosphere", r"光影", r"情绪", r"氛围"],
 }
 
 GENERIC_FILLER = {
@@ -115,22 +150,35 @@ CAMERA_CONFLICTS = [
 MJ_VALUE_PARAMS = {
     "--ar",
     "--aspect",
+    "--bs",
     "--chaos",
+    "--cw",
+    "--end",
+    "--iw",
+    "--loop",
+    "--motion",
+    "--oref",
+    "--profile",
+    "--p",
     "--quality",
     "--q",
+    "--repeat",
+    "--r",
     "--seed",
+    "--sref",
     "--stylize",
     "--s",
+    "--sv",
+    "--sw",
     "--weird",
     "--w",
     "--style",
     "--v",
     "--version",
-    "--sref",
-    "--cref",
-    "--cw",
 }
-MJ_FLAG_PARAMS = {"--raw", "--turbo", "--fast", "--relax", "--niji"}
+MJ_LEGACY_VALUE_PARAMS = {"--cref"}
+MJ_FLAG_PARAMS = {"--raw", "--turbo", "--fast", "--relax", "--niji", "--stealth", "--tile", "--public", "--draft"}
+FLUX_NEGATION_RE = re.compile(r"\b(?:no|without|not|avoid)\s+[A-Za-z][A-Za-z-]*", re.I)
 
 
 @dataclass
@@ -180,13 +228,17 @@ def canonical_heading(raw: str) -> str:
 
 
 def parse_sections(text: str) -> dict[str, str]:
-    heading_re = re.compile(r"^\s*(?:#+\s*)?(?:\[|【)([^]\】\n]+)(?:\]|】)\s*$", re.M)
+    heading_re = re.compile(
+        r"^\s*(?:(?:#+\s*)?(?:\[|【)([^]\】\n]+)(?:\]|】)|#{1,6}\s+([^:\n]+?)\s*$|([^:\n]{2,80}?(?:Layer|System|层|系统|Constraints|Prompt|主体|环境|光影|材质|构图|风格|语感|内涵))\s*[:：]\s*)$",
+        re.M,
+    )
     matches = list(heading_re.finditer(text))
     sections: dict[str, str] = {}
     for idx, match in enumerate(matches):
         start = match.end()
         end = matches[idx + 1].start() if idx + 1 < len(matches) else len(text)
-        sections[canonical_heading(match.group(1))] = text[start:end].strip()
+        heading = next(group for group in match.groups() if group)
+        sections[canonical_heading(heading)] = text[start:end].strip()
     return sections
 
 
@@ -232,22 +284,36 @@ def requirements_for(architecture: str) -> dict[str, list[str]]:
     return COMPACT_REQUIRED
 
 
+def section_aliases_for(architecture: str) -> dict[str, list[str]]:
+    if architecture == "seven-layer":
+        return SEVEN_SECTION_ALIASES
+    if architecture == "system":
+        return SYSTEM_SECTION_ALIASES
+    return COMPACT_SECTION_ALIASES
+
+
 def coverage_for(text: str, architecture: str) -> tuple[dict[str, bool], dict[str, SectionQuality]]:
     haystack = normalize(text)
     sections = parse_sections(text)
     required = requirements_for(architecture)
+    aliases = section_aliases_for(architecture)
     coverage: dict[str, bool] = {}
     section_quality: dict[str, SectionQuality] = {}
 
     for key, patterns in required.items():
-        section_name, section_content = section_for_key(sections, key, patterns)
+        section_name, section_content = section_for_key(sections, key, aliases.get(key, patterns))
         if section_name is not None and section_content is not None:
             quality = section_is_valid(section_content)
             section_quality[key] = quality
             coverage[key] = quality.valid
         else:
             section_quality[key] = SectionQuality(False, False, 0, "no matching section")
-            coverage[key] = has_any(haystack, patterns)
+            if architecture in {"seven-layer", "system"} and not sections:
+                coverage[key] = has_any(haystack, patterns)
+            elif architecture == "compact":
+                coverage[key] = has_any(haystack, patterns)
+            else:
+                coverage[key] = False
 
     return coverage, section_quality
 
@@ -311,11 +377,16 @@ def parse_midjourney_params(text: str) -> MidjourneyParse:
                 warnings.append("Midjourney --no multiword exclusions should be comma-separated or expressed positively.")
             continue
 
-        if param in MJ_VALUE_PARAMS:
+        if param in MJ_VALUE_PARAMS or param in MJ_LEGACY_VALUE_PARAMS:
+            if param in MJ_LEGACY_VALUE_PARAMS:
+                warnings.append(f"Legacy or deprecated Midjourney parameter: {param}")
             idx += 1
             if idx >= len(tokens) or tokens[idx].startswith("--"):
                 critical.append(f"Midjourney parameter {param} is missing a value.")
             else:
+                value = tokens[idx]
+                if value != value.rstrip(".,;:"):
+                    critical.append(f"Midjourney parameter {param} value has trailing punctuation.")
                 idx += 1
             continue
 
@@ -353,9 +424,15 @@ def check_model_policy(text: str, model: str) -> tuple[list[str], list[str], dic
             critical.append("Midjourney should use --no at the end instead of a separate Negative Prompt block.")
     elif model == "flux":
         bad_hex = malformed_hex_codes(text)
+        negation_hits = FLUX_NEGATION_RE.findall(text)
         policy["malformed_hex_codes"] = bad_hex
+        policy["plain_negation_phrases"] = negation_hits
         if has_negative_block or "--no" in haystack:
             critical.append("FLUX: prefer positive replacement language; most FLUX models do not support negative prompts.")
+        if len(negation_hits) >= 2:
+            critical.append(f"FLUX prompt uses multiple plain negation phrases; rewrite as positive replacements: {', '.join(negation_hits)}.")
+        elif negation_hits:
+            warnings.append(f"FLUX prompt uses plain negation; prefer a positive replacement: {', '.join(negation_hits)}.")
         if bad_hex:
             critical.append(f"FLUX color steering has malformed hex code(s): {', '.join(bad_hex)}.")
     elif model == "gpt-image":
@@ -363,6 +440,14 @@ def check_model_policy(text: str, model: str) -> tuple[list[str], list[str], dic
         policy["generic_filler_hits"] = filler_hits
         if len(filler_hits) >= 5:
             warnings.append("GPT Image: reduce keyword pile and express priorities in natural language.")
+        if any(term in haystack for term in ("edit", "replace", "remove", "change")) and not any(term in haystack for term in ("preserve", "keep", "only", "unchanged")):
+            warnings.append("GPT Image edit prompts should separate preserve/change instructions.")
+        if any(term in haystack for term in ("text", "headline", "sign", "label")) and not re.search(r'"[^"]+"|“[^”]+”', text):
+            warnings.append("GPT Image text-rendering prompts should quote exact text.")
+        if "pixel-perfect" in haystack or "guarantee exact reproduction" in haystack:
+            warnings.append("GPT Image prompts should not promise pixel-perfect or guaranteed exact reproduction.")
+        if "reference image" in haystack and not any(term in haystack for term in ("controls", "for identity", "for style", "for composition", "for palette")):
+            warnings.append("GPT Image reference-image prompts should assign each reference image a role.")
     elif model == "stable-diffusion":
         if "--no" in haystack:
             warnings.append("Stable Diffusion wrappers usually use a negative prompt field, not Midjourney --no.")

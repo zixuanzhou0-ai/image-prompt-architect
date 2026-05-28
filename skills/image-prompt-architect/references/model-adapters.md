@@ -26,7 +26,7 @@ Each adapter tracks:
 **Last verified:** 2026-05-28  
 **Confidence:** high for API behavior; medium for creative prompt heuristics  
 **Primary docs:** https://platform.openai.com/docs/guides/image-generation  
-**Local test coverage:** fixtures only; no image-output eval  
+**Local test coverage:** `tests/fixtures/bad_gpt_image_keyword_pile.txt`, `tests/fixtures/bad_gpt_image_edit_no_preserve.txt`, `tests/fixtures/bad_gpt_image_unquoted_text.txt`; no image-output eval
 **Applies to:** API and ChatGPT-like image workflows
 
 **Source basis:**
@@ -138,9 +138,9 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 ## Dreamina / Seedream / Jimeng
 
 **Last verified:** 2026-05-28  
-**Confidence:** low to medium  
+**Confidence:** low for Dreamina/Jimeng UI-specific behavior; medium for broad bilingual prompt heuristics
 **Primary docs:** local project rules when present; Seedream technical reports are model-family evidence, not Dreamina/Jimeng UI evidence  
-**Local test coverage:** examples only; no fixture-backed image-output eval  
+**Local test coverage:** `tests/fixtures/good_chinese_dreamina.txt`, `tests/fixtures/good_chinese_seven_layer.txt`, `tests/fixtures/good_bilingual_model_port.txt`; no image-output eval
 **Applies to:** mixed/unknown UI and local workflows
 
 **Source basis:**
@@ -179,7 +179,7 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 **Last verified:** 2026-05-28  
 **Confidence:** high for parameter syntax; medium for creative heuristics  
 **Primary docs:** https://docs.midjourney.com/docs/parameter-list and https://docs.midjourney.com/docs/no  
-**Local test coverage:** fixture-backed syntax checks; no image-output eval  
+**Local test coverage:** `tests/fixtures/good_midjourney.txt`, `tests/fixtures/good_midjourney_oref_profile.txt`, `tests/fixtures/bad_midjourney_negative_block.txt`, `tests/fixtures/bad_midjourney_params_middle.txt`, `tests/fixtures/bad_midjourney_value_punctuation.txt`; no image-output eval
 **Applies to:** Midjourney prompt UI
 
 **Source basis:**
@@ -201,7 +201,8 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 **Parameter/API strategy:**
 
 - Put parameters at the end with spaces before dashes and no punctuation after parameters.
-- Common parameters: `--ar`, `--chaos`, `--quality`, `--seed`, `--raw`, `--stylize`, `--sref`, `--weird`, `--niji`, `--no`.
+- Current parser-covered parameters include: `--ar`, `--aspect`, `--chaos`, `--quality`, `--q`, `--seed`, `--raw`, `--stylize`, `--s`, `--sref`, `--sw`, `--sv`, `--oref`, `--profile`, `--p`, `--iw`, `--weird`, `--w`, `--niji`, `--no`, `--repeat`, `--r`, `--tile`, `--stealth`, `--public`, `--draft`, `--motion`, `--loop`, `--end`, and `--bs`.
+- Legacy/deprecated parser-covered parameters: `--cref`. Treat legacy parameters as warnings until confirmed against the current UI.
 
 **Reference image strategy:** If using style references, keep them separate from prose when the UI supports it.
 
@@ -225,7 +226,7 @@ subject, setting, visual style, camera, lighting, mood --ar 16:9 --stylize 150 -
 **Last verified:** 2026-05-28  
 **Confidence:** high for negative-prompt and API-field guidance; medium for creative heuristics  
 **Primary docs:** https://docs.bfl.ai/guides/prompting_unified_technical and https://docs.bfl.ai/flux_2/flux2_text_to_image  
-**Local test coverage:** fixture-backed syntax checks; no image-output eval  
+**Local test coverage:** `tests/fixtures/good_flux_structured.txt`, `tests/fixtures/bad_flux_negative.txt`, `tests/fixtures/bad_flux_invalid_hex.txt`, `tests/fixtures/bad_flux_plain_negation.txt`; no image-output eval
 **Applies to:** BFL API / FLUX.2 workflows
 
 **Source basis:**
@@ -301,4 +302,3 @@ Premium glass skincare bottle with matte white pump on a warm gray stone surface
 - Use LoRA, ControlNet, weights, and sampler terms only when the user names that workflow.
 
 **Do not claim:** Do not apply Stable Diffusion syntax to FLUX or Midjourney.
-

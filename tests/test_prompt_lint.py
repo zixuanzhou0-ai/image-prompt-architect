@@ -49,6 +49,27 @@ def test_empty_heading_skeleton_is_critical():
     assert all(not quality["valid"] for quality in result.section_quality.values())
 
 
+def test_keyword_stuffing_without_sections_does_not_count_as_coverage():
+    result = prompt_lint.lint(fixture("bad_keyword_stuffing_no_sections.txt"), "seven-layer", "generic")
+    assert result.critical
+    assert sum(result.coverage.values()) <= 1
+    assert "subject" in result.missing
+
+
+def test_markdown_heading_skeleton_is_parsed_and_rejected():
+    result = prompt_lint.lint(fixture("bad_markdown_heading_skeleton.txt"), "seven-layer", "generic")
+    assert result.critical
+    assert result.section_quality["subject"]["present"]
+    assert not result.section_quality["subject"]["valid"]
+
+
+def test_colon_heading_skeleton_is_parsed_and_rejected():
+    result = prompt_lint.lint(fixture("bad_label_colon_skeleton.txt"), "seven-layer", "generic")
+    assert result.critical
+    assert result.section_quality["composition"]["present"]
+    assert not result.section_quality["composition"]["valid"]
+
+
 def test_good_system_series_has_series_controls():
     result = prompt_lint.lint(fixture("good_system_series.txt"), "system", "generic")
     assert result.score >= 8
@@ -82,9 +103,27 @@ def test_midjourney_params_middle_is_critical():
     assert any("trailing prose" in item for item in result.critical)
 
 
+def test_midjourney_current_reference_params_pass():
+    result = prompt_lint.lint(fixture("good_midjourney_oref_profile.txt"), "auto", "midjourney")
+    assert not result.critical
+    assert "--oref" in result.model_policy["midjourney_params"]
+    assert "--profile" in result.model_policy["midjourney_params"]
+
+
+def test_midjourney_value_punctuation_is_critical():
+    result = prompt_lint.lint(fixture("bad_midjourney_value_punctuation.txt"), "auto", "midjourney")
+    assert any("value has trailing punctuation" in item for item in result.critical)
+
+
 def test_flux_negative_prompt_is_critical():
     result = prompt_lint.lint(fixture("bad_flux_negative.txt"), "auto", "flux")
     assert any("FLUX" in item for item in result.critical)
+
+
+def test_flux_plain_negation_is_detected_and_escalated():
+    result = prompt_lint.lint(fixture("bad_flux_plain_negation.txt"), "auto", "flux")
+    assert result.model_policy["plain_negation_phrases"]
+    assert any("plain negation" in item for item in result.critical)
 
 
 def test_flux_invalid_hex_is_critical():
@@ -102,8 +141,29 @@ def test_gpt_image_keyword_pile_warns():
     assert any("keyword pile" in warning.lower() for warning in result.warnings)
 
 
+def test_gpt_image_edit_without_preserve_warns():
+    result = prompt_lint.lint(fixture("bad_gpt_image_edit_no_preserve.txt"), "auto", "gpt-image")
+    assert any("preserve/change" in warning for warning in result.warnings)
+
+
+def test_gpt_image_text_without_quotes_warns():
+    result = prompt_lint.lint(fixture("bad_gpt_image_unquoted_text.txt"), "auto", "gpt-image")
+    assert any("quote exact text" in warning for warning in result.warnings)
+
+
 def test_chinese_dreamina_prompt_runs():
     result = prompt_lint.lint(fixture("good_chinese_dreamina.txt"), "compact", "dreamina")
+    assert result.score >= 6
+
+
+def test_chinese_seven_layer_headings_are_supported():
+    result = prompt_lint.lint(fixture("good_chinese_seven_layer.txt"), "seven-layer", "dreamina")
+    assert not result.critical
+    assert not result.missing
+
+
+def test_bilingual_model_port_prompt_runs_as_compact():
+    result = prompt_lint.lint(fixture("good_bilingual_model_port.txt"), "compact", "dreamina")
     assert result.score >= 6
 
 
@@ -139,4 +199,3 @@ def test_strict_bad_fixture_returns_nonzero():
 def test_strict_good_fixture_returns_zero():
     completed = run_cli("tests/fixtures/good_seven_layer.txt", "--architecture", "seven-layer", "--strict")
     assert completed.returncode == 0
-

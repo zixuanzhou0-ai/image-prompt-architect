@@ -13,6 +13,55 @@
     "source_score": 7,
     "target_score": 17,
     "status": "prompt-level target only"
+  },
+  "gpt_image_text_rendering": {
+    "source_score": 8,
+    "target_score": 17,
+    "status": "prompt-level target only"
+  },
+  "gpt_image_edit_preserve_change": {
+    "source_score": 8,
+    "target_score": 17,
+    "status": "prompt-level target only"
+  },
+  "midjourney_no_phrase": {
+    "source_score": 10,
+    "target_score": 17,
+    "status": "prompt-level target only"
+  },
+  "midjourney_oref_style_ref": {
+    "source_score": 10,
+    "target_score": 17,
+    "status": "prompt-level target only"
+  },
+  "flux_plain_negation": {
+    "source_score": 9,
+    "target_score": 17,
+    "status": "prompt-level target only"
+  },
+  "flux_structured_brand_color": {
+    "source_score": 9,
+    "target_score": 17,
+    "status": "prompt-level target only"
+  },
+  "dreamina_bilingual_cultural_scene": {
+    "source_score": 8,
+    "target_score": 17,
+    "status": "prompt-level target only"
+  },
+  "grok_reference_image_generation": {
+    "source_score": 7,
+    "target_score": 16,
+    "status": "prompt-level target only"
+  },
+  "series_identity_drift": {
+    "source_score": 7,
+    "target_score": 18,
+    "status": "prompt-level target only"
+  },
+  "product_photo_constraints": {
+    "source_score": 8,
+    "target_score": 17,
+    "status": "prompt-level target only"
   }
 }
-

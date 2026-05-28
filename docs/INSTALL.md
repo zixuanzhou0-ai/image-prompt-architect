@@ -12,12 +12,18 @@ skills/image-prompt-architect/SKILL.md
 If your Codex CLI supports plugin marketplace sources:
 
 ```bash
-codex plugin marketplace add zixuanzhou0-ai/image-prompt-architect --ref main
+codex plugin marketplace add zixuanzhou0-ai/image-prompt-architect --ref v0.4.0
 codex plugin marketplace list
 codex plugin marketplace upgrade
 ```
 
-This repository is a plugin project root. If your CLI expects a marketplace index rather than a plugin root, use direct skill installation instead.
+To inspect the exact developer-preview files locally:
+
+```bash
+git clone --branch v0.4.0 https://github.com/zixuanzhou0-ai/image-prompt-architect.git
+```
+
+This repository is a plugin project root. If your CLI expects a marketplace index rather than a plugin root, use direct skill installation instead. Use `--ref main` only when you intentionally want the latest unreleased state.
 
 ## Direct Skill Use
 
@@ -39,4 +45,3 @@ Use Image Prompt Architect to rewrite this prompt for Midjourney: "beautiful gir
 - Skill not triggering: invoke `$image-prompt-architect` explicitly.
 - Tests failing: run `python -m pip install pytest` and retry `python -m pytest`.
 - Strict lint unexpectedly passes a bad prompt: add a fixture and expected critical failure.
-

@@ -29,3 +29,103 @@ cases:
     source_score_estimate: 7
     rewritten_score_target: 17
 
+  - id: gpt_image_text_rendering
+    source_prompt: "make a poster with headline Summer Archive, vintage paper, cool design"
+    target_model: "gpt-image"
+    expected_mode: "standard"
+    expected_risks:
+      - "exact text not quoted"
+      - "layout underspecified"
+    source_score_estimate: 8
+    rewritten_score_target: 17
+
+  - id: gpt_image_edit_preserve_change
+    source_prompt: "edit this product photo, change the background to marble and make it premium"
+    target_model: "gpt-image"
+    expected_mode: "critique"
+    expected_risks:
+      - "missing preserve/change split"
+      - "product geometry drift"
+    source_score_estimate: 8
+    rewritten_score_target: 17
+
+  - id: midjourney_no_phrase
+    source_prompt: "1930s Shanghai street portrait, cinematic --ar 3:4 --no modern clothing"
+    target_model: "midjourney"
+    expected_mode: "critique"
+    expected_risks:
+      - "ambiguous multiword --no phrase"
+      - "needs positive period-costume anchors"
+    source_score_estimate: 10
+    rewritten_score_target: 17
+
+  - id: midjourney_oref_style_ref
+    source_prompt: "ceramic tea set product photo --oref ref.jpg --profile ceramic-study --iw 1.2"
+    target_model: "midjourney"
+    expected_mode: "model-port"
+    expected_risks:
+      - "reference role unclear"
+      - "missing lighting/composition controls"
+    source_score_estimate: 10
+    rewritten_score_target: 17
+
+  - id: flux_plain_negation
+    source_prompt: "quiet mountain trail, no crowds, without cars, not dark, #88AAEE"
+    target_model: "flux"
+    expected_mode: "critique"
+    expected_risks:
+      - "plain negation should become positive replacement"
+      - "lighting intent unclear"
+    source_score_estimate: 9
+    rewritten_score_target: 17
+
+  - id: flux_structured_brand_color
+    source_prompt: "premium skincare bottle, white label, brand pink, clean studio"
+    target_model: "flux"
+    expected_mode: "standard"
+    expected_risks:
+      - "brand color lacks hex code"
+      - "product material and lighting underspecified"
+    source_score_estimate: 9
+    rewritten_score_target: 17
+
+  - id: dreamina_bilingual_cultural_scene
+    source_prompt: "雨后江南书店老板，电影感，人像，high quality"
+    target_model: "dreamina"
+    expected_mode: "standard"
+    expected_risks:
+      - "too little concrete cultural detail"
+      - "generic quality filler"
+    source_score_estimate: 8
+    rewritten_score_target: 17
+
+  - id: grok_reference_image_generation
+    source_prompt: "use this reference image to make a cinematic portrait"
+    target_model: "grok"
+    expected_mode: "standard"
+    expected_risks:
+      - "reference role unclear"
+      - "missing model settings outside prose"
+    source_score_estimate: 7
+    rewritten_score_target: 16
+
+  - id: series_identity_drift
+    source_prompt: "make six cinematic frames of the same girl traveling through different cities"
+    target_model: "gpt-image"
+    expected_mode: "series"
+    expected_risks:
+      - "identity lock missing"
+      - "variation budget missing"
+      - "shot slots missing"
+    source_score_estimate: 7
+    rewritten_score_target: 18
+
+  - id: product_photo_constraints
+    source_prompt: "luxury watch on table, professional, no text, no reflections"
+    target_model: "flux"
+    expected_mode: "model-port"
+    expected_risks:
+      - "negative language needs positive replacement"
+      - "material and geometry constraints underspecified"
+    source_score_estimate: 8
+    rewritten_score_target: 17

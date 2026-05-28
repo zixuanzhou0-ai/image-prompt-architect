@@ -13,3 +13,4 @@ This folder defines a lightweight prompt-evaluation protocol.
 
 The current evals are prompt-level only. Image-output evaluation is not yet automated.
 
+For image-output scoring fields and manual capture format, see `image_output_protocol.md`.
