@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.10.0 - 2026-05-29
+
+- Added `evals/check_image_output_records.py` for v1.0-style scored record validation.
+- Added CI coverage for image-output record validation.
+- Made prompt eval fail when `skill_output_prompt` lacks source/date/notes provenance.
+- Added `docs/V1_RELEASE_GATE.md` with release gates and an example scored image-output record.
+- Kept image-output records placeholder-only; v1.0 remains blocked until real model outputs are captured and scored.
+
 ## 0.9.0 - 2026-05-29
 
 - Added skill-output provenance fields to prompt eval cases.

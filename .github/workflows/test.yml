@@ -24,6 +24,7 @@ jobs:
       - run: python evals/run_prompt_eval.py
       - run: git diff --exit-code evals/report.md
       - run: python scripts/check_adapter_eval_status.py
+      - run: python evals/check_image_output_records.py
       - name: Strict lint good fixtures
         run: |
           python - <<'PY'

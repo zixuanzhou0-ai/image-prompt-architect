@@ -19,6 +19,7 @@ CASES_FILE = ROOT / "evals" / "prompt_cases.yml"
 REPORT_FILE = ROOT / "evals" / "report.md"
 SKILL_OUTPUTS_FILE = ROOT / "evals" / "skill_outputs.json"
 LINTER_FILE = ROOT / "skills" / "image-prompt-architect" / "scripts" / "prompt_lint.py"
+ALLOWED_SKILL_OUTPUT_SOURCES = {"manual_capture", "codex_run", "golden_reference"}
 
 FEATURE_SYNONYMS = {
     "specific subject": ["24-year-old", "woman", "hiker", "product", "bottle", "watch", "书店老板"],
@@ -216,8 +217,31 @@ def make_report(cases: list[dict[str, object]]) -> str:
     return "\n".join(lines)
 
 
+def provenance_errors(cases: list[dict[str, object]]) -> list[str]:
+    errors: list[str] = []
+    for case in cases:
+        case_id = str(case.get("id", "unknown"))
+        if not case.get("skill_output_prompt"):
+            continue
+        source = str(case.get("skill_output_source", ""))
+        date = str(case.get("skill_output_date", ""))
+        notes = str(case.get("skill_output_notes", ""))
+        if source not in ALLOWED_SKILL_OUTPUT_SOURCES:
+            errors.append(f"{case_id}: missing or invalid skill_output_source")
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date):
+            errors.append(f"{case_id}: missing or invalid skill_output_date")
+        if not notes.strip():
+            errors.append(f"{case_id}: missing skill_output_notes")
+    return errors
+
+
 def main() -> int:
     cases = parse_cases(CASES_FILE.read_text(encoding="utf-8"))
+    errors = provenance_errors(cases)
+    if errors:
+        print("Prompt eval provenance validation failed:")
+        print("\n".join(errors))
+        return 1
     report = make_report(cases)
     REPORT_FILE.write_text(report, encoding="utf-8")
     print(f"Wrote {REPORT_FILE.relative_to(ROOT)} with {len(cases)} cases.")
