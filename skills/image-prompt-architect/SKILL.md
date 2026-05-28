@@ -1,6 +1,6 @@
 ---
 name: image-prompt-architect
-description: Design, rewrite, critique, and port AI image-generation prompts. Use for image-prompt architecture, prompt diagnosis, model-specific prompt adaptation, cinematic series prompts, and reusable visual style bibles. Do not trigger for ordinary image creation, image editing, or visual critique unless the user asks for prompt text, prompt structure, or model adaptation.
+description: Create and improve prompt text for AI image models. Use for image prompt rewriting, critique, model-porting, prompt linting, cinematic series bibles, and reusable visual style systems. Do not trigger for ordinary image generation, image editing, or visual analysis unless the user explicitly asks for prompt text, prompt structure, or model adaptation.
 ---
 
 # Image Prompt Architect
@@ -22,6 +22,18 @@ Choose one mode before drafting.
 - **Series bible**: user wants multiple images, cinematic stills, a set, or a consistent visual world. Output continuity rules, variation budget, shot slots, and per-shot prompts.
 
 For exact schemas, read `references/output-contract.md`.
+
+## Mode Precedence
+
+If multiple modes apply:
+
+1. Choose **Critique** first when the user provides an existing prompt and asks what is wrong.
+2. Choose **Model port** first when source and target models are named.
+3. Choose **Series bible** first when multiple images or continuity are required.
+4. Choose **Standard build** for structured creation or rewrite.
+5. Choose **Quick prompt** only when the user asks for speed or gives a simple one-off request.
+
+Quick mode must still follow model-native syntax when a target model is named.
 
 ## Architecture Choice
 
@@ -65,4 +77,3 @@ python skills/image-prompt-architect/scripts/prompt_lint.py prompt.txt --archite
 - `references/checklist.md`: quick quality gate.
 - `references/evaluation-rubric.md`: scoring rubric.
 - `references/examples.md`: worked examples and reusable skeletons.
-

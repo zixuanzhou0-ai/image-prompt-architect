@@ -1,0 +1,27 @@
+[Premise System]
+A series of fantasy village images.
+
+[Spatial System]
+Village, forest, river.
+
+[Character System]
+Young traveler.
+
+[Color System]
+Blue and gold.
+
+[Medium System]
+Film still.
+
+[Composition System]
+Wide shots.
+
+[Lighting and Atmosphere System]
+Soft light.
+
+[Narrative and Emotion System]
+Nostalgia.
+
+[Quality and Exclusion System]
+Avoid low quality.
+

@@ -1,0 +1,31 @@
+cases:
+  - id: generic_city_girl
+    source_prompt: "beautiful girl, cinematic, masterpiece, city at night"
+    target_model: "gpt-image"
+    expected_mode: "critique"
+    expected_risks:
+      - "generic filler"
+      - "missing lighting source"
+      - "missing camera/composition"
+    source_score_estimate: 4
+    rewritten_score_target: 16
+
+  - id: flux_negative
+    source_prompt: "Negative Prompt: no crowds, no cars. peaceful landscape"
+    target_model: "flux"
+    expected_mode: "model-port"
+    expected_risks:
+      - "negative prompt unsupported"
+      - "needs positive replacements"
+    source_score_estimate: 5
+    rewritten_score_target: 16
+
+  - id: midjourney_params
+    source_prompt: "ceramic tea set --ar 4:3 on a table with morning light"
+    target_model: "midjourney"
+    expected_mode: "critique"
+    expected_risks:
+      - "parameters not at end"
+    source_score_estimate: 7
+    rewritten_score_target: 17
+

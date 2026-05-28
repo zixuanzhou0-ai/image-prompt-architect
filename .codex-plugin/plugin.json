@@ -1,7 +1,16 @@
 {
   "name": "image-prompt-architect",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Codex skill for AI image prompt design, critique, model adaptation, and cinematic series prompt bibles.",
+  "repository": "https://github.com/zixuanzhou0-ai/image-prompt-architect",
+  "license": "MIT",
+  "keywords": [
+    "image prompts",
+    "prompt engineering",
+    "Midjourney",
+    "FLUX",
+    "GPT Image"
+  ],
   "author": {
     "name": "zixuanzhou0-ai"
   },
@@ -12,6 +21,7 @@
     "longDescription": "Image Prompt Architect packages a reusable image-prompt design workflow. It supports seven-layer prompts, multi-system series bibles, model-specific prompt ports, prompt critique, lint checks, and iteration rubrics.",
     "developerName": "zixuanzhou0-ai",
     "category": "Creativity",
+    "websiteURL": "https://github.com/zixuanzhou0-ai/image-prompt-architect",
     "capabilities": [
       "Prompt engineering",
       "Prompt critique",

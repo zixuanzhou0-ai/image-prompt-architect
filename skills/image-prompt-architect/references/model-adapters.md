@@ -7,6 +7,10 @@ Model behavior changes. Treat this file as a dated heuristic matrix, not permane
 Each adapter tracks:
 
 - **Last verified**
+- **Confidence**
+- **Primary docs**
+- **Local test coverage**
+- **Applies to**
 - **Source basis**
 - **Best prompt shape**
 - **Language strategy**
@@ -19,12 +23,18 @@ Each adapter tracks:
 
 ## GPT Image / OpenAI Image Models
 
-**Last verified:** 2026-05-28
+**Last verified:** 2026-05-28  
+**Confidence:** high for API behavior; medium for creative prompt heuristics  
+**Primary docs:** https://platform.openai.com/docs/guides/image-generation  
+**Local test coverage:** fixtures only; no image-output eval  
+**Applies to:** API and ChatGPT-like image workflows
 
 **Source basis:**
 
-- OpenAI image generation docs distinguish Responses API and Image API. Responses API is suited to conversational and multi-turn image generation/editing; Image API is suited to direct image operations.
-- When using the image generation tool in Responses API, the mainline model may revise prompts for performance and expose `revised_prompt`.
+- OpenAI image generation docs distinguish Responses API and Image API.
+- Responses API is suited to conversational and multi-turn image generation/editing; Image API is suited to direct image operations.
+- The Responses image generation tool may revise prompts for performance and expose `revised_prompt`.
+- Mask editing is prompt-guided and should not be treated as pixel-perfect geometry control.
 
 **Best prompt shape:**
 
@@ -58,6 +68,8 @@ Each adapter tracks:
 **Do not claim:**
 
 - Do not claim exact reproducibility from prompt text alone.
+- Do not promise exact text/layout reproduction from prompt alone.
+- Do not claim masks are followed with pixel-perfect precision.
 - Do not claim English is always better.
 
 **Copy-ready output format:**
@@ -66,9 +78,13 @@ Each adapter tracks:
 Create an image of ... Preserve ... Change ... Render the exact text "...". Avoid ...
 ```
 
-## Grok / Grok Imagine
+## Grok Imagine - Image Generation
 
-**Last verified:** 2026-05-28
+**Last verified:** 2026-05-28  
+**Confidence:** medium  
+**Primary docs:** https://docs.x.ai/docs/guides/image-generation  
+**Local test coverage:** examples only; no controlled image-output eval  
+**Applies to:** API and Grok Imagine-style image generation
 
 **Source basis:**
 
@@ -79,75 +95,78 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 - Structured English prompts often work well in practice, but treat this as a heuristic unless the user has test results.
 - Seven-layer and system prompts are useful when the user wants explicit control.
 
-**Language strategy:**
+**Language strategy:** Use English for technical art-direction terms; keep Chinese cultural terms when semantically important.
 
-- Use English for technical art-direction terms when precision matters.
-- Keep Chinese cultural terms when they are semantically important.
+**Length strategy:** Medium to long prompts are acceptable when each part is concrete.
 
-**Length strategy:**
+**Negative prompt strategy:** Use concise avoid statements. Do not overstuff exclusions.
 
-- Medium to long prompts are acceptable when each part is concrete.
+**Parameter/API strategy:** Keep aspect ratio, resolution, output count, and response format outside prompt prose when coding.
 
-**Negative prompt strategy:**
+**Reference image strategy:** Name whether references control style, subject, or composition.
 
-- Use concise avoid statements. Do not overstuff exclusions.
-
-**Parameter/API strategy:**
-
-- If coding, expose aspect ratio, resolution, output count, and response format separately from prompt prose.
-
-**Reference image strategy:**
-
-- If references are available, name which reference controls style, subject, or composition.
-
-**Do not claim:**
-
-- Do not claim official proof that Grok is uniquely optimized for long cinematic prompts.
+**Do not claim:** Do not claim official proof that Grok is uniquely optimized for long cinematic prompts.
 
 **Copy-ready output format:**
 
 ```text
-[seven-layer or system prompt], avoid [specific failure modes]. Aspect ratio: ...
+<seven-layer or system prompt>, avoid <specific failure modes>. Aspect ratio: ...
 ```
+
+## Grok Imagine - Image Editing
+
+**Last verified:** 2026-05-28  
+**Confidence:** medium  
+**Primary docs:** https://docs.x.ai/docs/guides/image-generation  
+**Local test coverage:** none  
+**Applies to:** API/editing workflows
+
+**Best prompt shape:** State what to preserve, what to change, and which reference controls style or identity.
+
+**Do not claim:** Do not treat editing strategy as the same as text-to-image generation.
+
+## Grok Imagine - Video / Image-to-Video
+
+**Last verified:** 2026-05-28  
+**Confidence:** low  
+**Primary docs:** https://docs.x.ai/docs/guides/image-generation  
+**Local test coverage:** none  
+**Applies to:** video/image-to-video workflows
+
+**Best prompt shape:** Use motion, temporal continuity, camera movement, and first/last-frame intent. This skill is prompt-text oriented; for video generation, defer to a video-specific skill when available.
 
 ## Dreamina / Seedream / Jimeng
 
-**Last verified:** 2026-05-28
+**Last verified:** 2026-05-28  
+**Confidence:** low to medium  
+**Primary docs:** local project rules when present; Seedream technical reports are model-family evidence, not Dreamina/Jimeng UI evidence  
+**Local test coverage:** examples only; no fixture-backed image-output eval  
+**Applies to:** mixed/unknown UI and local workflows
 
 **Source basis:**
 
 - Project-local AGENTS rules may override this public adapter.
-- Public model reports describe Seedream as a multimodal image generation/editing family, but public skill defaults should not hard-code a private "always use 4.5" rule.
+- Seedream technical reports describe a model family; they do not prove Dreamina/Jimeng UI prompt best practices.
 
 **Best prompt shape:**
 
 - Combine natural-language intent with structured aesthetic keywords when useful.
 - Follow local prompt libraries, checklist, and model notes if present.
 
-**Language strategy:**
+**Language strategy:** Chinese is useful for culturally specific scenes; English is useful for common technical visual terms.
 
-- Chinese is often useful for culturally specific scenes.
-- English is useful for common technical visual terms.
+**Length strategy:** Use medium-length prompts with clear subject, scene, style, camera, and constraints.
 
-**Length strategy:**
+**Negative prompt strategy:** Keep avoid lists short and model-specific.
 
-- Use medium-length prompts with clear subject, scene, style, camera, and constraints.
+**Parameter/API strategy:** Do not set a public universal model default unless local instructions require it.
 
-**Negative prompt strategy:**
-
-- Keep avoid lists short and model-specific.
-
-**Parameter/API strategy:**
-
-- Do not set a model default unless the user's local instructions require it.
-
-**Reference image strategy:**
-
-- State whether references control identity, pose, style, or layout.
+**Reference image strategy:** State whether references control identity, pose, style, or layout.
 
 **Do not claim:**
 
 - Do not claim a public universal default model version.
+- Do not imply Seedream technical report behavior, Dreamina UI behavior, and Jimeng UI behavior are identical.
 
 **Copy-ready output format:**
 
@@ -157,24 +176,22 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 
 ## Midjourney
 
-**Last verified:** 2026-05-28
+**Last verified:** 2026-05-28  
+**Confidence:** high for parameter syntax; medium for creative heuristics  
+**Primary docs:** https://docs.midjourney.com/docs/parameter-list and https://docs.midjourney.com/docs/no  
+**Local test coverage:** fixture-backed syntax checks; no image-output eval  
+**Applies to:** Midjourney prompt UI
 
 **Source basis:**
 
 - Midjourney docs state parameters belong at the end of the prompt.
 - The `--no` parameter is the native way to tell Midjourney what to exclude.
 
-**Best prompt shape:**
+**Best prompt shape:** Compact image-forward prompt: subject, setting, style, camera, lighting, mood.
 
-- Compact image-forward prompt: subject, setting, style, camera, lighting, mood.
+**Language strategy:** English compact prompts are conventional; keep culturally specific terms if needed.
 
-**Language strategy:**
-
-- English compact prompts are conventional; keep culturally specific terms if needed.
-
-**Length strategy:**
-
-- Short to medium. Avoid long explanatory prose.
+**Length strategy:** Short to medium. Avoid long explanatory prose.
 
 **Negative prompt strategy:**
 
@@ -186,45 +203,44 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 - Put parameters at the end with spaces before dashes and no punctuation after parameters.
 - Common parameters: `--ar`, `--chaos`, `--quality`, `--seed`, `--raw`, `--stylize`, `--sref`, `--weird`, `--niji`, `--no`.
 
-**Reference image strategy:**
+**Reference image strategy:** If using style references, keep them separate from prose when the UI supports it.
 
-- If using style references, keep them separate from prose when the UI supports it.
+**Do not claim:** Do not output a Stable Diffusion-style `Negative Prompt:` block for Midjourney.
 
-**Do not claim:**
+**Explanatory output format:**
 
-- Do not output a Stable Diffusion-style `Negative Prompt:` block for Midjourney.
+```text
+Prompt: subject, setting, visual style, camera, lighting, mood
+Parameters: --ar 16:9 --stylize 150 --chaos 8 --seed 1234 --raw --no text, watermark, modern cars
+```
 
 **Copy-ready output format:**
 
 ```text
-[Prompt]
-subject, setting, visual style, camera, lighting, mood
-
-[Parameters]
---ar 16:9 --stylize 150 --chaos 8 --seed 1234 --raw --no text, watermark, modern cars
+subject, setting, visual style, camera, lighting, mood --ar 16:9 --stylize 150 --chaos 8 --seed 1234 --raw --no text, watermark, modern cars
 ```
 
 ## FLUX.2 / BFL API
 
-**Last verified:** 2026-05-28
+**Last verified:** 2026-05-28  
+**Confidence:** high for negative-prompt and API-field guidance; medium for creative heuristics  
+**Primary docs:** https://docs.bfl.ai/guides/prompting_unified_technical and https://docs.bfl.ai/flux_2/flux2_text_to_image  
+**Local test coverage:** fixture-backed syntax checks; no image-output eval  
+**Applies to:** BFL API / FLUX.2 workflows
 
 **Source basis:**
 
 - BFL docs recommend natural-language specificity and working without negative prompts for most FLUX models.
-- FLUX.2 docs describe hex-code color steering and JSON-structured prompts for precise production control.
+- FLUX.2 docs describe hex-code color steering and JSON-structured prompt content for precise production control.
 
 **Best prompt shape:**
 
 - Natural-language descriptive prompts.
-- JSON-structured prompts for production workflows and automation.
+- Structured prompt content for production workflows and automation.
 
-**Language strategy:**
+**Language strategy:** Use direct descriptive language. Quote exact text when text rendering matters.
 
-- Use direct descriptive language. Quote exact text when text rendering matters.
-
-**Length strategy:**
-
-- Medium to long is acceptable, but more words do not automatically improve output. Remove filler.
+**Length strategy:** Medium to long is acceptable, but more words do not automatically improve output. Remove filler.
 
 **Negative prompt strategy:**
 
@@ -236,16 +252,20 @@ subject, setting, visual style, camera, lighting, mood
 - Put aspect ratio, width, height, and seed/API fields outside prompt prose when coding.
 - Use hex codes for exact brand colors.
 
-**Reference image strategy:**
-
-- Define each reference's role: composition, character, style, palette, product.
+**Reference image strategy:** Define each reference's role: composition, character, style, palette, product.
 
 **Do not claim:**
 
 - Do not assume negative prompts are supported.
 - Do not merge FLUX guidance with Stable Diffusion local-wrapper habits.
 
-**Copy-ready output format:**
+**Natural-language output format:**
+
+```text
+Premium glass skincare bottle with matte white pump on a warm gray stone surface, large diffused softbox from upper left, subtle rim light on the glass edge, centered minimal luxury product composition, clean unmarked background, solitary product, uncluttered stone surface, label color #F8F6F0 with accent line #B76E79.
+```
+
+**Structured prompt content:**
 
 ```json
 {
@@ -253,24 +273,32 @@ subject, setting, visual style, camera, lighting, mood
   "background": "...",
   "lighting": "...",
   "style": "...",
-  "camera_angle": "...",
-  "composition": "...",
   "constraints": "positive replacements for unwanted elements"
+}
+```
+
+**BFL API wrapper:**
+
+```json
+{
+  "prompt": "<natural-language prompt or stringified structured prompt>",
+  "width": 1024,
+  "height": 1024
 }
 ```
 
 ## Stable Diffusion Local Wrappers
 
-**Last verified:** 2026-05-28
-
-**Source basis:** local wrapper behavior varies.
+**Last verified:** 2026-05-28  
+**Confidence:** medium  
+**Primary docs:** local wrapper documentation varies  
+**Local test coverage:** none  
+**Applies to:** local wrapper / UI workflows
 
 **Best prompt shape:**
 
 - Positive prompt plus negative prompt only if the interface supports it.
 - Use LoRA, ControlNet, weights, and sampler terms only when the user names that workflow.
 
-**Do not claim:**
-
-- Do not apply Stable Diffusion syntax to FLUX or Midjourney.
+**Do not claim:** Do not apply Stable Diffusion syntax to FLUX or Midjourney.
 

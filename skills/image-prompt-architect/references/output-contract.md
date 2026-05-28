@@ -2,6 +2,16 @@
 
 Choose the smallest output mode that satisfies the user.
 
+## Copy-Ready Definition
+
+Copy-ready means the final prompt contains no teaching labels, Markdown headings, bracketed placeholders, or explanation inside the prompt text.
+
+Exceptions:
+
+- target-native structured JSON when the target adapter recommends it;
+- API request wrappers when the user explicitly asks for code/API use;
+- separate parameter fields when the target interface requires fields.
+
 ## Quick Prompt
 
 Use when the user asks for one prompt quickly.
@@ -17,6 +27,7 @@ Output:
 ```
 
 Do not include long explanations unless the user asks to learn the structure.
+Omit model notes in quick mode unless model syntax matters.
 
 ## Standard Build
 
@@ -90,6 +101,47 @@ Output:
 <short list of changes>
 ```
 
+## Target-Native Copy-Ready Examples
+
+Midjourney:
+
+```text
+handmade celadon ceramic tea set on a dark walnut table, thin steam, morning window light, linen napkin, subtle glaze crackle, calm minimal still life, 80mm product photography, shallow depth of field --ar 4:3 --stylize 80 --quality 1 --seed 2204 --no text, watermark, plastic shine
+```
+
+FLUX natural language:
+
+```text
+Premium glass skincare bottle with matte white pump on a warm gray stone surface, large diffused softbox from upper left, subtle rim light on the glass edge, centered minimal luxury product composition, clean unmarked background, solitary product, uncluttered stone surface, label color #F8F6F0 with accent line #B76E79.
+```
+
+FLUX structured prompt content:
+
+```json
+{
+  "subject": "premium glass skincare bottle with matte white pump",
+  "background": "warm gray stone surface with soft shadow gradient",
+  "lighting": "large diffused softbox from upper left, subtle rim light on glass edge",
+  "constraints": "clean unmarked background, solitary product, uncluttered stone surface"
+}
+```
+
+BFL API wrapper example:
+
+```json
+{
+  "prompt": "<natural-language prompt or stringified structured prompt>",
+  "width": 1024,
+  "height": 1024
+}
+```
+
+GPT Image editing:
+
+```text
+Replace only the background with a softly lit bookstore interior. Preserve the person's face, pose, clothing, and camera angle. Add a window sign that reads exactly "NIGHT SHELF" in warm cream serif letters. Avoid extra text or warped letters.
+```
+
 ## Series Bible
 
 Use for multiple images, cinematic stills, style-consistent sets, or visual worlds.
@@ -117,4 +169,3 @@ Output:
 **Per-Shot Prompts**
 <copy-ready prompts for each frame>
 ```
-

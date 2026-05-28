@@ -1,0 +1,16 @@
+should_trigger:
+  - "Rewrite this prompt for Midjourney."
+  - "Port this FLUX prompt to GPT Image."
+  - "Diagnose why this image prompt is generic."
+  - "Build a 6-shot visual bible for this film still series."
+  - "Create prompt text for an AI image model using a seven-layer structure."
+
+should_not_trigger:
+  - "Generate an image of a cat."
+  - "Edit this photo to remove the background."
+  - "What do you see in this image?"
+  - "Make this image brighter."
+  - "Create a hero image for my website."
+
+note: "Manual review fixture unless Codex trigger simulation is available."
+

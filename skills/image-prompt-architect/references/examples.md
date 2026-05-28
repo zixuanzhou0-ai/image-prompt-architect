@@ -145,3 +145,54 @@ Frame 02: One student seen through rain-streaked bus glass, medium shot, evening
 Frame 03: Both students standing far apart on a reservoir levee, wide shot, pale sunset, emotional beat: unsent confession.
 ```
 
+## 11. Failure -> Revision Loops
+
+### Midjourney `--no` Phrase Issue
+
+Initial:
+
+```text
+rural 1990s student portrait, film still --ar 16:9 --no modern clothing
+```
+
+Observed risk: Midjourney may parse "modern" and "clothing" separately instead of as one precise phrase.
+
+Revision:
+
+```text
+rural 1990s student portrait, early-Heisei school uniform, white shirt, navy sailor collar, dark pleated skirt, canvas school bag, film still, muted summer light --ar 16:9 --no smartphone, hoodie, logo, streetwear
+```
+
+### FLUX Negative Replacement
+
+Initial:
+
+```text
+Negative Prompt: no crowds, no cars, no signs. Peaceful village lane.
+```
+
+Revision:
+
+```text
+Peaceful empty village lane at dawn, closed wooden shutters, quiet stone path, solitary bicycle leaning by a wall, soft mist, no visible traffic implied by a pedestrian-only alley and calm rural stillness.
+```
+
+### GPT Image Exact Text Repair
+
+Observed failure: poster text came out as "AFTR RAIN".
+
+Repair:
+
+```text
+Regenerate the poster while preserving the monochrome wet-vellum design. The headline must read exactly "AFTER RAIN" with all letters present, centered at the top in a clean bold serif font. Keep the subtext exactly "solo piano / 9pm / hall b". Remove any extra words.
+```
+
+### Series Identity Drift Repair
+
+Observed failure: frame 2 changes the student uniforms and face shape.
+
+Repair:
+
+```text
+Keep the same two high-school students from frame 1: same face shape, same dark hair length, same white shirt and navy sailor collar, same canvas school bags. Change only the location to a rainy bus interior and the emotional beat to separation. Preserve Fuji color negative, blue-green shadows, restrained gestures, and 1990s rural youth drama tone.
+```

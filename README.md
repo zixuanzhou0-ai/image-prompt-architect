@@ -41,7 +41,15 @@ Clone the repository:
 git clone https://github.com/zixuanzhou0-ai/image-prompt-architect.git
 ```
 
-Then install or link it using the Codex plugin workflow available in your Codex app/CLI environment. The plugin follows the standard Codex layout: `.codex-plugin/plugin.json` at the root and bundled skills under `./skills/`.
+If your Codex CLI supports marketplace sources, try:
+
+```bash
+codex plugin marketplace add zixuanzhou0-ai/image-prompt-architect --ref main
+codex plugin marketplace list
+codex plugin marketplace upgrade
+```
+
+If that command is not available in your environment, use Option B below. This repository is a plugin project root, not a curated marketplace index.
 
 ### Option B: Use The Skill Directly
 
@@ -90,6 +98,20 @@ python -m pytest
 
 If you have the Codex creator/validator tools available locally, also run the skill and plugin validators from your installed Codex skill/plugin tooling.
 
+## Known Limitations
+
+- This plugin does not generate images.
+- It cannot guarantee exact reproducibility across image models.
+- Model adapters are dated heuristics with source links, not permanent laws.
+- The linter is structural and syntax-oriented; it does not replace image-output evaluation.
+
+## Troubleshooting
+
+- Plugin not appearing: confirm your Codex environment supports local plugin projects or marketplace sources.
+- Skill not triggering: invoke it explicitly with `$image-prompt-architect`.
+- `pytest` missing: install it with `python -m pip install pytest`.
+- A bad fixture passes strict mode: file an issue with the fixture and expected failure.
+
 ## Evaluation
 
 Use `skills/image-prompt-architect/references/evaluation-rubric.md`. A prompt should score at least 16/20 before being treated as strong, and model fit should not be 0.
@@ -102,4 +124,3 @@ Use `skills/image-prompt-architect/references/evaluation-rubric.md`. A prompt sh
 2. Convert critique into a patch plan.
 3. Improve the skill and examples.
 4. Run tests and validators.
-

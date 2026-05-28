@@ -1,0 +1,40 @@
+[Premise System]
+A series of early-1990s rural youth drama film stills about two students after a missed confession.
+
+[Identity Lock]
+Two East Asian high-school students, same uniforms, same canvas bags, same restrained body language, no identity drift.
+
+[Continuity System]
+Must remain fixed: Fuji color negative feeling, blue-green shadows, late-summer countryside, restrained gestures, landscapes larger than characters.
+
+[Variation Budget]
+May change per frame: location, weather, time of day, camera distance, emotional beat. Limit each frame to two major changes.
+
+[Spatial System]
+Reservoir levee, rural bus shelter, school corridor, and rain-streaked bus glass as recurring spaces.
+
+[Character System]
+Muted affect, misaligned gaze, side profile, hands holding straps or school bags, no fashion posing.
+
+[Color System]
+Cobalt sky, cyan-green shadows, low-saturation grass, warm orange late-summer highlights.
+
+[Medium System]
+35mm color negative film still, soft telecine scan, silver-halide grain, faint halation.
+
+[Composition System]
+Wide landscape frames, negative space, window frames and railings as dividers.
+
+[Lighting and Atmosphere System]
+Overcast afternoon, pale sunset, rainy reflections, humid haze.
+
+[Narrative and Emotion System]
+Unsent confession, adolescent hesitation, emotional ellipsis.
+
+[Quality and Exclusion System]
+No modern phones, no neon cyberpunk, no commercial portrait posing.
+
+[Shot Slots]
+Frame 01: two students at a rural bus shelter, overcast afternoon, almost speaking.
+Frame 02: one student through rain-streaked bus glass, evening sodium light, separation.
+

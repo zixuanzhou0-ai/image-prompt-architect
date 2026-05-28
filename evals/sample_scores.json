@@ -1,0 +1,18 @@
+{
+  "generic_city_girl": {
+    "source_score": 4,
+    "target_score": 16,
+    "status": "prompt-level target only"
+  },
+  "flux_negative": {
+    "source_score": 5,
+    "target_score": 16,
+    "status": "prompt-level target only"
+  },
+  "midjourney_params": {
+    "source_score": 7,
+    "target_score": 17,
+    "status": "prompt-level target only"
+  }
+}
+

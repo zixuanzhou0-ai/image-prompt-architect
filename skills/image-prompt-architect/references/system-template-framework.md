@@ -53,6 +53,20 @@ List what must stay fixed across all images:
 - emotional temperature;
 - visual motifs.
 
+### Identity Lock
+
+State what must never drift:
+
+- character facial constants;
+- body type, age, hair, costume, and prop invariants;
+- product geometry and brand-shape invariants;
+- recurring prop invariants;
+- forbidden identity drift.
+
+### Continuity Anchor Budget
+
+Repeat only 3-5 core anchors across the series. Avoid repeating the entire prompt unchanged; repeat the identity, medium, palette, motif, and camera grammar anchors that truly matter.
+
 ### Variation Budget
 
 List what may change per image:
@@ -75,8 +89,10 @@ location:
 camera:
 lighting:
 emotional beat:
+identity lock:
 required continuity anchors:
-allowed variation:
+per-frame delta:
+failure watch item:
 copy-ready prompt:
 ```
 
@@ -88,6 +104,12 @@ A series of [era/genre/medium] image stills about [relationship/story theme], se
 
 [Continuity System]
 Must remain fixed: [era], [medium], [palette], [characters], [lens grammar], [motifs], [emotional temperature].
+
+[Identity Lock]
+Must never drift: [face/body/costume/product geometry/recurring prop].
+
+[Continuity Anchor Budget]
+Repeat only: [3-5 core anchors].
 
 [Variation Budget]
 May change per frame: [location], [weather], [time of day], [camera distance], [action], [emotional beat]. Limit each image to 2-3 major changes.
@@ -136,4 +158,3 @@ Frame 03 ...
 - No variation budget: the series drifts too far or repeats too much.
 - Conflicting media cues: VHS, IMAX, watercolor, and 3D render compete.
 - Location becomes wallpaper: spatial system does not affect story or composition.
-

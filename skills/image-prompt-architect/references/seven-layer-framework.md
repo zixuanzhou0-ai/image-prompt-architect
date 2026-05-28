@@ -40,11 +40,17 @@ aspect ratio:
 resolution or target surface:
 text to render exactly:
 must include:
-must avoid:
+avoid / replacement strategy:
 brand/safety/platform constraints:
 ```
 
 Do not bury these constraints inside style words. They are production requirements.
+
+Model-native handling:
+
+- Midjourney: convert avoid items to `--no`.
+- FLUX: rewrite avoid items as positive replacements.
+- GPT Image: use natural-language avoid/preserve instructions.
 
 ## Recommended Sentence Structure
 
@@ -57,7 +63,7 @@ captured through [Composition and camera: shot + lens + angle + framing],
 in [Style: medium + visual language + color grade],
 evoking [Context, intent, and tone: cultural context + emotional meaning].
 
-[Output Constraints: aspect ratio + text + must-have + must-avoid]
+[Output Constraints: aspect ratio + exact text + must-have + avoid/replacement strategy]
 ```
 
 ## Bad to Good
@@ -89,6 +95,13 @@ Concrete fill:
 [Output Constraints] 16:9, no modern microphones, no LED panels, no smartphone-era details.
 ```
 
+Exact text constraint example:
+
+```text
+[Output Constraints]
+Vertical 2:3 poster. Render the headline exactly as "AFTER RAIN" and the subtext exactly as "solo piano / 9pm / hall b". Keep typography legible, centered, and free of extra words.
+```
+
 ## Common Failure Modes
 
 - Template-only prompt: headings exist, details are generic.
@@ -97,4 +110,3 @@ Concrete fill:
 - No material cues: output becomes glossy or plastic.
 - No camera layer: composition defaults to centered portrait.
 - Constraints buried in prose: platform or text requirements are ignored.
-

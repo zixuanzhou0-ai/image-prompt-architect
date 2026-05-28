@@ -1,0 +1,11 @@
+{
+  "subject": "premium glass skincare bottle with matte white pump",
+  "background": "warm gray stone surface with soft shadow gradient",
+  "lighting": "large diffused softbox from upper left, subtle rim light on glass edge",
+  "style": "minimal luxury product photography",
+  "camera_angle": "eye-level three-quarter view",
+  "composition": "centered product, negative space above for headline",
+  "colors": "label color #F8F6F0, accent line #B76E79",
+  "constraints": "clean unmarked background, solitary product, uncluttered stone surface"
+}
+
