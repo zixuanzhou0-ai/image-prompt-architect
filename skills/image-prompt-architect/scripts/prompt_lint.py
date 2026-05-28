@@ -152,10 +152,10 @@ MJ_VALUE_PARAMS = {
     "--aspect",
     "--bs",
     "--chaos",
+    "--c",
     "--cw",
     "--end",
     "--iw",
-    "--loop",
     "--motion",
     "--oref",
     "--profile",
@@ -177,8 +177,20 @@ MJ_VALUE_PARAMS = {
     "--version",
 }
 MJ_LEGACY_VALUE_PARAMS = {"--cref"}
-MJ_FLAG_PARAMS = {"--raw", "--turbo", "--fast", "--relax", "--niji", "--stealth", "--tile", "--public", "--draft"}
-FLUX_NEGATION_RE = re.compile(r"\b(?:no|without|not|avoid)\s+[A-Za-z][A-Za-z-]*", re.I)
+MJ_FLAG_PARAMS = {
+    "--raw",
+    "--turbo",
+    "--fast",
+    "--relax",
+    "--niji",
+    "--stealth",
+    "--tile",
+    "--public",
+    "--draft",
+    "--loop",
+    "--video",
+}
+FLUX_NEGATION_RE = re.compile(r"\b(?:no|without|not|avoid)\s+[^,.;\n]+", re.I)
 
 
 @dataclass
@@ -229,7 +241,7 @@ def canonical_heading(raw: str) -> str:
 
 def parse_sections(text: str) -> dict[str, str]:
     heading_re = re.compile(
-        r"^\s*(?:(?:#+\s*)?(?:\[|【)([^]\】\n]+)(?:\]|】)|#{1,6}\s+([^:\n]+?)\s*$|([^:\n]{2,80}?(?:Layer|System|层|系统|Constraints|Prompt|主体|环境|光影|材质|构图|风格|语感|内涵))\s*[:：]\s*)$",
+        r"^\s*(?:(?:#+\s*)?(?:\[|【)([^]\】\n]+)(?:\]|】)|#{1,6}\s+([^:\n]+?)\s*$|([^:\n]{0,80}?(?:Layer|System|层|系统|Constraints|Prompt|主体|环境|光影|材质|构图|风格|语感|内涵|输出|约束|限制))\s*[:：]\s*)$",
         re.M,
     )
     matches = list(heading_re.finditer(text))

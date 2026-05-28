@@ -1,0 +1,50 @@
+{
+  "status": "placeholder records only; no real image-output eval has been run",
+  "records": [
+    {
+      "case_id": "gpt_image_text_rendering",
+      "target_model": "gpt-image",
+      "model_version": "unknown",
+      "adapter_version": "0.5.0",
+      "prompt_before": "make a poster with headline Summer Archive, vintage paper, cool design",
+      "rewritten_prompt": "unknown",
+      "generation_params": {},
+      "output_image_path": "unknown",
+      "image_score": null,
+      "human_rater": "unknown",
+      "observed_failures": [],
+      "revision_prompt": "unknown",
+      "final_score": null
+    },
+    {
+      "case_id": "flux_plain_negation",
+      "target_model": "flux",
+      "model_version": "unknown",
+      "adapter_version": "0.5.0",
+      "prompt_before": "quiet mountain trail, no crowds, without cars, not dark, #88AAEE",
+      "rewritten_prompt": "unknown",
+      "generation_params": {},
+      "output_image_path": "unknown",
+      "image_score": null,
+      "human_rater": "unknown",
+      "observed_failures": [],
+      "revision_prompt": "unknown",
+      "final_score": null
+    },
+    {
+      "case_id": "midjourney_no_phrase",
+      "target_model": "midjourney",
+      "model_version": "unknown",
+      "adapter_version": "0.5.0",
+      "prompt_before": "1930s Shanghai street portrait, cinematic --ar 3:4 --no modern clothing",
+      "rewritten_prompt": "unknown",
+      "generation_params": {},
+      "output_image_path": "unknown",
+      "image_score": null,
+      "human_rater": "unknown",
+      "observed_failures": [],
+      "revision_prompt": "unknown",
+      "final_score": null
+    }
+  ]
+}

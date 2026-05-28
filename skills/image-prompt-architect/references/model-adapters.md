@@ -1,4 +1,4 @@
-# Model Adapters
+﻿# Model Adapters
 
 Model behavior changes. Treat this file as a dated heuristic matrix, not permanent truth. Prefer official docs and local tests over inherited prompt lore.
 
@@ -6,7 +6,9 @@ Model behavior changes. Treat this file as a dated heuristic matrix, not permane
 
 Each adapter tracks:
 
-- **Last verified**
+- **Docs last checked**
+- **Fixture coverage last updated**
+- **Image-output eval last run**
 - **Confidence**
 - **Primary docs**
 - **Local test coverage**
@@ -23,10 +25,12 @@ Each adapter tracks:
 
 ## GPT Image / OpenAI Image Models
 
-**Last verified:** 2026-05-28  
-**Confidence:** high for API behavior; medium for creative prompt heuristics  
-**Primary docs:** https://platform.openai.com/docs/guides/image-generation  
-**Local test coverage:** `tests/fixtures/bad_gpt_image_keyword_pile.txt`, `tests/fixtures/bad_gpt_image_edit_no_preserve.txt`, `tests/fixtures/bad_gpt_image_unquoted_text.txt`; no image-output eval
+**Docs last checked:** 2026-05-28
+**Fixture coverage last updated:** 2026-05-28
+**Image-output eval last run:** none
+**Confidence:** high for API behavior; medium for creative prompt heuristics
+**Primary docs:** https://platform.openai.com/docs/guides/image-generation
+**Local test coverage:** `tests/fixtures/bad_gpt_image_keyword_pile.txt`, `tests/fixtures/warn_gpt_image_edit_no_preserve.txt`, `tests/fixtures/warn_gpt_image_unquoted_text.txt`, `tests/fixtures/warn_gpt_image_pixel_perfect_claim.txt`, `tests/fixtures/warn_gpt_image_reference_without_role.txt`, `tests/fixtures/good_gpt_image_edit_preserve_change.txt`, `tests/fixtures/good_gpt_image_text_quoted.txt`; no image-output eval
 **Applies to:** API and ChatGPT-like image workflows
 
 **Source basis:**
@@ -80,10 +84,12 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 
 ## Grok Imagine - Image Generation
 
-**Last verified:** 2026-05-28  
-**Confidence:** medium  
-**Primary docs:** https://docs.x.ai/docs/guides/image-generation  
-**Local test coverage:** examples only; no controlled image-output eval  
+**Docs last checked:** 2026-05-28
+**Fixture coverage last updated:** 2026-05-28
+**Image-output eval last run:** none
+**Confidence:** medium
+**Primary docs:** https://docs.x.ai/docs/guides/image-generation
+**Local test coverage:** examples only; no controlled image-output eval
 **Applies to:** API and Grok Imagine-style image generation
 
 **Source basis:**
@@ -115,10 +121,12 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 
 ## Grok Imagine - Image Editing
 
-**Last verified:** 2026-05-28  
-**Confidence:** medium  
-**Primary docs:** https://docs.x.ai/docs/guides/image-generation  
-**Local test coverage:** none  
+**Docs last checked:** 2026-05-28
+**Fixture coverage last updated:** 2026-05-28
+**Image-output eval last run:** none
+**Confidence:** medium
+**Primary docs:** https://docs.x.ai/docs/guides/image-generation
+**Local test coverage:** none
 **Applies to:** API/editing workflows
 
 **Best prompt shape:** State what to preserve, what to change, and which reference controls style or identity.
@@ -127,20 +135,24 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 
 ## Grok Imagine - Video / Image-to-Video
 
-**Last verified:** 2026-05-28  
-**Confidence:** low  
-**Primary docs:** https://docs.x.ai/docs/guides/image-generation  
-**Local test coverage:** none  
+**Docs last checked:** 2026-05-28
+**Fixture coverage last updated:** 2026-05-28
+**Image-output eval last run:** none
+**Confidence:** low
+**Primary docs:** https://docs.x.ai/docs/guides/image-generation
+**Local test coverage:** none
 **Applies to:** video/image-to-video workflows
 
 **Best prompt shape:** Use motion, temporal continuity, camera movement, and first/last-frame intent. This skill is prompt-text oriented; for video generation, defer to a video-specific skill when available.
 
 ## Dreamina / Seedream / Jimeng
 
-**Last verified:** 2026-05-28  
+**Docs last checked:** 2026-05-28
+**Fixture coverage last updated:** 2026-05-28
+**Image-output eval last run:** none
 **Confidence:** low for Dreamina/Jimeng UI-specific behavior; medium for broad bilingual prompt heuristics
-**Primary docs:** local project rules when present; Seedream technical reports are model-family evidence, not Dreamina/Jimeng UI evidence  
-**Local test coverage:** `tests/fixtures/good_chinese_dreamina.txt`, `tests/fixtures/good_chinese_seven_layer.txt`, `tests/fixtures/good_bilingual_model_port.txt`; no image-output eval
+**Primary docs:** local project rules when present; Seedream technical reports are model-family evidence, not Dreamina/Jimeng UI evidence
+**Local test coverage:** `tests/fixtures/good_chinese_dreamina.txt`, `tests/fixtures/good_chinese_seven_layer.txt`, `tests/fixtures/good_chinese_short_labels.txt`, `tests/fixtures/good_bilingual_model_port.txt`; no image-output eval
 **Applies to:** mixed/unknown UI and local workflows
 
 **Source basis:**
@@ -176,10 +188,12 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 
 ## Midjourney
 
-**Last verified:** 2026-05-28  
-**Confidence:** high for parameter syntax; medium for creative heuristics  
-**Primary docs:** https://docs.midjourney.com/docs/parameter-list and https://docs.midjourney.com/docs/no  
-**Local test coverage:** `tests/fixtures/good_midjourney.txt`, `tests/fixtures/good_midjourney_oref_profile.txt`, `tests/fixtures/bad_midjourney_negative_block.txt`, `tests/fixtures/bad_midjourney_params_middle.txt`, `tests/fixtures/bad_midjourney_value_punctuation.txt`; no image-output eval
+**Docs last checked:** 2026-05-28
+**Fixture coverage last updated:** 2026-05-28
+**Image-output eval last run:** none
+**Confidence:** high for parameter syntax; medium for creative heuristics
+**Primary docs:** https://docs.midjourney.com/docs/parameter-list and https://docs.midjourney.com/docs/no
+**Local test coverage:** `tests/fixtures/good_midjourney.txt`, `tests/fixtures/good_midjourney_oref_profile.txt`, `tests/fixtures/good_midjourney_chaos_alias.txt`, `tests/fixtures/good_midjourney_video.txt`, `tests/fixtures/good_midjourney_loop.txt`, `tests/fixtures/bad_midjourney_negative_block.txt`, `tests/fixtures/bad_midjourney_params_middle.txt`, `tests/fixtures/bad_midjourney_value_punctuation.txt`; no image-output eval
 **Applies to:** Midjourney prompt UI
 
 **Source basis:**
@@ -201,7 +215,8 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 **Parameter/API strategy:**
 
 - Put parameters at the end with spaces before dashes and no punctuation after parameters.
-- Current parser-covered parameters include: `--ar`, `--aspect`, `--chaos`, `--quality`, `--q`, `--seed`, `--raw`, `--stylize`, `--s`, `--sref`, `--sw`, `--sv`, `--oref`, `--profile`, `--p`, `--iw`, `--weird`, `--w`, `--niji`, `--no`, `--repeat`, `--r`, `--tile`, `--stealth`, `--public`, `--draft`, `--motion`, `--loop`, `--end`, and `--bs`.
+- Parser-covered parameters include: `--ar`, `--aspect`, `--chaos`, `--c`, `--quality`, `--q`, `--seed`, `--raw`, `--stylize`, `--s`, `--sref`, `--sw`, `--sv`, `--oref`, `--profile`, `--p`, `--iw`, `--weird`, `--w`, `--niji`, `--no`, `--repeat`, `--r`, `--tile`, `--stealth`, `--public`, `--draft`, `--motion`, `--loop`, `--end`, `--bs`, and `--video`.
+- Treat `--loop` and `--video` as flag-like. Treat `--motion`, `--end`, and `--bs` as value parameters.
 - Legacy/deprecated parser-covered parameters: `--cref`. Treat legacy parameters as warnings until confirmed against the current UI.
 
 **Reference image strategy:** If using style references, keep them separate from prose when the UI supports it.
@@ -223,10 +238,12 @@ subject, setting, visual style, camera, lighting, mood --ar 16:9 --stylize 150 -
 
 ## FLUX.2 / BFL API
 
-**Last verified:** 2026-05-28  
-**Confidence:** high for negative-prompt and API-field guidance; medium for creative heuristics  
-**Primary docs:** https://docs.bfl.ai/guides/prompting_unified_technical and https://docs.bfl.ai/flux_2/flux2_text_to_image  
-**Local test coverage:** `tests/fixtures/good_flux_structured.txt`, `tests/fixtures/bad_flux_negative.txt`, `tests/fixtures/bad_flux_invalid_hex.txt`, `tests/fixtures/bad_flux_plain_negation.txt`; no image-output eval
+**Docs last checked:** 2026-05-28
+**Fixture coverage last updated:** 2026-05-28
+**Image-output eval last run:** none
+**Confidence:** high for negative-prompt and API-field guidance; medium for creative heuristics
+**Primary docs:** https://docs.bfl.ai/guides/prompting_unified_technical and https://docs.bfl.ai/flux_2/flux2_text_to_image
+**Local test coverage:** `tests/fixtures/good_flux_structured.txt`, `tests/fixtures/good_flux_positive_replacements.txt`, `tests/fixtures/bad_flux_negative.txt`, `tests/fixtures/bad_flux_invalid_hex.txt`, `tests/fixtures/bad_flux_plain_negation.txt`, `tests/fixtures/bad_flux_multiple_plain_negation_phrases.txt`, `tests/fixtures/warn_flux_single_plain_negation_phrase.txt`; no image-output eval
 **Applies to:** BFL API / FLUX.2 workflows
 
 **Source basis:**
@@ -290,10 +307,12 @@ Premium glass skincare bottle with matte white pump on a warm gray stone surface
 
 ## Stable Diffusion Local Wrappers
 
-**Last verified:** 2026-05-28  
-**Confidence:** medium  
-**Primary docs:** local wrapper documentation varies  
-**Local test coverage:** none  
+**Docs last checked:** 2026-05-28
+**Fixture coverage last updated:** 2026-05-28
+**Image-output eval last run:** none
+**Confidence:** medium
+**Primary docs:** local wrapper documentation varies
+**Local test coverage:** none
 **Applies to:** local wrapper / UI workflows
 
 **Best prompt shape:**

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.0 - 2026-05-28
+
+- Added Midjourney `--c` and `--video` support, and corrected `--loop` as flag-like based on current docs.
+- Split warning-only fixtures into `warn_*.txt` and updated CI to enforce good/bad/warn fixture policy.
+- Added short Chinese label fixtures for `主体：` / `环境：` / `输出约束：` style headings.
+- Expanded FLUX plain-negation phrase capture and added single-warning vs multiple-critical fixtures.
+- Added GPT Image pixel-perfect, reference-role, quoted-text, and preserve/change fixtures.
+- Added prompt-level eval runner and generated report support.
+- Added CI badge and v0.5 tag-based install commands.
+
 ## 0.4.0 - 2026-05-28
 
 - Blocked framework-label keyword stuffing from counting as seven-layer/system coverage.

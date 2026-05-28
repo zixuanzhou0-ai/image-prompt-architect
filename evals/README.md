@@ -14,3 +14,5 @@ This folder defines a lightweight prompt-evaluation protocol.
 The current evals are prompt-level only. Image-output evaluation is not yet automated.
 
 For image-output scoring fields and manual capture format, see `image_output_protocol.md`.
+
+`image_output_records.json` currently contains placeholder records only. Do not treat them as evidence of model output quality until `output_image_path`, `image_score`, and `human_rater` are filled from real runs.

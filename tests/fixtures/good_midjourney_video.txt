@@ -1,0 +1,1 @@
+https://example.com/start-frame.jpg quiet bookstore owner character turning toward rain outside a wooden street doorway, soft overcast light, restrained cinematic film mood, 35mm framing --video --motion low --loop --bs 2 --raw

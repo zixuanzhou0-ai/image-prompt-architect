@@ -1,10 +1,12 @@
 # Image Prompt Architect
 
+[![test](https://github.com/zixuanzhou0-ai/image-prompt-architect/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/zixuanzhou0-ai/image-prompt-architect/actions/workflows/test.yml)
+
 Image Prompt Architect is a Codex plugin for designing, rewriting, critiquing, and porting AI image-generation prompts.
 
 It is not an image generator. It is a prompt architecture workflow for users who want better prompt text, model-specific adaptation, cinematic series bibles, or prompt diagnosis.
 
-Current version: `0.4.0` developer preview.
+Current version: `0.5.0` developer preview.
 
 ## What It Does
 
@@ -40,18 +42,18 @@ image-prompt-architect/
 Clone the repository:
 
 ```bash
-git clone --branch v0.4.0 https://github.com/zixuanzhou0-ai/image-prompt-architect.git
+git clone --branch v0.5.0 https://github.com/zixuanzhou0-ai/image-prompt-architect.git
 ```
 
 If your Codex CLI supports marketplace sources, try:
 
 ```bash
-codex plugin marketplace add zixuanzhou0-ai/image-prompt-architect --ref v0.4.0
+codex plugin marketplace add zixuanzhou0-ai/image-prompt-architect --ref v0.5.0
 codex plugin marketplace list
 codex plugin marketplace upgrade
 ```
 
-For unreleased development snapshots, replace `v0.4.0` with `main`. If that command is not available in your environment, use Option B below. This repository is a plugin project root, not a curated marketplace index.
+For unreleased development snapshots, replace `v0.5.0` with `main`. If that command is not available in your environment, use Option B below. This repository is a plugin project root, not a curated marketplace index.
 
 ### Option B: Use The Skill Directly
 
@@ -96,6 +98,7 @@ Run from the repository root:
 python skills/image-prompt-architect/scripts/prompt_lint.py tests/fixtures/good_seven_layer.txt --architecture seven-layer --model generic
 python skills/image-prompt-architect/scripts/prompt_lint.py tests/fixtures/bad_flux_negative.txt --model flux --format json
 python -m pytest
+python evals/run_prompt_eval.py
 ```
 
 If you have the Codex creator/validator tools available locally, also run the skill and plugin validators from your installed Codex skill/plugin tooling.
@@ -117,6 +120,8 @@ If you have the Codex creator/validator tools available locally, also run the sk
 ## Evaluation
 
 Use `skills/image-prompt-architect/references/evaluation-rubric.md`. A prompt should score at least 16/20 before being treated as strong, and model fit should not be 0.
+
+`evals/run_prompt_eval.py` generates a prompt-level report at `evals/report.md`. Image-output evals still require manual model runs and the fields in `evals/image_output_protocol.md`.
 
 ## Review Loop
 

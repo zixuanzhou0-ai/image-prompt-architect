@@ -110,6 +110,25 @@ def test_midjourney_current_reference_params_pass():
     assert "--profile" in result.model_policy["midjourney_params"]
 
 
+def test_midjourney_chaos_alias_passes():
+    result = prompt_lint.lint(fixture("good_midjourney_chaos_alias.txt"), "auto", "midjourney")
+    assert not result.critical
+    assert "--c" in result.model_policy["midjourney_params"]
+
+
+def test_midjourney_video_and_loop_params_pass():
+    result = prompt_lint.lint(fixture("good_midjourney_video.txt"), "compact", "midjourney")
+    assert not result.critical
+    assert "--video" in result.model_policy["midjourney_params"]
+    assert "--loop" in result.model_policy["midjourney_params"]
+
+
+def test_midjourney_loop_is_flag_like():
+    result = prompt_lint.lint(fixture("good_midjourney_loop.txt"), "compact", "midjourney")
+    assert not result.critical
+    assert "--loop" in result.model_policy["midjourney_params"]
+
+
 def test_midjourney_value_punctuation_is_critical():
     result = prompt_lint.lint(fixture("bad_midjourney_value_punctuation.txt"), "auto", "midjourney")
     assert any("value has trailing punctuation" in item for item in result.critical)
@@ -126,6 +145,19 @@ def test_flux_plain_negation_is_detected_and_escalated():
     assert any("plain negation" in item for item in result.critical)
 
 
+def test_flux_single_plain_negation_warns_but_does_not_fail():
+    result = prompt_lint.lint(fixture("warn_flux_single_plain_negation_phrase.txt"), "compact", "flux")
+    assert result.model_policy["plain_negation_phrases"] == ["no background distractions"]
+    assert not result.critical
+    assert any("plain negation" in warning for warning in result.warnings)
+
+
+def test_flux_multiple_plain_negations_are_critical():
+    result = prompt_lint.lint(fixture("bad_flux_multiple_plain_negation_phrases.txt"), "compact", "flux")
+    assert len(result.model_policy["plain_negation_phrases"]) >= 2
+    assert any("multiple plain negation" in item for item in result.critical)
+
+
 def test_flux_invalid_hex_is_critical():
     result = prompt_lint.lint(fixture("bad_flux_invalid_hex.txt"), "auto", "flux")
     assert any("malformed hex" in item for item in result.critical)
@@ -136,19 +168,51 @@ def test_good_flux_structured_has_no_critical_errors():
     assert not result.critical
 
 
+def test_good_flux_positive_replacements_have_no_negation_warning():
+    result = prompt_lint.lint(fixture("good_flux_positive_replacements.txt"), "compact", "flux")
+    assert not result.critical
+    assert not result.model_policy["plain_negation_phrases"]
+
+
 def test_gpt_image_keyword_pile_warns():
     result = prompt_lint.lint(fixture("bad_gpt_image_keyword_pile.txt"), "auto", "gpt-image")
     assert any("keyword pile" in warning.lower() for warning in result.warnings)
 
 
 def test_gpt_image_edit_without_preserve_warns():
-    result = prompt_lint.lint(fixture("bad_gpt_image_edit_no_preserve.txt"), "auto", "gpt-image")
+    result = prompt_lint.lint(fixture("warn_gpt_image_edit_no_preserve.txt"), "compact", "gpt-image")
+    assert not result.critical
     assert any("preserve/change" in warning for warning in result.warnings)
 
 
 def test_gpt_image_text_without_quotes_warns():
-    result = prompt_lint.lint(fixture("bad_gpt_image_unquoted_text.txt"), "auto", "gpt-image")
+    result = prompt_lint.lint(fixture("warn_gpt_image_unquoted_text.txt"), "compact", "gpt-image")
+    assert not result.critical
     assert any("quote exact text" in warning for warning in result.warnings)
+
+
+def test_gpt_image_pixel_perfect_claim_warns():
+    result = prompt_lint.lint(fixture("warn_gpt_image_pixel_perfect_claim.txt"), "compact", "gpt-image")
+    assert not result.critical
+    assert any("pixel-perfect" in warning for warning in result.warnings)
+
+
+def test_gpt_image_reference_without_role_warns():
+    result = prompt_lint.lint(fixture("warn_gpt_image_reference_without_role.txt"), "compact", "gpt-image")
+    assert not result.critical
+    assert any("reference-image" in warning for warning in result.warnings)
+
+
+def test_good_gpt_image_edit_preserve_change_has_no_policy_warning():
+    result = prompt_lint.lint(fixture("good_gpt_image_edit_preserve_change.txt"), "compact", "gpt-image")
+    assert not result.critical
+    assert not any("preserve/change" in warning for warning in result.warnings)
+
+
+def test_good_gpt_image_quoted_text_has_no_text_warning():
+    result = prompt_lint.lint(fixture("good_gpt_image_text_quoted.txt"), "compact", "gpt-image")
+    assert not result.critical
+    assert not any("quote exact text" in warning for warning in result.warnings)
 
 
 def test_chinese_dreamina_prompt_runs():
@@ -160,6 +224,19 @@ def test_chinese_seven_layer_headings_are_supported():
     result = prompt_lint.lint(fixture("good_chinese_seven_layer.txt"), "seven-layer", "dreamina")
     assert not result.critical
     assert not result.missing
+
+
+def test_chinese_short_labels_are_supported():
+    result = prompt_lint.lint(fixture("good_chinese_short_labels.txt"), "seven-layer", "dreamina")
+    assert not result.critical
+    assert not result.missing
+
+
+def test_chinese_short_label_skeleton_is_rejected():
+    result = prompt_lint.lint(fixture("bad_chinese_short_label_skeleton.txt"), "seven-layer", "dreamina")
+    assert result.critical
+    assert result.section_quality["subject"]["present"]
+    assert not result.section_quality["subject"]["valid"]
 
 
 def test_bilingual_model_port_prompt_runs_as_compact():

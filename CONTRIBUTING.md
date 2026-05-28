@@ -15,7 +15,7 @@ Contributions should improve prompt architecture quality, model-specific accurac
 When updating `references/model-adapters.md`:
 
 - Link primary docs or state that only local/project evidence exists.
-- Update `Last verified`, `Confidence`, `Applies to`, and `Local test coverage`.
+- Update `Docs last checked`, `Fixture coverage last updated`, `Image-output eval last run`, `Confidence`, `Applies to`, and `Local test coverage`.
 - Add or update fixtures when syntax or policy behavior changes.
 - Add tests when a linter rule changes.
 - Add an eval case when a creative heuristic changes.

@@ -1,0 +1,1 @@
+https://example.com/start-frame.jpg solitary hiker character on an empty mountain street path with drifting mist, slow camera push, pale dawn light, restrained cinematic natural motion --video --loop --motion low --bs 1
