@@ -29,11 +29,21 @@ REQUIRED_SCORED_FIELDS = [
     "model_version",
     "adapter_version",
     "rewritten_prompt",
+    "task_type",
     "output_image_path",
+    "image_score",
     "task_gate_results",
     "human_rater",
     "final_score",
 ]
+
+TASK_REQUIRED_GATES = {
+    "text_rendering": ["text_accuracy", "text_layout_legibility"],
+    "editing": ["edit_preservation"],
+    "series": ["identity_continuity", "constraint_handling"],
+    "product_photography": ["product_geometry_material_fidelity", "subject_fidelity"],
+    "model_port": ["model_specific_fit"],
+}
 
 
 def adapter_block(markdown: str, heading_hint: str) -> str:
@@ -58,13 +68,28 @@ def main() -> int:
         case_id = str(record.get("case_id", "unknown"))
         for field in REQUIRED_SCORED_FIELDS:
             value = record.get(field)
-            if value in {None, "", "unknown"}:
+            if value in {None, "", "unknown"} or value == {}:
                 warnings.append(f"{case_id}: scored image-output record has missing `{field}`")
+        if "prompt_before" not in record or record.get("prompt_before") in {None, "", "unknown"}:
+            warnings.append(f"{case_id}: scored image-output record has missing `prompt_before`")
         output_path = record.get("output_image_path")
         if isinstance(output_path, str) and output_path not in {"", "unknown"} and not re.match(r"^https?://", output_path):
             path = (ROOT / output_path).resolve()
             if not path.exists():
                 warnings.append(f"{case_id}: output_image_path does not exist: {output_path}")
+        final_score = record.get("final_score")
+        if final_score is not None and not isinstance(final_score, (int, float)):
+            warnings.append(f"{case_id}: final_score must be numeric when present")
+        task_type = str(record.get("task_type", ""))
+        gate_results = record.get("task_gate_results")
+        required_gates = TASK_REQUIRED_GATES.get(task_type, [])
+        if required_gates and isinstance(gate_results, dict):
+            for gate in required_gates:
+                value = gate_results.get(gate)
+                if value is not True:
+                    warnings.append(f"{case_id}: task gate `{gate}` must be true for task_type `{task_type}`")
+        elif task_type:
+            warnings.append(f"{case_id}: task_gate_results must be an object with task-specific gates")
 
     for model in scored_models:
         heading = MODEL_ADAPTER_HEADINGS.get(model, model)

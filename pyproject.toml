@@ -1,6 +1,6 @@
 [project]
 name = "image-prompt-architect"
-version = "0.8.0"
+version = "0.9.0"
 description = "Codex plugin for structured AI image prompt architecture"
 requires-python = ">=3.10"
 

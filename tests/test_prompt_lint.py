@@ -306,6 +306,41 @@ def test_good_gpt_image_blank_label_with_material_detail_has_no_text_warning():
     assert not any("quote exact text" in warning for warning in result.warnings)
 
 
+def test_gpt_image_chinese_sign_unquoted_warns():
+    result = prompt_lint.lint(fixture("warn_gpt_image_chinese_sign_unquoted.txt"), "compact", "gpt-image")
+    assert not result.critical
+    assert any("quote exact text" in warning for warning in result.warnings)
+
+
+def test_good_gpt_image_chinese_blank_label_has_no_text_warning():
+    result = prompt_lint.lint(fixture("good_gpt_image_chinese_blank_label.txt"), "compact", "gpt-image")
+    assert not result.critical
+    assert not any("quote exact text" in warning for warning in result.warnings)
+
+
+def test_good_gpt_image_chinese_exact_text_has_no_text_warning():
+    result = prompt_lint.lint(fixture("good_gpt_image_chinese_exact_text_quoted.txt"), "compact", "gpt-image")
+    assert not result.critical
+    assert not any("quote exact text" in warning for warning in result.warnings)
+
+
+def test_good_grok_reference_generation_runs():
+    result = prompt_lint.lint(fixture("good_grok_reference_image_generation.txt"), "compact", "grok")
+    assert not result.critical
+    assert result.score >= 6
+
+
+def test_warn_grok_reference_role_unclear_is_warning_fixture_safe():
+    result = prompt_lint.lint(fixture("warn_grok_reference_role_unclear.txt"), "compact", "grok")
+    assert not result.critical
+
+
+def test_good_grok_generation_settings_outside_prompt_runs():
+    result = prompt_lint.lint(fixture("good_grok_generation_settings_outside_prompt.txt"), "compact", "grok")
+    assert not result.critical
+    assert result.score >= 6
+
+
 def test_chinese_dreamina_prompt_runs():
     result = prompt_lint.lint(fixture("good_chinese_dreamina.txt"), "compact", "dreamina")
     assert result.score >= 6

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.9.0 - 2026-05-29
+
+- Added skill-output provenance fields to prompt eval cases.
+- Updated prompt eval reporting with a `Skill Source` column.
+- Strengthened future image-output record validation for scored records, including task gates and required output fields.
+- Added Chinese GPT Image text-rendering warnings for signs, titles, logos, labels, and exact wording cues.
+- Added Chinese GPT Image blank-label and quoted-text fixtures to reduce false positives.
+- Added Grok prompt-level fixtures for reference-image role assignment and generation settings.
+- Expanded image-output rubric task examples for text rendering, editing, series, product photography, and model-port evals.
+- Kept image-output records placeholder-only; real prompt-to-image evidence remains the v1.0 blocker.
+
 ## 0.8.0 - 2026-05-29
 
 - Added `skill_output_prompt` fields directly to prompt eval cases.

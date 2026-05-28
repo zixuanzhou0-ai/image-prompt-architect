@@ -66,11 +66,11 @@ SYSTEM_SECTION_ALIASES = {
 }
 
 COMPACT_REQUIRED = {
-    "subject": [r"subject", r"person", r"character", r"product", r"singer", r"object", r"人物", r"一位", r"男人", r"女人", r"老板"],
-    "setting": [r"setting", r"club", r"room", r"street", r"landscape", r"studio", r"background", r"老街", r"江南", r"雨后", r"木门"],
-    "visual_style": [r"style", r"cinematic", r"film", r"noir", r"editorial", r"photo", r"illustration", r"电影感", r"人像"],
-    "camera_or_composition": [r"camera", r"lens", r"shot", r"composition", r"35mm", r"50mm", r"85mm", r"foreground", r"portrait"],
-    "lighting_or_mood": [r"light", r"lamp", r"shadow", r"mood", r"melancholy", r"atmosphere", r"smoky", r"overcast", r"克制"],
+    "subject": [r"subject", r"person", r"character", r"product", r"singer", r"object", r"人物", r"一位", r"男人", r"女人", r"老板", r"产品", r"护肤品", r"玻璃瓶", r"海报"],
+    "setting": [r"setting", r"club", r"room", r"street", r"landscape", r"studio", r"background", r"老街", r"江南", r"雨后", r"木门", r"城市", r"街角", r"台面", r"背景", r"工作室"],
+    "visual_style": [r"style", r"cinematic", r"film", r"noir", r"editorial", r"photo", r"illustration", r"电影感", r"人像", r"复古", r"产品摄影", r"极简"],
+    "camera_or_composition": [r"camera", r"lens", r"shot", r"composition", r"35mm", r"50mm", r"85mm", r"foreground", r"portrait", r"构图", r"版式", r"居中", r"网格"],
+    "lighting_or_mood": [r"light", r"lamp", r"shadow", r"mood", r"melancholy", r"atmosphere", r"smoky", r"overcast", r"克制", r"光", r"柔光", r"柔光箱", r"窗光", r"橱窗光"],
 }
 
 COMPACT_SECTION_ALIASES = {
@@ -485,6 +485,10 @@ def malformed_hex_codes(text: str) -> list[str]:
 
 def gpt_image_needs_quoted_text(text: str) -> bool:
     haystack = normalize(text)
+    if any(term in haystack for term in ("空白标签", "无字标签", "未标记包装")):
+        return False
+    if any(term in haystack for term in ("招牌写着", "标题", "文字", "字样", "logo写着", "标签写着")):
+        return True
     label_or_logo = re.search(r"\b(label|logo)\b", haystack)
     label_text_cue = re.search(r"\b(read|reads|says|with the words|exactly)\b", haystack)
     if label_or_logo and label_text_cue:
@@ -543,6 +547,9 @@ def check_model_policy(text: str, model: str, strict_model_params: bool = False)
             warnings.append("GPT Image prompts should not promise pixel-perfect or guaranteed exact reproduction.")
         if "reference image" in haystack and not any(term in haystack for term in ("controls", "for identity", "for style", "for composition", "for palette")):
             warnings.append("GPT Image reference-image prompts should assign each reference image a role.")
+    elif model == "grok":
+        if "reference image" in haystack and not any(term in haystack for term in ("for identity", "for style", "for composition", "for palette")):
+            warnings.append("Grok reference-image prompts should assign whether the reference controls identity, style, composition, or palette.")
     elif model == "stable-diffusion":
         if "--no" in haystack:
             warnings.append("Stable Diffusion wrappers usually use a negative prompt field, not Midjourney --no.")

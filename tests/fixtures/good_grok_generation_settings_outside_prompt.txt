@@ -1,0 +1,2 @@
+Prompt: quiet editorial portrait of a middle-aged ceramic artist in a daylight studio, clay-stained apron, shelves of unfinished vases, soft north window light, 50mm documentary photography, calm focused mood.
+Settings: aspect_ratio=4:5, n=2, resolution=high.

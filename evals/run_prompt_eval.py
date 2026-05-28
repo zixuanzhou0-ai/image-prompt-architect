@@ -174,10 +174,11 @@ def make_report(cases: list[dict[str, object]]) -> str:
         "",
         "Generated from `evals/prompt_cases.yml` using structural prompt lint only.",
         "`Skill` columns use `skill_output_prompt` fields, with `evals/skill_outputs.json` as a fallback; this is not a Codex router simulator.",
+        "`Skill Source` records whether the prompt was a manual capture, Codex run, or golden reference.",
         "Image-output scoring still requires `evals/image_output_protocol.md`.",
         "",
-        "| Case | Model | Mode | Source | Candidate | Candidate Delta | Skill | Skill Delta | Features | Missing Features | Expected Risks |",
-        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |",
+        "| Case | Model | Mode | Skill Source | Source | Candidate | Candidate Delta | Skill | Skill Delta | Features | Missing Features | Expected Risks |",
+        "| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |",
     ]
 
     for case in cases:
@@ -187,6 +188,9 @@ def make_report(cases: list[dict[str, object]]) -> str:
         source_prompt = str(case.get("source_prompt", ""))
         rewritten_prompt = str(case.get("rewritten_prompt_candidate", ""))
         skill_prompt = str(case.get("skill_output_prompt", "")) or skill_outputs.get(case_id, "")
+        skill_source = str(case.get("skill_output_source", "") or ("fallback_file" if case_id in skill_outputs else "missing"))
+        if skill_prompt and skill_source == "missing":
+            skill_source = "missing_source"
         expected_features = str(case.get("expected_rewrite_features", ""))
         architecture = model_to_architecture(case_id, target_model)
         source_result = lint_score(linter, source_prompt, architecture, target_model)
@@ -204,7 +208,7 @@ def make_report(cases: list[dict[str, object]]) -> str:
         feature_text = f"{hits}/{total}" if total else ""
         missing_text = ", ".join(missing) if missing else "-"
         lines.append(
-            f"| `{case_id}` | `{target_model}` | `{expected_mode}` | {source_score} | "
+            f"| `{case_id}` | `{target_model}` | `{expected_mode}` | `{skill_source}` | {source_score} | "
             f"{rewrite_score} | {rewrite_delta} | {skill_score} | {skill_delta} | {feature_text} | {missing_text} | {risk_text} |"
         )
 

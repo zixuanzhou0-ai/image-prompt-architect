@@ -40,6 +40,8 @@ jobs:
                   return "flux"
               if "gpt_image" in name:
                   return "gpt-image"
+              if "grok" in name:
+                  return "grok"
               if "dreamina" in name or "chinese" in name or "bilingual" in name:
                   return "dreamina"
               return "generic"
@@ -47,11 +49,9 @@ jobs:
           def architecture_for(name: str) -> str:
               if "system" in name:
                   return "system"
-              if any(term in name for term in ("midjourney", "flux", "gpt_image")):
+              if any(term in name for term in ("midjourney", "flux", "gpt_image", "grok")):
                   return "compact"
-              if any(term in name for term in ("seven_layer", "heading", "template", "keyword_stuffing")):
-                  return "seven-layer"
-              if "short_label" in name:
+              if any(term in name for term in ("seven_layer", "heading", "template", "keyword_stuffing", "short_label")):
                   return "seven-layer"
               return "auto"
 
@@ -88,6 +88,8 @@ jobs:
                   return "flux"
               if "gpt_image" in name:
                   return "gpt-image"
+              if "grok" in name:
+                  return "grok"
               if "dreamina" in name or "chinese" in name or "bilingual" in name:
                   return "dreamina"
               return "generic"
@@ -95,11 +97,9 @@ jobs:
           def architecture_for(name: str) -> str:
               if "system" in name:
                   return "system"
-              if any(term in name for term in ("midjourney", "flux", "gpt_image")):
+              if any(term in name for term in ("midjourney", "flux", "gpt_image", "grok")):
                   return "compact"
-              if any(term in name for term in ("seven_layer", "heading", "template", "keyword_stuffing")):
-                  return "seven-layer"
-              if "short_label" in name:
+              if any(term in name for term in ("seven_layer", "heading", "template", "keyword_stuffing", "short_label")):
                   return "seven-layer"
               return "auto"
 
@@ -144,6 +144,8 @@ jobs:
                   return "flux"
               if "gpt_image" in name:
                   return "gpt-image"
+              if "grok" in name:
+                  return "grok"
               if "dreamina" in name or "chinese" in name or "bilingual" in name:
                   return "dreamina"
               return "generic"
@@ -151,7 +153,7 @@ jobs:
           def architecture_for(name: str) -> str:
               if "system" in name:
                   return "system"
-              if any(term in name for term in ("midjourney", "flux", "gpt_image")):
+              if any(term in name for term in ("midjourney", "flux", "gpt_image", "grok")):
                   return "compact"
               if any(term in name for term in ("seven_layer", "heading", "template", "keyword_stuffing", "short_label")):
                   return "seven-layer"
