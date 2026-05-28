@@ -1,0 +1,3 @@
+Negative Prompt: no crowds, no cars, no text
+A landscape without buildings, not dark, not sad, high quality, masterpiece.
+

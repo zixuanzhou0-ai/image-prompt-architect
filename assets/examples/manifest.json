@@ -1,0 +1,18 @@
+{
+  "schema_version": "0.1",
+  "note": "These images were imported from the original Grok conversation export. Prompt, model, seed, and scoring metadata were not reliably exported, so unknown fields are explicit rather than invented.",
+  "images": [
+    {"file": "image.jpg", "source_prompt": "unknown", "target_model": "unknown", "architecture": "unknown", "evaluation_score": null, "known_failures": [], "revision_prompt": "unknown"},
+    {"file": "image(1).jpg", "source_prompt": "unknown", "target_model": "unknown", "architecture": "unknown", "evaluation_score": null, "known_failures": [], "revision_prompt": "unknown"},
+    {"file": "image(2).jpg", "source_prompt": "unknown", "target_model": "unknown", "architecture": "unknown", "evaluation_score": null, "known_failures": [], "revision_prompt": "unknown"},
+    {"file": "image(3).jpg", "source_prompt": "unknown", "target_model": "unknown", "architecture": "unknown", "evaluation_score": null, "known_failures": [], "revision_prompt": "unknown"},
+    {"file": "image(4).jpg", "source_prompt": "unknown", "target_model": "unknown", "architecture": "unknown", "evaluation_score": null, "known_failures": [], "revision_prompt": "unknown"},
+    {"file": "image(5).jpg", "source_prompt": "unknown", "target_model": "unknown", "architecture": "unknown", "evaluation_score": null, "known_failures": [], "revision_prompt": "unknown"},
+    {"file": "image(6).jpg", "source_prompt": "unknown", "target_model": "unknown", "architecture": "unknown", "evaluation_score": null, "known_failures": [], "revision_prompt": "unknown"},
+    {"file": "image(7).jpg", "source_prompt": "unknown", "target_model": "unknown", "architecture": "unknown", "evaluation_score": null, "known_failures": [], "revision_prompt": "unknown"},
+    {"file": "image(8).jpg", "source_prompt": "unknown", "target_model": "unknown", "architecture": "unknown", "evaluation_score": null, "known_failures": [], "revision_prompt": "unknown"},
+    {"file": "image(9).jpg", "source_prompt": "unknown", "target_model": "unknown", "architecture": "unknown", "evaluation_score": null, "known_failures": [], "revision_prompt": "unknown"},
+    {"file": "image(10).jpg", "source_prompt": "unknown", "target_model": "unknown", "architecture": "unknown", "evaluation_score": null, "known_failures": [], "revision_prompt": "unknown"}
+  ]
+}
+

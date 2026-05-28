@@ -1,93 +1,276 @@
 # Model Adapters
 
-Use this file to adapt prompt length, language, and structure to common image models. Model behavior changes over time, so treat these as working heuristics rather than permanent laws.
+Model behavior changes. Treat this file as a dated heuristic matrix, not permanent truth. Prefer official docs and local tests over inherited prompt lore.
+
+## Adapter Schema
+
+Each adapter tracks:
+
+- **Last verified**
+- **Source basis**
+- **Best prompt shape**
+- **Language strategy**
+- **Length strategy**
+- **Negative prompt strategy**
+- **Parameter/API strategy**
+- **Reference image strategy**
+- **Do not claim**
+- **Copy-ready output format**
+
+## GPT Image / OpenAI Image Models
+
+**Last verified:** 2026-05-28
+
+**Source basis:**
+
+- OpenAI image generation docs distinguish Responses API and Image API. Responses API is suited to conversational and multi-turn image generation/editing; Image API is suited to direct image operations.
+- When using the image generation tool in Responses API, the mainline model may revise prompts for performance and expose `revised_prompt`.
+
+**Best prompt shape:**
+
+- Clear natural language with explicit priorities.
+- Use sections when preserving/changing/editing instructions need clarity.
+- For text rendering, quote exact text and specify placement, typography, layout, and what must remain unchanged.
+
+**Language strategy:**
+
+- Use the language that carries the user's intent best.
+- English can help with production art-direction terms; Chinese can be appropriate for Chinese text rendering and culturally specific content.
+
+**Length strategy:**
+
+- Prefer concise, prioritized natural language over huge keyword piles.
+
+**Negative prompt strategy:**
+
+- Use "avoid" or "do not change" instructions in ordinary language.
+- For editing, state both preservation and change constraints.
+
+**Parameter/API strategy:**
+
+- Note whether the workflow is Responses API or Image API if the user is coding.
+- Mention `revised_prompt` only for Responses image generation tool behavior.
+
+**Reference image strategy:**
+
+- State what each reference image controls: identity, style, composition, product shape, or palette.
+
+**Do not claim:**
+
+- Do not claim exact reproducibility from prompt text alone.
+- Do not claim English is always better.
+
+**Copy-ready output format:**
+
+```text
+Create an image of ... Preserve ... Change ... Render the exact text "...". Avoid ...
+```
 
 ## Grok / Grok Imagine
 
-Recommended style:
+**Last verified:** 2026-05-28
 
-- Use English for maximum precision, especially for long structured prompts.
-- Use explicit seven-layer or system templates.
-- Keep visual concepts concrete and repeated when they must dominate.
-- Name lighting, camera, and material details directly.
+**Source basis:**
 
-Good for:
+- xAI Imagine docs state Grok Imagine models generate images from text prompts and expose settings such as output count, aspect ratio, resolution, and response format.
 
-- Long, structured, cinematic prompts.
-- Specific film language and detailed visual grammar.
+**Best prompt shape:**
 
-Risk:
+- Structured English prompts often work well in practice, but treat this as a heuristic unless the user has test results.
+- Seven-layer and system prompts are useful when the user wants explicit control.
 
-- Chinese prompts may lose fine detail in complex structure.
-- Generic templates produce generic images.
+**Language strategy:**
+
+- Use English for technical art-direction terms when precision matters.
+- Keep Chinese cultural terms when they are semantically important.
+
+**Length strategy:**
+
+- Medium to long prompts are acceptable when each part is concrete.
+
+**Negative prompt strategy:**
+
+- Use concise avoid statements. Do not overstuff exclusions.
+
+**Parameter/API strategy:**
+
+- If coding, expose aspect ratio, resolution, output count, and response format separately from prompt prose.
+
+**Reference image strategy:**
+
+- If references are available, name which reference controls style, subject, or composition.
+
+**Do not claim:**
+
+- Do not claim official proof that Grok is uniquely optimized for long cinematic prompts.
+
+**Copy-ready output format:**
+
+```text
+[seven-layer or system prompt], avoid [specific failure modes]. Aspect ratio: ...
+```
 
 ## Dreamina / Seedream / Jimeng
 
-Recommended style:
+**Last verified:** 2026-05-28
 
-- Follow the local project rules when present.
-- For high quality image generation, default to model 4.5 unless the user asks otherwise or project rules specify another choice.
-- Use mixed prompting when effective: natural-language concept plus structured aesthetic keywords.
-- Use Chinese for culturally specific concepts and English for established visual-technical terms when useful.
+**Source basis:**
 
-Good for:
+- Project-local AGENTS rules may override this public adapter.
+- Public model reports describe Seedream as a multimodal image generation/editing family, but public skill defaults should not hard-code a private "always use 4.5" rule.
 
-- Aesthetic images, model-specific prompt libraries, and style modifiers.
+**Best prompt shape:**
 
-Risk:
+- Combine natural-language intent with structured aesthetic keywords when useful.
+- Follow local prompt libraries, checklist, and model notes if present.
 
-- Overly abstract prompts can drift unless anchored by subject, scene, style, and constraints.
+**Language strategy:**
 
-## GPT Image / ChatGPT Images / OpenAI Image Models
+- Chinese is often useful for culturally specific scenes.
+- English is useful for common technical visual terms.
 
-Recommended style:
+**Length strategy:**
 
-- Use clear natural language with enough structure to express priorities.
-- Avoid unnecessarily huge keyword piles when the model can reason over intent.
-- Give composition, text rendering, and editing instructions explicitly.
-- For API image generation tools, remember the mainline model may revise prompts for performance and expose `revised_prompt` in tool output.
+- Use medium-length prompts with clear subject, scene, style, camera, and constraints.
 
-Useful current facts:
+**Negative prompt strategy:**
 
-- `gpt-image-2` is documented as a state-of-the-art image generation and editing model with text and image input and image output.
-- OpenAI's image generation tool documentation states it uses GPT Image models and automatically optimizes text inputs for improved performance.
-- ChatGPT Images 2.0 system-card material describes enhanced instruction following, detail generation, and a thinking mode that can turn a basic prompt into a more thought-through final image.
+- Keep avoid lists short and model-specific.
 
-Language strategy:
+**Parameter/API strategy:**
 
-- Chinese is often usable for direct conceptual prompts and Chinese text rendering.
-- English can still be useful for precise technical art direction, complex lighting, lens, and production terminology.
-- Prefer bilingual prompts only when each language carries a real advantage.
+- Do not set a model default unless the user's local instructions require it.
+
+**Reference image strategy:**
+
+- State whether references control identity, pose, style, or layout.
+
+**Do not claim:**
+
+- Do not claim a public universal default model version.
+
+**Copy-ready output format:**
+
+```text
+自然语言概念段落 + 三段式美学关键词 + 简短避免项
+```
 
 ## Midjourney
 
-Recommended style:
+**Last verified:** 2026-05-28
 
-- Use compact, image-forward prompts.
-- Put subject, environment, style, camera, and mood in a concise order.
-- Use parameters separately when the user provides them or asks for Midjourney output.
+**Source basis:**
 
-Risk:
+- Midjourney docs state parameters belong at the end of the prompt.
+- The `--no` parameter is the native way to tell Midjourney what to exclude.
 
-- Over-explaining can dilute the prompt.
+**Best prompt shape:**
 
-## Flux / Stable Diffusion
+- Compact image-forward prompt: subject, setting, style, camera, lighting, mood.
 
-Recommended style:
+**Language strategy:**
 
-- Use concrete English visual terms.
-- Separate positive and negative prompts if the interface supports it.
-- Keep token weighting syntax only when the target interface supports it.
+- English compact prompts are conventional; keep culturally specific terms if needed.
 
-Risk:
+**Length strategy:**
 
-- Long narrative prose can be less effective than dense visual phrases for some workflows.
+- Short to medium. Avoid long explanatory prose.
 
-## General Adapter Decision
+**Negative prompt strategy:**
 
-- If the model is literal and prompt-sensitive: use seven-layer or system structure.
-- If the model reasons and rewrites prompts: use clear natural language plus essential constraints.
-- If the output is a series: use system template or hybrid.
-- If the output is one hero image: use seven-layer.
-- If the user is learning: always include the tagged version before the copy-ready version.
+- Convert negative block to `--no item, item`.
+- Avoid ambiguous multiword exclusions that can be parsed independently; specify desired alternatives in the positive prompt.
+
+**Parameter/API strategy:**
+
+- Put parameters at the end with spaces before dashes and no punctuation after parameters.
+- Common parameters: `--ar`, `--chaos`, `--quality`, `--seed`, `--raw`, `--stylize`, `--sref`, `--weird`, `--niji`, `--no`.
+
+**Reference image strategy:**
+
+- If using style references, keep them separate from prose when the UI supports it.
+
+**Do not claim:**
+
+- Do not output a Stable Diffusion-style `Negative Prompt:` block for Midjourney.
+
+**Copy-ready output format:**
+
+```text
+[Prompt]
+subject, setting, visual style, camera, lighting, mood
+
+[Parameters]
+--ar 16:9 --stylize 150 --chaos 8 --seed 1234 --raw --no text, watermark, modern cars
+```
+
+## FLUX.2 / BFL API
+
+**Last verified:** 2026-05-28
+
+**Source basis:**
+
+- BFL docs recommend natural-language specificity and working without negative prompts for most FLUX models.
+- FLUX.2 docs describe hex-code color steering and JSON-structured prompts for precise production control.
+
+**Best prompt shape:**
+
+- Natural-language descriptive prompts.
+- JSON-structured prompts for production workflows and automation.
+
+**Language strategy:**
+
+- Use direct descriptive language. Quote exact text when text rendering matters.
+
+**Length strategy:**
+
+- Medium to long is acceptable, but more words do not automatically improve output. Remove filler.
+
+**Negative prompt strategy:**
+
+- Prefer positive replacements: "empty pathway" instead of "no crowds."
+- Only include a negative field if the specific wrapper/model supports it.
+
+**Parameter/API strategy:**
+
+- Put aspect ratio, width, height, and seed/API fields outside prompt prose when coding.
+- Use hex codes for exact brand colors.
+
+**Reference image strategy:**
+
+- Define each reference's role: composition, character, style, palette, product.
+
+**Do not claim:**
+
+- Do not assume negative prompts are supported.
+- Do not merge FLUX guidance with Stable Diffusion local-wrapper habits.
+
+**Copy-ready output format:**
+
+```json
+{
+  "subject": "...",
+  "background": "...",
+  "lighting": "...",
+  "style": "...",
+  "camera_angle": "...",
+  "composition": "...",
+  "constraints": "positive replacements for unwanted elements"
+}
+```
+
+## Stable Diffusion Local Wrappers
+
+**Last verified:** 2026-05-28
+
+**Source basis:** local wrapper behavior varies.
+
+**Best prompt shape:**
+
+- Positive prompt plus negative prompt only if the interface supports it.
+- Use LoRA, ControlNet, weights, and sampler terms only when the user names that workflow.
+
+**Do not claim:**
+
+- Do not apply Stable Diffusion syntax to FLUX or Midjourney.
 

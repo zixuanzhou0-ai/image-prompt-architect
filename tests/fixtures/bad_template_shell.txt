@@ -1,0 +1,12 @@
+[Subject]
+beautiful woman
+
+[Environment]
+city
+
+[Lighting]
+cinematic lighting
+
+[Style]
+masterpiece, stunning, aesthetic, high quality, best quality
+

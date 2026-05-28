@@ -1,69 +1,147 @@
 # Examples
 
-## Example 1: Seven-Layer Prompt
+These examples emphasize architecture and model fit. Do not copy them blindly; adapt the concrete nouns, light, medium, camera, and constraints.
+
+## 1. Quick Prompt
+
+User: "Give me a prompt for a moody jazz club poster."
+
+```text
+A 1950s New Orleans basement jazz club poster, solitary singer in an ivory satin suit holding a chrome microphone, red leather booths, rain on the street-level window, low amber table lamps and blue rim light, tarnished brass trumpet in foreground, scratched lacquer piano, smoky noir atmosphere, bold cream serif title space at top, Kodak Vision3 color, soft film grain, 2:3 poster composition.
+```
+
+Knobs: make it more noir; add exact title text; switch poster ratio.
+
+## 2. Standard Seven-Layer Prompt
 
 User idea: "1930s rainy Shanghai Bund qipao woman."
-
-Tagged prompt:
 
 ```text
 [Subject Layer]
 A young Chinese woman in her early 20s, porcelain-like skin, long side-swept black curls, wearing a vintage emerald qipao with delicate gold phoenix embroidery, holding a red oil-paper umbrella, half-turned with a restrained mysterious smile.
 
 [Environment Layer]
-On wet cobblestone streets of 1930s Shanghai Bund at night during heavy rain, with European-style facades, soft neon signs, distant vintage cars, and Huangpu River reflections in the background.
+Wet cobblestone streets of 1930s Shanghai Bund at night during heavy rain, European-style facades, soft neon signs, distant vintage cars, Huangpu River reflections.
 
 [Lighting and Atmosphere Layer]
-Warm golden neon glow contrasts with cold blue moonlight, backlit rain streaks, volumetric light beams, thin river fog, glossy reflections, nostalgic and melancholic mood.
+Warm golden neon glow contrasts with cold blue moonlight, backlit rain streaks, volumetric light beams, thin river fog, glossy reflections.
 
 [Material and Texture Layer]
-Silk qipao sheen, embroidered thread relief, translucent oiled paper umbrella, mirror-like puddles, wet stone texture, aged wood and brass details.
+Silk qipao sheen, embroidered thread relief, translucent oiled paper umbrella, mirror-like puddles, wet stone texture.
 
 [Composition and Camera Layer]
-Low-angle cinematic medium shot, 50mm lens feel, shallow depth of field, rule-of-thirds placement, foreground rain blur and background neon bokeh.
+Low-angle cinematic medium shot, 50mm lens feel, shallow depth of field, rule-of-thirds placement, foreground rain blur.
 
 [Style Layer]
-Wong Kar-wai inspired cinematic color grading, elegant old Shanghai noir romance, teal-gold palette, high-detail film still.
+Old Shanghai noir romance, teal-gold palette, restrained cinematic color grade, film still.
 
-[Era and Artistic Tone Layer]
-Lonely glamour, pre-war Shanghai nostalgia, restrained longing, poetic urban melancholy.
+[Context, Intent, and Tone Layer]
+Lonely glamour, pre-war Shanghai nostalgia, restrained longing.
+
+[Output Constraints]
+16:9, no modern cars, no LED billboards, no smartphone-era details.
 ```
 
-Copy-ready prompt:
+## 3. Critique Example
+
+Bad prompt:
 
 ```text
-A young Chinese woman in her early 20s, porcelain-like skin, long side-swept black curls, wearing a vintage emerald qipao with delicate gold phoenix embroidery, holding a red oil-paper umbrella, half-turned with a restrained mysterious smile, on wet cobblestone streets of 1930s Shanghai Bund at night during heavy rain, European-style facades, soft neon signs, distant vintage cars, Huangpu River reflections, warm golden neon glow contrasting with cold blue moonlight, backlit rain streaks, volumetric light beams, thin river fog, glossy reflections, silk qipao sheen, embroidered thread relief, translucent oiled paper umbrella, mirror-like puddles, wet stone texture, low-angle cinematic medium shot, 50mm lens feel, shallow depth of field, rule-of-thirds placement, foreground rain blur, neon bokeh, Wong Kar-wai inspired cinematic color grading, old Shanghai noir romance, teal-gold palette, lonely glamour, pre-war Shanghai nostalgia, restrained longing, poetic urban melancholy.
+beautiful girl in city, cinematic, masterpiece, high quality, aesthetic, neon
 ```
 
-## Example 2: Multi-System Series Template
+Diagnosis:
 
-User idea: "A series of early Heisei youth drama stills."
+- Subject is generic.
+- City has no time, scale, or spatial role.
+- Lighting says "cinematic" but does not define source or contrast.
+- No material, camera, context, or output constraints.
+- Style anchors are vague filler.
+
+Rewrite:
 
 ```text
-A series of early Heisei 80s/90s Japanese youth drama film stills about [relationship/story theme], set in [season] across [lake shore, rural road, bus interior, school corridor, ferry cabin, tea field, snowy street]. The images should feel like fragments from a lost 1990s coming-of-age film, lyrical realism, mono no aware, post-bubble suburbia.
+A 24-year-old courier in a rain-dark nylon jacket, wet short hair tucked behind one ear, holding a cracked transparent umbrella at a crosswalk in late-night Taipei, scooter headlights streaking through monsoon rain, green convenience-store glow reflecting on slick asphalt, close medium shot from across the street, 85mm lens compression, shallow depth of field, damp fabric texture, water beads on umbrella ribs, restrained neo-noir realism, lonely after-work exhaustion, 16:9, avoid fashion-pose glamour and cyberpunk neon overload.
+```
 
-[Spatial System]
-Non-metropolitan East Asian outskirts, reservoirs, riverbanks, levees, old school buildings, local buses, ferry windows, concrete walls, summer power lines. Space must carry narrative weight; characters are often small within landscape, about 1:5 to 1:12 scale.
+## 4. Model Port: Generic Prompt to Midjourney
 
-[Character System]
-Two East Asian high-school students in 80s/90s uniforms, white shirts, sailor collar, dark pleated skirt or student trousers, old leather school bag or canvas tote. Restrained gestures: side profile, looking away, holding a glass bottle, standing by water, gripping a bus strap. Avoid modern influencer poses and commercial portrait energy.
+Source idea: "A quiet product photo of a ceramic tea set."
 
-[Color System]
-Fuji color negative feeling, 90s telecine transfer, cobalt sky, ultramarine shadows, green-blue tree shade, low-saturation grass, warm orange sunset, slight magenta highlight shift, cyan-green shadow contamination.
+Midjourney output:
 
-[Medium System]
-35mm color negative film still, soft telecine scan, silver-halide grain, mild halation, dust specks, gate weave, slight broadcast-era softness.
+```text
+handmade celadon ceramic tea set on a dark walnut table, thin steam rising from one cup, morning window light, linen napkin, subtle glaze crackle, calm minimal still life, 80mm product photography, shallow depth of field, soft shadows, restrained editorial composition --ar 4:3 --stylize 80 --quality 1 --seed 2204 --no text, watermark, plastic shine
+```
 
-[Composition System]
-Wide landscape frames, negative space, window frames, railings, water surfaces and power lines as visual dividers, long-lens compression in rural roads, characters partially obscured by environment.
+Notes:
 
-[Lighting and Atmosphere System]
-Overcast summer light, dusk orange, rainy window reflections, humid haze, snow-night sodium lamps depending on scene.
+- Parameters are at the end.
+- Avoid list is converted to `--no`.
 
-[Narrative and Emotion System]
-Withheld confession, adolescent hesitation, misaligned gaze, emotional ellipsis, memory-like quietness. The scene should imply a story without explaining it.
+## 5. GPT Image / OpenAI Image Model
 
-[Quality and Exclusion System]
-Film still, natural faces, no modern HDR, no cyber neon, no plastic skin, no fashion editorial posing, no smartphone-era details.
+```text
+Create a clean editorial image of a small independent bookstore window on a rainy evening. Preserve a realistic street-level perspective. The window sign should read exactly "NIGHT SHELF" in warm cream serif letters centered on the glass. Inside, show stacked books, a brass reading lamp, and a small handwritten staff-pick card. Use soft amber interior light against cool blue rain outside. Avoid extra text, distorted letters, or modern neon signage.
+```
+
+## 6. FLUX.2 Structured Prompt
+
+```json
+{
+  "subject": "premium glass skincare bottle with matte white pump",
+  "background": "warm gray stone surface with soft shadow gradient",
+  "lighting": "large diffused softbox from upper left, subtle rim light on glass edge",
+  "style": "minimal luxury product photography",
+  "camera_angle": "eye-level three-quarter view",
+  "composition": "centered product, negative space above for headline",
+  "colors": "label color #F8F6F0, accent line #B76E79",
+  "constraints": "clean unmarked background, solitary product, no clutter"
+}
+```
+
+Notes:
+
+- Uses positive replacements instead of "no clutter" as a negative field.
+- Uses hex colors for brand precision.
+
+## 7. Dreamina / Seedream / Jimeng Bilingual Style
+
+```text
+一张电影感人像：雨后的江南老街，青石板反光，一位穿深蓝色棉麻长衫的年轻书店老板站在木门旁，手里拿着旧书，神情安静克制。soft overcast light, wet stone texture, muted teal-gray palette, 50mm documentary portrait, shallow depth of field, subtle film grain, restrained literary mood. 避免网红摆拍、过度磨皮、现代霓虹招牌。
+```
+
+## 8. Product Photography
+
+```text
+[Subject Layer] A matte black pour-over coffee kettle with a narrow gooseneck spout, tiny condensation beads near the lid, placed beside a ceramic dripper.
+[Environment Layer] Minimal morning kitchen counter, pale limestone surface, blurred linen curtain in background.
+[Lighting and Atmosphere Layer] Soft side window light from left, delicate steam, calm early morning atmosphere.
+[Material and Texture Layer] Powder-coated metal, ceramic glaze, limestone pores, warm paper coffee filter.
+[Composition and Camera Layer] 3:2 product editorial shot, 80mm lens feel, product on lower right third, negative space for copy.
+[Style Layer] Scandinavian editorial product photography, warm neutral palette.
+[Context, Intent, and Tone Layer] Quiet ritual, premium but unpretentious home brewing.
+[Output Constraints] no logo, no hands, no text, no plastic props.
+```
+
+## 9. Typography / Poster
+
+```text
+Create a vertical concert poster for an imaginary ambient piano performance. Exact headline text: "AFTER RAIN". Subtext: "solo piano / 9pm / hall b". Large centered typography, black ink on wet translucent vellum, rain droplets catching soft silver light, minimal monochrome palette, generous margins, editorial Swiss grid, high legibility. Avoid extra words, warped letters, ornate fonts, and busy background.
+```
+
+## 10. Series Shot List
+
+```text
+[Continuity Rules]
+Early Heisei rural youth drama, Fuji color negative feeling, two high-school students, restrained gestures, blue-green shadows, warm late-summer highlights, landscapes larger than characters.
+
+[Variation Budget]
+Each frame may change location, weather, or emotional beat. Keep costume, medium, palette, and body language fixed.
+
+[Shot Slots]
+Frame 01: Two students waiting under a rural bus shelter, wide 16:9, overcast afternoon, emotional beat: almost speaking.
+Frame 02: One student seen through rain-streaked bus glass, medium shot, evening sodium light, emotional beat: separation.
+Frame 03: Both students standing far apart on a reservoir levee, wide shot, pale sunset, emotional beat: unsent confession.
 ```
 

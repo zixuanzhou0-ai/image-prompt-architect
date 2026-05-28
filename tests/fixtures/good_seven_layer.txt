@@ -1,0 +1,24 @@
+[Subject Layer]
+A 32-year-old jazz singer in an ivory satin suit holding a chrome microphone stand.
+
+[Environment Layer]
+A narrow 1950s New Orleans basement club after midnight with red leather booths and rain visible through a street-level window.
+
+[Lighting and Atmosphere Layer]
+Low amber table lamps, a cool blue rim light from the stairwell, smoky volumetric beams.
+
+[Material and Texture Layer]
+Satin lapels, tarnished brass trumpet, damp tile floor, scratched lacquer piano.
+
+[Composition and Camera Layer]
+Medium-wide 35mm film still, singer on the left third, microphone silhouette in foreground.
+
+[Style Layer]
+Kodak Vision3-style color, restrained noir musical drama, soft film grain.
+
+[Context, Intent, and Tone Layer]
+Late-night loneliness, postwar glamour wearing thin, intimate performance before an almost-empty room.
+
+[Output Constraints]
+16:9, no modern microphones, no LED panels, no smartphone-era details.
+

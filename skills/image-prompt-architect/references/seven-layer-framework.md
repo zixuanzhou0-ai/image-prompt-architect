@@ -1,42 +1,50 @@
 # Seven-Layer Image Prompt Framework
 
-Use this framework when the user wants a single image or a tightly controlled image concept.
+Use this framework for one image that needs precise control.
 
 ## The Seven Layers
 
 1. **Subject Layer**
    - Controls the core person, object, creature, product, or scene focus.
-   - Include identity, age or type, posture, expression, action, clothing, key accessories, and relationship to the frame.
-   - Weak: "a beautiful girl in the rain"
-   - Strong: "a young Chinese woman in her early 20s, porcelain-like skin, long side-swept black curls, wearing a vintage emerald qipao with gold phoenix embroidery, holding a red oil-paper umbrella, half-turned with a restrained mysterious smile"
+   - Include identity, type, posture, expression, action, clothing, accessories, and relationship to the frame.
 
 2. **Environment Layer**
-   - Controls time, place, weather, background objects, and spatial context.
-   - Make the environment participate in the image, not merely sit behind the subject.
-   - Include time period, location, weather, architecture, background elements, foreground depth cues, and scale.
+   - Controls time, place, weather, background objects, scale, and spatial context.
+   - The environment should shape the image, not merely decorate it.
 
 3. **Lighting and Atmosphere Layer**
-   - Controls light source, light direction, contrast, color temperature, haze, rain, fog, dust, bloom, and emotional mood.
-   - This is often the highest-impact layer for "premium" results.
-   - Use concrete light relationships: warm neon against cold moonlight, backlit rain streaks, soft window light, hard rim light, volumetric beams.
+   - Controls light source, direction, contrast, color temperature, haze, rain, fog, dust, bloom, and mood.
+   - This is often the highest-impact layer for perceived quality.
 
 4. **Material and Texture Layer**
-   - Controls surfaces and tactile realism.
-   - Include fabric, skin, metal, glass, water, stone, wood, paper, grain, reflection, translucency, roughness, and wear.
-   - This prevents generic plastic-looking output.
+   - Controls surfaces and tactile realism: fabric, skin, metal, glass, water, stone, wood, paper, grain, reflection, translucency, roughness, and wear.
 
 5. **Composition and Camera Layer**
-   - Controls frame, lens, distance, angle, depth of field, and visual hierarchy.
-   - Include shot type, lens feel, camera angle, subject scale, rule of thirds, negative space, leading lines, foreground framing, and bokeh.
+   - Controls frame, lens, distance, angle, depth of field, visual hierarchy, negative space, leading lines, and foreground/background staging.
 
 6. **Style Layer**
-   - Controls visual language.
-   - Include medium, genre, film stock, art movement, color grade, renderer, painterly language, or cinematographic reference.
-   - Keep style anchors few and coherent. Too many unrelated references dilute the output.
+   - Controls visual language: medium, genre, film stock, art movement, color grade, rendering style, or cinematographic reference.
+   - Keep style anchors coherent. Too many unrelated references dilute the output.
 
-7. **Era and Artistic Tone Layer**
-   - Controls cultural time, narrative feeling, symbolism, and deeper emotional interpretation.
-   - Include period mood, nostalgia, alienation, mono no aware, noir fatalism, post-bubble suburbia, folk ritual quality, or editorial elegance.
+7. **Context, Intent, and Tone Layer**
+   - Controls period context, cultural cues, symbolic meaning, emotional temperature, and intended viewer response.
+   - This replaces the narrower "era and artistic tone" label.
+
+## Output Constraints Block
+
+Keep this outside the seven creative layers:
+
+```text
+[Output Constraints]
+aspect ratio:
+resolution or target surface:
+text to render exactly:
+must include:
+must avoid:
+brand/safety/platform constraints:
+```
+
+Do not bury these constraints inside style words. They are production requirements.
 
 ## Recommended Sentence Structure
 
@@ -47,24 +55,46 @@ with [Lighting and atmosphere: source + direction + color + mood],
 featuring [Material and texture: surfaces + reflections + tactile details],
 captured through [Composition and camera: shot + lens + angle + framing],
 in [Style: medium + visual language + color grade],
-evoking [Era and artistic tone: cultural mood + narrative meaning],
-[quality and technical constraints].
+evoking [Context, intent, and tone: cultural context + emotional meaning].
+
+[Output Constraints: aspect ratio + text + must-have + must-avoid]
 ```
 
-## How to Use It Well
+## Bad to Good
 
-- Put the subject early. Most models treat early content as more central.
-- Make each layer specific. A layer title alone does nothing.
-- Let the environment and lighting support the emotion.
-- Put camera language after the scene is clear.
-- Use repeated anchors only for the most important style concepts.
-- Add negative constraints only when they prevent common failure modes.
+Weak template fill:
+
+```text
+[Subject] beautiful woman
+[Environment] city at night
+[Lighting] cinematic lighting
+[Material] high quality details
+[Composition] good composition
+[Style] artistic
+[Tone] nostalgic
+```
+
+Why it fails: every layer exists, but none gives the model drawable specifics.
+
+Concrete fill:
+
+```text
+[Subject] A 32-year-old jazz singer in a tailored ivory satin suit, one hand resting on a chrome microphone stand, eyes lowered as if holding back a confession.
+[Environment] A narrow 1950s basement club in New Orleans after midnight, red leather booths, cigarette haze, brass instruments stacked near a small stage, rain visible through a street-level window.
+[Lighting] Low amber table lamps, a single cool blue rim light from the stairwell, smoky volumetric beams crossing the stage.
+[Material] Satin lapels with soft highlights, tarnished brass trumpet, damp black-and-white tile floor, scratched lacquer piano.
+[Composition] Medium-wide 35mm film still, singer placed left third, microphone silhouette in foreground, deep background bokeh.
+[Style] Kodak Vision3-style color, restrained noir musical drama, soft film grain.
+[Context, Intent, and Tone] Late-night loneliness, postwar glamour wearing thin, intimate performance before an almost-empty room.
+[Output Constraints] 16:9, no modern microphones, no LED panels, no smartphone-era details.
+```
 
 ## Common Failure Modes
 
-- **Template-only prompt**: layers exist, but details are generic.
-- **Style overload**: five unrelated style references compete.
-- **Lighting omitted**: output looks flat even with a good subject.
-- **No material cues**: output becomes glossy, plastic, or vague.
-- **No camera layer**: composition becomes default portrait framing.
+- Template-only prompt: headings exist, details are generic.
+- Style overload: unrelated references compete.
+- Lighting omitted: output looks flat.
+- No material cues: output becomes glossy or plastic.
+- No camera layer: composition defaults to centered portrait.
+- Constraints buried in prose: platform or text requirements are ignored.
 

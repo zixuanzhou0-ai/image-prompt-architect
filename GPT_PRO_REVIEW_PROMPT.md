@@ -4,6 +4,8 @@ You are reviewing a Codex plugin repository named `image-prompt-architect`.
 
 I want you to act as a senior prompt-engineering researcher, image-generation workflow designer, and Codex skill/plugin architect. Please review the repository in extreme detail and give actionable suggestions.
 
+Before criticizing model-specific claims, verify current official documentation where possible. Flag any adapter statement that is not supported by current primary sources or by explicit local testing.
+
 Repository goal:
 
 - Turn an image-prompt methodology into a reusable Codex skill/plugin.
@@ -106,4 +108,3 @@ Deliver your response in this format:
 
 ## Final Recommendation
 ```
-

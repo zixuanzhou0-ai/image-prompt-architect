@@ -1,91 +1,139 @@
 # Multi-System Modular Prompt Template
 
-Use this framework for cinematic series, consistent visual grammar, story-world prompts, and sets of images that must feel like they belong to the same film, campaign, or visual universe.
+Use this framework for cinematic series, consistent visual grammar, style bibles, and image sets that should feel like they belong to the same world.
 
 ## Core Idea
 
-The seven-layer framework decomposes an image by visible elements. The multi-system template decomposes an image by functional control systems.
+The seven-layer framework decomposes one image by visible elements. The multi-system template decomposes a visual world by control systems.
 
 - Seven-layer structure: "What parts make up this picture?"
-- System template: "What visual systems govern this world?"
-
-The system template is powerful because it repeats a few key anchors across multiple systems: period, medium, color science, emotional tone, spatial logic, and character behavior.
+- System template: "What rules govern this world?"
 
 ## Core Systems
 
 1. **Premise System**
-   - State the series format, genre, era, subject theme, and intended continuity.
-   - Example: "a set of early Heisei 80s/90s Japanese youth drama film stills..."
+   - State format, genre, era, subject theme, and intended continuity.
 
 2. **Spatial System**
-   - Define the world geography, recurring locations, scale, and environmental narrative role.
-   - Make space functional: the location shapes the story, emotion, and composition.
-   - Include ratios such as character-to-environment scale when useful.
+   - Define geography, recurring locations, scale, and how space participates in story.
 
 3. **Character System**
-   - Define people, clothing, body language, facial affect, actions, and what to avoid.
-   - For cinematic work, restrained actions often outperform dramatic poses.
-   - Include behavioral vocabulary: withheld emotion, misaligned gaze, adolescent hesitation, emotional ellipsis.
+   - Define identity rules, clothing, behavior, gestures, facial affect, and forbidden pose language.
 
 4. **Color System**
    - Define color science, palette, saturation, highlight and shadow behavior.
-   - Good prompts name color relationships, not only colors.
-   - Example: cobalt sky, cyan-green shadow cast, warm orange sun, slight magenta highlight shift.
 
 5. **Medium System**
-   - Define film stock, grain, scan, lens artifacts, broadcast texture, analog flaws, and image materiality.
-   - This is often the difference between "AI picture" and "found film still."
+   - Define film stock, grain, scan, lens artifacts, broadcast texture, analog flaws, or rendering medium.
 
 6. **Composition System**
-   - Define recurring framing strategies, camera distance, subject scale, negative space, frames within frames, and landscape ratio.
-   - This system keeps a series visually consistent.
+   - Define recurring framing, camera distance, lens grammar, subject scale, negative space, and dividers.
 
 7. **Lighting and Atmosphere System**
-   - Define weather, light sources, diffusion, haze, time of day, and emotional weather.
-   - Keep it tied to the premise, not pasted from a generic cinematic keyword list.
+   - Define weather, time of day, light sources, diffusion, haze, and emotional weather.
 
 8. **Narrative and Emotion System**
-   - Define the unspoken story, emotional temperature, symbolic motifs, and what the image should feel like before it says anything.
-   - Use this to prevent beautiful but empty images.
+   - Define unspoken story, emotional temperature, symbolic motifs, and what the images should imply.
 
 9. **Quality and Exclusion System**
-   - Define technical target and common failure exclusions.
-   - Avoid broad "masterpiece" piles unless the target model benefits from them.
+   - Define output gate and common failure exclusions.
+   - This is not a world system; it is a production filter.
+
+## Series Controls
+
+### Continuity System
+
+List what must stay fixed across all images:
+
+- era and cultural context;
+- medium and color science;
+- character identity and costume rules;
+- recurring locations or object motifs;
+- lens grammar and composition habits;
+- emotional temperature;
+- visual motifs.
+
+### Variation Budget
+
+List what may change per image:
+
+- location;
+- weather;
+- time of day;
+- camera distance;
+- character action;
+- emotional beat.
+
+Limit each frame to 2-3 major changes. Too much variation breaks series identity.
+
+### Shot Slot Template
+
+```text
+Frame:
+subject action:
+location:
+camera:
+lighting:
+emotional beat:
+required continuity anchors:
+allowed variation:
+copy-ready prompt:
+```
 
 ## Blank Template
 
 ```text
-A series of [era/genre/medium] image stills about [relationship/story theme], set in [season] at [location set]. The images should feel like [core aesthetic premise].
+[Premise System]
+A series of [era/genre/medium] image stills about [relationship/story theme], set in [season] across [location set]. The images should feel like [core aesthetic premise].
 
-[Spatial System] ...
+[Continuity System]
+Must remain fixed: [era], [medium], [palette], [characters], [lens grammar], [motifs], [emotional temperature].
 
-[Character System] ...
+[Variation Budget]
+May change per frame: [location], [weather], [time of day], [camera distance], [action], [emotional beat]. Limit each image to 2-3 major changes.
 
-[Color System] ...
+[Spatial System]
+...
 
-[Medium System] ...
+[Character System]
+...
 
-[Composition System] ...
+[Color System]
+...
 
-[Lighting and Atmosphere System] ...
+[Medium System]
+...
 
-[Narrative and Emotion System] ...
+[Composition System]
+...
 
-[Quality and Exclusion System] ...
+[Lighting and Atmosphere System]
+...
+
+[Narrative and Emotion System]
+...
+
+[Quality and Exclusion System]
+...
+
+[Shot Slots]
+Frame 01 ...
+Frame 02 ...
+Frame 03 ...
 ```
 
 ## When It Beats Seven Layers
 
 - The user wants multiple images with one visual language.
 - The style is more important than a single subject.
-- The output should feel like stills from the same movie.
-- The prompt needs world rules, not just an object description.
+- The output should feel like stills from the same film.
+- The prompt needs world rules, not just object description.
 
 ## Common Failure Modes
 
-- **System shell without content**: all headings, no specific visual law.
-- **Weak anchor repetition**: the core style appears once and disappears.
-- **Conflicting media cues**: VHS, IMAX, watercolor, and 3D render all fight.
-- **Character treated as fashion model**: cinematic restraint is lost.
-- **Location becomes wallpaper**: spatial system does not affect story or composition.
+- System shell without content: all headings, no specific visual law.
+- Weak continuity: each image looks good but unrelated.
+- No variation budget: the series drifts too far or repeats too much.
+- Conflicting media cues: VHS, IMAX, watercolor, and 3D render compete.
+- Location becomes wallpaper: spatial system does not affect story or composition.
 

@@ -1,67 +1,68 @@
 ---
 name: image-prompt-architect
-description: Create, adapt, critique, and iterate image-generation prompts using seven-layer image structure, multi-system modular prompt templates, and model-specific adapters for Grok, Dreamina/Seedream, GPT Image, Midjourney, Flux, and similar tools. Use when the user asks for image prompts, prompt engineering for AI images, cinematic/series prompt templates, prompt diagnosis, model adaptation, prompt libraries, or reusable visual style systems.
+description: Design, rewrite, critique, and port AI image-generation prompts. Use for image-prompt architecture, prompt diagnosis, model-specific prompt adaptation, cinematic series prompts, and reusable visual style bibles. Do not trigger for ordinary image creation, image editing, or visual critique unless the user asks for prompt text, prompt structure, or model adaptation.
 ---
 
 # Image Prompt Architect
 
 ## Core Principle
 
-Treat prompt structure as a scaffold, not the art itself. A strong image prompt needs both:
+Treat prompt structure as a scaffold, not the art itself. Strong image prompts need concrete visual substance: specific subjects, spatial logic, light, materiality, camera grammar, style anchors, constraints, and iteration knobs.
 
-- **Architecture**: a chosen structure that tells the model how to parse the image.
-- **Substance**: specific scene details, style anchors, emotional intent, medium cues, and constraints.
+Never fill a template with vague praise words alone. If a layer is generic, infer concrete details from the user's intent or ask one concise question when guessing would change the output.
 
-Avoid merely filling a template with generic words. If a layer is vague, ask for or infer concrete visual details.
+## Mode Selection
 
-## Workflow
+Choose one mode before drafting.
 
-1. Identify the target model, output type, and purpose.
-   - If the user names a model, adapt to it.
-   - If no model is named, ask only when the choice changes the result materially; otherwise choose a conservative general prompt and state the assumption.
-   - For Dreamina/Seedream image work in a workspace with project instructions, follow the local Dreamina rules first.
+- **Quick prompt**: user wants one prompt fast. Output a copy-ready prompt plus 2-3 iteration knobs.
+- **Standard build**: user wants a new or rewritten prompt. Output architecture choice, tagged prompt, copy-ready prompt, model notes, and iteration knobs.
+- **Critique**: user provides an existing prompt. Output diagnosis, severity, missing controls, contradictions, and a rewritten prompt.
+- **Model port**: user wants a prompt adapted from one model to another. Output target-model risks, converted prompt, parameter/negative handling, and what changed.
+- **Series bible**: user wants multiple images, cinematic stills, a set, or a consistent visual world. Output continuity rules, variation budget, shot slots, and per-shot prompts.
 
-2. Choose the prompt architecture.
-   - Use **seven-layer structure** for one-off images that need precise control over subject, lighting, materials, composition, and style. Read `references/seven-layer-framework.md` when needed.
-   - Use **multi-system modular template** for series, cinematic stills, consistent visual grammar, narrative worlds, or sets of images. Read `references/system-template-framework.md` when needed.
-   - Use **hybrid architecture** when the user needs both precise details and strong style continuity across a series.
-   - Use **compact natural-language architecture** for models that revise or reason over prompts well, especially GPT Image-style systems. Read `references/model-adapters.md` before making model-specific claims.
+For exact schemas, read `references/output-contract.md`.
 
-3. Draft in a learning-friendly form first.
-   - Provide labeled sections so the user can see what each layer or system controls.
-   - Keep repeated style anchors intentional. Repeat only the few concepts that must dominate the output.
-   - Separate positive prompt, negative constraints, and model notes.
+## Architecture Choice
 
-4. Produce a clean copy version.
-   - After the labeled version, provide a direct copy-ready prompt without explanations.
-   - Match the language strategy to the model: English for maximum control on English-dominant models; Chinese or bilingual when cultural specificity or text rendering benefits from it.
+- Use **seven-layer structure** for a single image that needs precise control. Read `references/seven-layer-framework.md`.
+- Use **multi-system modular template** for cinematic series, style bibles, and visual worlds. Read `references/system-template-framework.md`.
+- Use **hybrid architecture** when the user needs both precise single-frame control and continuity across a set.
+- Use **compact natural-language architecture** when the target model reasons over or revises prompts well. Check `references/model-adapters.md` before making model claims.
 
-5. Run a prompt self-check.
-   - Use `references/checklist.md`.
-   - For longer prompts, optionally run `scripts/prompt_lint.py` on a saved prompt file to detect missing layers, weak anchors, and overlong sections.
+## Model Adaptation
 
-6. Suggest targeted iteration knobs.
-   - Name the 2-4 highest-leverage edits: subject specificity, light source, camera distance, color system, material cues, style anchor, negative constraints, or model adapter.
-   - Do not rewrite everything when one layer is the likely failure point.
+Read `references/model-adapters.md` when:
 
-## Output Contract
+- the user names a model or platform;
+- the prompt must be ported between models;
+- negative prompts, parameters, reference images, text rendering, or API fields matter.
 
-When creating or rewriting a prompt, default to this structure:
+Do not overclaim model behavior. If a model behavior is not documented or not locally tested, present it as a heuristic.
 
-1. **Architecture Choice**: why this framework fits.
-2. **Tagged Prompt**: labeled layers or systems.
-3. **Copy-Ready Prompt**: clean final prompt.
-4. **Negative / Avoid**: what to suppress.
-5. **Model Notes**: language, length, and adaptation guidance.
-6. **Iteration Knobs**: what to adjust after seeing the image.
+## Quality Gate
 
-For quick user requests, compress the explanation but still include a copy-ready prompt.
+Before finalizing, apply `references/checklist.md` or `references/evaluation-rubric.md`:
 
-## References
+- Is the subject drawable and specific?
+- Does the environment shape the image?
+- Are lighting, material, camera, style, and constraints explicit?
+- Is the prompt shaped for the target model?
+- Are avoid/negative instructions handled in the model's native way?
 
-- `references/seven-layer-framework.md`: seven-layer prompt structure.
-- `references/system-template-framework.md`: multi-system modular template for cinematic series and unified visual worlds.
-- `references/model-adapters.md`: model-specific prompt strategy.
-- `references/checklist.md`: prompt quality gate and debugging checklist.
+For file-based prompts, optionally run:
+
+```bash
+python skills/image-prompt-architect/scripts/prompt_lint.py prompt.txt --architecture auto --model generic
+```
+
+## Reference Map
+
+- `references/output-contract.md`: response modes and schemas.
+- `references/seven-layer-framework.md`: single-image structure.
+- `references/system-template-framework.md`: cinematic series and continuity systems.
+- `references/model-adapters.md`: versioned model adapter matrix.
+- `references/checklist.md`: quick quality gate.
+- `references/evaluation-rubric.md`: scoring rubric.
 - `references/examples.md`: worked examples and reusable skeletons.
 

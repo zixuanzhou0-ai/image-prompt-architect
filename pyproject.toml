@@ -1,0 +1,10 @@
+[project]
+name = "image-prompt-architect"
+version = "0.2.0"
+description = "Codex plugin for structured AI image prompt architecture"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
