@@ -1,0 +1,4 @@
+interface:
+  display_name: "Image Prompt Architect"
+  short_description: "Structured prompts for AI images"
+  default_prompt: "Turn my image idea into a structured, model-adapted prompt."
