@@ -1,0 +1,17 @@
+{
+  "name": "image-prompt-architect",
+  "interface": {
+    "displayName": "Image Prompt Architect"
+  },
+  "plugins": [
+    {
+      "name": "image-prompt-architect",
+      "source": "./plugins/image-prompt-architect",
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "category": "Creativity"
+    }
+  ]
+}

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.12.0 - 2026-05-29
+
+- Added a Codex marketplace manifest at `.agents/plugins/marketplace.json`.
+- Added an installable marketplace package under `plugins/image-prompt-architect/`.
+- Updated README and INSTALL with the working two-step CLI install flow: `codex plugin marketplace add` followed by `codex plugin add`.
+- Documented that skill invocation uses `$image-prompt-architect`, not `/image-prompt-architect`.
+- Kept image-output records placeholder-only; v1.0 remains blocked until real model outputs are captured and scored.
+
 ## 0.11.0 - 2026-05-29
 
 - Hardened `evals/check_image_output_records.py` so real scored records with object/list fields validate cleanly instead of triggering type errors.

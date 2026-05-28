@@ -6,7 +6,7 @@ Image Prompt Architect is a Codex plugin for designing, rewriting, critiquing, a
 
 It is not an image generator. It is a prompt architecture workflow for users who want better prompt text, model-specific adaptation, cinematic series bibles, or prompt diagnosis.
 
-Current version: `0.11.0` developer preview.
+Current version: `0.12.0` developer preview.
 
 ## What It Does
 
@@ -27,7 +27,9 @@ Current version: `0.11.0` developer preview.
 
 ```text
 image-prompt-architect/
+  .agents/plugins/marketplace.json
   .codex-plugin/plugin.json
+  plugins/image-prompt-architect/
   skills/image-prompt-architect/SKILL.md
   skills/image-prompt-architect/references/
   skills/image-prompt-architect/scripts/prompt_lint.py
@@ -35,33 +37,44 @@ image-prompt-architect/
   tests/
 ```
 
-## Install Locally
+## Install
 
-### Option A: Use As A Local Plugin Project
+### Option A: Install From GitHub
 
-Clone the repository:
-
-```bash
-git clone --branch v0.11.0 https://github.com/zixuanzhou0-ai/image-prompt-architect.git
-```
-
-If your Codex CLI supports marketplace sources, try:
+Add this repository as a Codex plugin marketplace source, then install the plugin:
 
 ```bash
-codex plugin marketplace add zixuanzhou0-ai/image-prompt-architect --ref v0.11.0
-codex plugin marketplace list
-codex plugin marketplace upgrade
+codex plugin marketplace add zixuanzhou0-ai/image-prompt-architect --ref v0.12.0
+codex plugin add image-prompt-architect@image-prompt-architect
 ```
 
-For unreleased development snapshots, replace `v0.11.0` with `main`. If that command is not available in your environment, use Option B below. This repository is a plugin project root, not a curated marketplace index.
+Verify:
 
-### Option B: Use The Skill Directly
+```bash
+codex plugin list --marketplace image-prompt-architect
+```
 
-Copy or link `skills/image-prompt-architect/` into your Codex skills directory, then invoke it explicitly:
+For unreleased development snapshots, replace `v0.12.0` with `main`.
+
+### Option B: Inspect Or Install Directly
+
+Clone the exact developer-preview files:
+
+```bash
+git clone --branch v0.12.0 https://github.com/zixuanzhou0-ai/image-prompt-architect.git
+```
+
+If your Codex CLI does not support plugin marketplaces, copy or link `skills/image-prompt-architect/` into your Codex skills directory.
+
+## Invoke The Skill
+
+Invoke it explicitly with the skill name:
 
 ```text
 $image-prompt-architect Rewrite this image prompt for Midjourney.
 ```
+
+Slash commands such as `/image-prompt-architect` are not the skill invocation mechanism. Use `$image-prompt-architect` or ask naturally for image prompt rewriting, prompt critique, model porting, prompt linting, or a series bible.
 
 ## Usage Examples
 
@@ -127,9 +140,9 @@ Use `skills/image-prompt-architect/references/evaluation-rubric.md`. A prompt sh
 CI evidence:
 
 - Main badge: see the badge at the top of this README.
-- Fixed release tag CI: check the [GitHub Actions workflow](https://github.com/zixuanzhou0-ai/image-prompt-architect/actions/workflows/test.yml) filtered to `v0.11.0`.
+- Fixed release tag CI: check the [GitHub Actions workflow](https://github.com/zixuanzhou0-ai/image-prompt-architect/actions/workflows/test.yml) filtered to `v0.12.0`.
 - Prompt-level report: [`evals/report.md`](evals/report.md).
-- Image-output records: [`evals/image_output_records.json`](evals/image_output_records.json) is still placeholder-only until real model outputs are captured; v0.11 hardens the v1.0 record gate against real scored-record edge cases but does not invent output evidence.
+- Image-output records: [`evals/image_output_records.json`](evals/image_output_records.json) is still placeholder-only until real model outputs are captured; v0.12 improves installation packaging but does not invent output evidence.
 - Image-output rubric: [`evals/image_output_rubric.md`](evals/image_output_rubric.md) defines task-specific gates for future real output evals.
 - v1.0 gate: [`docs/V1_RELEASE_GATE.md`](docs/V1_RELEASE_GATE.md) defines the release checklist and example scored record shape.
 
