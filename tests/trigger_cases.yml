@@ -19,6 +19,11 @@ should_trigger:
   - "诊断这个图像提示词为什么太空泛。"
   - "给我一个七层结构的海报生图 prompt。"
   - "把这段修图 prompt 改得更明确，要求保留人物身份。"
+  - "帮我写一条生成猫图的提示词。"
+  - "改写这条修图提示词，让背景替换更精确。"
+  - "把这个品牌视觉系统整理成可复用的 style bible prompt。"
+  - "将这个产品摄影 prompt 从 GPT Image 移植到 Midjourney。"
+  - "用七层结构诊断这条中文生图提示词。"
 
 should_not_trigger:
   - "Generate an image of a cat."
@@ -41,5 +46,10 @@ should_not_trigger:
   - "分析这张图里有什么。"
   - "给我的品牌做一套视觉系统。"
   - "把这张图裁成 4:5。"
+  - "生成一张城市夜景图片。"
+  - "修掉这张照片里的路人。"
+  - "让这个海报更高级一点。"
+  - "帮我判断这张图像是不是 AI 生成的。"
+  - "给这个产品做一套品牌视觉规范。"
 
 note: "Manual review fixture unless Codex trigger simulation is available."

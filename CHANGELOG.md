@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.8.0 - 2026-05-29
+
+- Added `skill_output_prompt` fields directly to prompt eval cases.
+- Updated prompt eval reporting with missing expected feature visibility.
+- Added task-specific image-output rubric gates for text rendering, editing, series, product photography, and model-port evals.
+- Strengthened adapter/image-output eval status checks for future scored records.
+- Expanded GPT Image warning fixtures around unmarked logos and label/logo text.
+- Expanded trigger smoke cases from 40 to 50 with more Chinese ambiguity pairs.
+- Added broader Chinese filler and concrete visual terms.
+- Kept image-output records placeholder-only; no model outputs were invented.
+
 ## 0.7.0 - 2026-05-29
 
 - Added skill-output prompt captures and skill/candidate delta reporting.

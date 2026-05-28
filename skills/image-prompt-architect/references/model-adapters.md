@@ -30,7 +30,7 @@ Each adapter tracks:
 **Image-output eval last run:** none
 **Confidence:** high for API behavior; medium for creative prompt heuristics
 **Primary docs:** https://platform.openai.com/docs/guides/image-generation
-**Local test coverage:** `tests/fixtures/bad_gpt_image_keyword_pile.txt`, `tests/fixtures/warn_gpt_image_edit_no_preserve.txt`, `tests/fixtures/warn_gpt_image_unquoted_text.txt`, `tests/fixtures/warn_gpt_image_pixel_perfect_claim.txt`, `tests/fixtures/warn_gpt_image_reference_without_role.txt`, `tests/fixtures/warn_gpt_image_label_with_unquoted_words.txt`, `tests/fixtures/good_gpt_image_edit_preserve_change.txt`, `tests/fixtures/good_gpt_image_text_quoted.txt`, `tests/fixtures/good_gpt_image_blank_label.txt`; no image-output eval
+**Local test coverage:** `tests/fixtures/bad_gpt_image_keyword_pile.txt`, `tests/fixtures/warn_gpt_image_edit_no_preserve.txt`, `tests/fixtures/warn_gpt_image_unquoted_text.txt`, `tests/fixtures/warn_gpt_image_pixel_perfect_claim.txt`, `tests/fixtures/warn_gpt_image_reference_without_role.txt`, `tests/fixtures/warn_gpt_image_label_with_unquoted_words.txt`, `tests/fixtures/warn_gpt_image_logo_says_unquoted.txt`, `tests/fixtures/good_gpt_image_edit_preserve_change.txt`, `tests/fixtures/good_gpt_image_text_quoted.txt`, `tests/fixtures/good_gpt_image_blank_label.txt`, `tests/fixtures/good_gpt_image_unmarked_logo_shape.txt`, `tests/fixtures/good_gpt_image_label_no_text_but_material_detail.txt`; no image-output eval
 **Applies to:** API and ChatGPT-like image workflows
 
 **Source basis:**

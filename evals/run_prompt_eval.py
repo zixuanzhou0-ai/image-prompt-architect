@@ -20,6 +20,33 @@ REPORT_FILE = ROOT / "evals" / "report.md"
 SKILL_OUTPUTS_FILE = ROOT / "evals" / "skill_outputs.json"
 LINTER_FILE = ROOT / "skills" / "image-prompt-architect" / "scripts" / "prompt_lint.py"
 
+FEATURE_SYNONYMS = {
+    "specific subject": ["24-year-old", "woman", "hiker", "product", "bottle", "watch", "书店老板"],
+    "lighting source": ["light", "glow", "sunlight", "softbox", "lamp", "window", "柔光"],
+    "concrete lighting": ["light", "glow", "sunlight", "softbox", "lamp", "window", "柔光"],
+    "lighting": ["light", "glow", "sunlight", "softbox", "lamp", "window", "柔光"],
+    "lighting constraints": ["light", "polarizing", "reflection", "softbox", "rim"],
+    "camera": ["camera", "lens", "35mm", "50mm", "80mm", "portrait", "人像"],
+    "mood": ["mood", "melancholy", "calm", "restrained", "loneliness", "克制", "安静"],
+    "concrete setting": ["street", "landscape", "studio", "mountain", "club", "江南", "老街"],
+    "concrete material": ["ceramic", "walnut", "glass", "steel", "stone", "paper", "棉麻"],
+    "material": ["ceramic", "walnut", "glass", "steel", "stone", "paper", "棉麻"],
+    "material geometry": ["steel", "glass", "case", "sapphire", "stone", "dial"],
+    "positive replacements": ["empty", "vehicle-free", "peaceful", "solitary", "uncluttered", "unmarked", "clean"],
+    "positive replacements for negation": ["empty", "vehicle-free", "peaceful", "solitary", "uncluttered", "unmarked", "clean"],
+    "valid hex color": ["#"],
+    "hex color": ["#"],
+    "typography": ["headline", "footer", "layout", "poster"],
+    "layout": ["layout", "grid", "centered", "composition", "margins"],
+    "palette": ["palette", "navy", "ivory", "teal", "amber"],
+    "reference role remains parameterized": ["--oref", "--profile", "--iw"],
+    "lighting/composition added": ["light", "lens", "composition", "centered"],
+    "specific cultural setting": ["江南", "老街", "书店", "青石板"],
+    "reference role assignment": ["identity only", "reference image"],
+    "setting": ["street", "landscape", "studio", "mountain", "club", "江南", "老街"],
+    "continuity anchors": ["continuity", "anchors", "train-window"],
+}
+
 
 def load_linter():
     spec = importlib.util.spec_from_file_location("prompt_lint", LINTER_FILE)
@@ -94,20 +121,43 @@ def load_skill_outputs() -> dict[str, str]:
     return outputs
 
 
-def feature_hits(prompt: str, features: str) -> tuple[int, int]:
+def feature_hits(prompt: str, features: str) -> tuple[int, int, list[str]]:
     if not features:
-        return 0, 0
+        return 0, 0, []
     parts = [part.strip().lower() for part in re.split(r"[,;]", features) if part.strip()]
     haystack = prompt.lower()
     hits = 0
+    missing: list[str] = []
     for part in parts:
+        if part == "no negative prompt block":
+            if "negative prompt" not in haystack and "--no" not in haystack:
+                hits += 1
+            else:
+                missing.append(part)
+            continue
+        if part == "parameters at end":
+            last_param = haystack.rfind("--")
+            if last_param >= 0 and last_param > max(0, len(haystack) - 90):
+                hits += 1
+            else:
+                missing.append(part)
+            continue
+        synonym_terms = FEATURE_SYNONYMS.get(part)
+        if synonym_terms:
+            if any(term.lower() in haystack for term in synonym_terms):
+                hits += 1
+            else:
+                missing.append(part)
+            continue
         tokens = re.findall(r"[a-zA-Z0-9#]+", part)
         if not tokens:
             continue
         required = tokens[:2] if len(tokens) > 1 else tokens
         if any(token in haystack for token in required):
             hits += 1
-    return hits, len(parts)
+        else:
+            missing.append(part)
+    return hits, len(parts), missing
 
 
 def lint_score(linter, prompt: str, architecture: str, target_model: str):
@@ -123,11 +173,11 @@ def make_report(cases: list[dict[str, object]]) -> str:
         "# Prompt Eval Report",
         "",
         "Generated from `evals/prompt_cases.yml` using structural prompt lint only.",
-        "`Skill` columns use `evals/skill_outputs.json` manual captures when present; this is not a Codex router simulator.",
+        "`Skill` columns use `skill_output_prompt` fields, with `evals/skill_outputs.json` as a fallback; this is not a Codex router simulator.",
         "Image-output scoring still requires `evals/image_output_protocol.md`.",
         "",
-        "| Case | Model | Mode | Source | Candidate | Candidate Delta | Skill | Skill Delta | Features | Expected Risks |",
-        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- |",
+        "| Case | Model | Mode | Source | Candidate | Candidate Delta | Skill | Skill Delta | Features | Missing Features | Expected Risks |",
+        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |",
     ]
 
     for case in cases:
@@ -136,7 +186,7 @@ def make_report(cases: list[dict[str, object]]) -> str:
         expected_mode = str(case.get("expected_mode", "unknown"))
         source_prompt = str(case.get("source_prompt", ""))
         rewritten_prompt = str(case.get("rewritten_prompt_candidate", ""))
-        skill_prompt = skill_outputs.get(case_id, "")
+        skill_prompt = str(case.get("skill_output_prompt", "")) or skill_outputs.get(case_id, "")
         expected_features = str(case.get("expected_rewrite_features", ""))
         architecture = model_to_architecture(case_id, target_model)
         source_result = lint_score(linter, source_prompt, architecture, target_model)
@@ -150,11 +200,12 @@ def make_report(cases: list[dict[str, object]]) -> str:
         rewrite_delta = rewritten_result.score - source_result.score if source_result and rewritten_result else ""
         skill_score = skill_result.score if skill_result else ""
         skill_delta = skill_result.score - source_result.score if source_result and skill_result else ""
-        hits, total = feature_hits(skill_prompt or rewritten_prompt, expected_features)
+        hits, total, missing = feature_hits(skill_prompt or rewritten_prompt, expected_features)
         feature_text = f"{hits}/{total}" if total else ""
+        missing_text = ", ".join(missing) if missing else "-"
         lines.append(
             f"| `{case_id}` | `{target_model}` | `{expected_mode}` | {source_score} | "
-            f"{rewrite_score} | {rewrite_delta} | {skill_score} | {skill_delta} | {feature_text} | {risk_text} |"
+            f"{rewrite_score} | {rewrite_delta} | {skill_score} | {skill_delta} | {feature_text} | {missing_text} | {risk_text} |"
         )
 
     lines.append("")

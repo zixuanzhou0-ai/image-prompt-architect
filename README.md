@@ -6,7 +6,7 @@ Image Prompt Architect is a Codex plugin for designing, rewriting, critiquing, a
 
 It is not an image generator. It is a prompt architecture workflow for users who want better prompt text, model-specific adaptation, cinematic series bibles, or prompt diagnosis.
 
-Current version: `0.7.0` developer preview.
+Current version: `0.8.0` developer preview.
 
 ## What It Does
 
@@ -42,18 +42,18 @@ image-prompt-architect/
 Clone the repository:
 
 ```bash
-git clone --branch v0.7.0 https://github.com/zixuanzhou0-ai/image-prompt-architect.git
+git clone --branch v0.8.0 https://github.com/zixuanzhou0-ai/image-prompt-architect.git
 ```
 
 If your Codex CLI supports marketplace sources, try:
 
 ```bash
-codex plugin marketplace add zixuanzhou0-ai/image-prompt-architect --ref v0.7.0
+codex plugin marketplace add zixuanzhou0-ai/image-prompt-architect --ref v0.8.0
 codex plugin marketplace list
 codex plugin marketplace upgrade
 ```
 
-For unreleased development snapshots, replace `v0.7.0` with `main`. If that command is not available in your environment, use Option B below. This repository is a plugin project root, not a curated marketplace index.
+For unreleased development snapshots, replace `v0.8.0` with `main`. If that command is not available in your environment, use Option B below. This repository is a plugin project root, not a curated marketplace index.
 
 ### Option B: Use The Skill Directly
 
@@ -121,14 +121,15 @@ If you have the Codex creator/validator tools available locally, also run the sk
 
 Use `skills/image-prompt-architect/references/evaluation-rubric.md`. A prompt should score at least 16/20 before being treated as strong, and model fit should not be 0.
 
-`evals/run_prompt_eval.py` generates a prompt-level before/after report at `evals/report.md`. Image-output evals still require manual model runs and the fields in `evals/image_output_protocol.md`.
+`evals/run_prompt_eval.py` generates a prompt-level source/candidate/skill-output report at `evals/report.md`. Image-output evals still require manual model runs and the fields in `evals/image_output_protocol.md`.
 
 CI evidence:
 
 - Main badge: see the badge at the top of this README.
-- Fixed release tag CI: check the [GitHub Actions workflow](https://github.com/zixuanzhou0-ai/image-prompt-architect/actions/workflows/test.yml) filtered to `v0.7.0`.
+- Fixed release tag CI: check the [GitHub Actions workflow](https://github.com/zixuanzhou0-ai/image-prompt-architect/actions/workflows/test.yml) filtered to `v0.8.0`.
 - Prompt-level report: [`evals/report.md`](evals/report.md).
 - Image-output records: [`evals/image_output_records.json`](evals/image_output_records.json) is still placeholder-only until real model outputs are captured.
+- Image-output rubric: [`evals/image_output_rubric.md`](evals/image_output_rubric.md) defines task-specific gates for future real output evals.
 
 ## Review Loop
 

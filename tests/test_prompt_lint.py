@@ -288,6 +288,24 @@ def test_gpt_image_label_reads_unquoted_words_warns():
     assert any("quote exact text" in warning for warning in result.warnings)
 
 
+def test_good_gpt_image_unmarked_logo_shape_has_no_text_warning():
+    result = prompt_lint.lint(fixture("good_gpt_image_unmarked_logo_shape.txt"), "compact", "gpt-image")
+    assert not result.critical
+    assert not any("quote exact text" in warning for warning in result.warnings)
+
+
+def test_gpt_image_logo_says_unquoted_warns():
+    result = prompt_lint.lint(fixture("warn_gpt_image_logo_says_unquoted.txt"), "compact", "gpt-image")
+    assert not result.critical
+    assert any("quote exact text" in warning for warning in result.warnings)
+
+
+def test_good_gpt_image_blank_label_with_material_detail_has_no_text_warning():
+    result = prompt_lint.lint(fixture("good_gpt_image_label_no_text_but_material_detail.txt"), "compact", "gpt-image")
+    assert not result.critical
+    assert not any("quote exact text" in warning for warning in result.warnings)
+
+
 def test_chinese_dreamina_prompt_runs():
     result = prompt_lint.lint(fixture("good_chinese_dreamina.txt"), "compact", "dreamina")
     assert result.score >= 6

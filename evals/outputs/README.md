@@ -8,6 +8,7 @@ Each output should be referenced from `evals/image_output_records.json` with:
 - prompt before and rewritten prompt
 - generation parameters
 - output image path
+- task-specific gate results from `evals/image_output_rubric.md`
 - human rater and image score
 - observed failures and revision prompt
 

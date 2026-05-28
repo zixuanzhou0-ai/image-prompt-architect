@@ -11,6 +11,7 @@ cases:
     rewritten_score_target: 16
     rewritten_prompt_candidate: "A 24-year-old woman waiting under a blue bus-shelter light on a rainy downtown street at night, wet asphalt reflections, sodium shop-window glow, 50mm documentary portrait, shallow depth of field, restrained melancholy, natural skin texture, no glamour posing."
     expected_rewrite_features: "specific subject, lighting source, camera, mood, concrete setting"
+    skill_output_prompt: "A 24-year-old woman standing under a blue bus-shelter light on a rain-soaked downtown street at midnight, dark wool coat, calm introspective expression, wet asphalt reflecting taxi lights and warm shop windows, 50mm documentary portrait, shallow depth of field, muted teal and amber palette, restrained urban loneliness, natural skin texture."
 
   - id: flux_negative
     source_prompt: "Negative Prompt: no crowds, no cars. peaceful landscape"
@@ -23,6 +24,7 @@ cases:
     rewritten_score_target: 16
     rewritten_prompt_candidate: "Peaceful empty mountain landscape at dawn, solitary character on a trail, open meadow, warm low-angle sunlight, clear air, clean unbroken vehicle-free pathways, wide 35mm natural landscape composition, quiet documentary style, accent color #88AAEE."
     expected_rewrite_features: "positive replacements, no negative prompt block, concrete lighting"
+    skill_output_prompt: "Peaceful empty mountain landscape at dawn with a solitary hiker on an open trail, vehicle-free pathways, quiet meadow, warm low-angle sunlight through pine mist, wide 35mm natural landscape composition, calm documentary style, positive replacements for crowds and cars, accent wildflower color #88AAEE."
 
   - id: midjourney_params
     source_prompt: "ceramic tea set --ar 4:3 on a table with morning light"
@@ -34,6 +36,7 @@ cases:
     rewritten_score_target: 17
     rewritten_prompt_candidate: "handmade celadon ceramic tea set on a dark walnut table, thin steam, morning window light, linen napkin, subtle glaze crackle, calm minimal product photography, 80mm lens --ar 4:3"
     expected_rewrite_features: "parameters at end, concrete material, lighting, camera"
+    skill_output_prompt: "handmade celadon ceramic tea set on a dark walnut table, thin steam, morning window light, linen napkin, subtle glaze crackle, calm minimal product photography, 80mm lens --ar 4:3"
 
   - id: gpt_image_text_rendering
     source_prompt: "make a poster with headline Summer Archive, vintage paper, cool design"
@@ -46,6 +49,7 @@ cases:
     rewritten_score_target: 17
     rewritten_prompt_candidate: "Create an editorial product poster in a quiet studio setting with the exact headline \"Summer Archive\" at the top, warm off-white paper texture, centered grid camera composition, small footer text \"Volume 04\", muted navy and ivory palette, soft window light, refined print style."
     expected_rewrite_features: "quoted exact text, layout, typography, palette"
+    skill_output_prompt: "Create an editorial product poster in a quiet studio setting with the exact headline \"Summer Archive\" centered near the top, warm off-white paper texture, muted navy and ivory palette, small footer text \"Volume 04\", generous margins, grid-based print layout, soft window light, refined archival design."
 
   - id: gpt_image_edit_preserve_change
     source_prompt: "edit this product photo, change the background to marble and make it premium"
@@ -58,6 +62,7 @@ cases:
     rewritten_score_target: 17
     rewritten_prompt_candidate: "Edit this product photo. Preserve the product shape, label placement, camera angle, and glass reflections. Change only the background to pale marble, add a soft studio shadow, and keep the composition centered."
     expected_rewrite_features: "preserve/change split, geometry lock, limited edit scope"
+    skill_output_prompt: "Edit this product photo. Preserve the product shape, label placement, camera angle, and glass reflections unchanged. Change only the background to pale marble, add a soft studio shadow, keep the composition centered, and avoid altering the product geometry."
 
   - id: midjourney_no_phrase
     source_prompt: "1930s Shanghai street portrait, cinematic --ar 3:4 --no modern clothing"
@@ -70,6 +75,7 @@ cases:
     rewritten_score_target: 17
     rewritten_prompt_candidate: "1930s Shanghai rain-soaked street portrait, period qipao with silk piping, vintage shop signs, wet stone pavement, warm tungsten window light, 50mm film still, restrained noir mood --ar 3:4 --no sneakers, jeans, cars"
     expected_rewrite_features: "positive period anchors, concise --no list, parameters at end"
+    skill_output_prompt: "1930s Shanghai rain-soaked street portrait, period qipao with silk piping, vintage shop signs, wet stone pavement, warm tungsten window light, 50mm film still, restrained noir mood --ar 3:4 --no sneakers, jeans, cars"
 
   - id: midjourney_oref_style_ref
     source_prompt: "ceramic tea set product photo --oref ref.jpg --profile ceramic-study --iw 1.2"
@@ -82,6 +88,7 @@ cases:
     rewritten_score_target: 17
     rewritten_prompt_candidate: "handmade celadon ceramic tea set on dark walnut table, morning window light, linen napkin, subtle glaze crackle, calm minimal product photography, 80mm lens --oref ref.jpg --profile ceramic-study --iw 1.2"
     expected_rewrite_features: "reference role remains parameterized, lighting/composition added"
+    skill_output_prompt: "handmade celadon ceramic tea set on a dark walnut table, thin steam, morning window light, linen napkin, subtle glaze crackle, calm minimal product photography, 80mm lens --oref ref.jpg --profile ceramic-study --iw 1.2"
 
   - id: flux_plain_negation
     source_prompt: "quiet mountain trail, no crowds, without cars, not dark, #88AAEE"
@@ -94,6 +101,7 @@ cases:
     rewritten_score_target: 17
     rewritten_prompt_candidate: "Quiet mountain trail at dawn, empty pathways and peaceful solitude, clear car-free natural landscape, soft mist between pine trees, pale gold sunlight, calm open composition, accent wildflower color #88AAEE."
     expected_rewrite_features: "positive replacements for negation, valid hex color, lighting"
+    skill_output_prompt: "Quiet mountain trail at dawn, empty pathways and peaceful solitude, clear vehicle-free natural landscape, soft mist between pine trees, pale gold sunlight, calm open composition, accent wildflower color #88AAEE."
 
   - id: flux_structured_brand_color
     source_prompt: "premium skincare bottle, white label, brand pink, clean studio"
@@ -106,6 +114,7 @@ cases:
     rewritten_score_target: 17
     rewritten_prompt_candidate: "Premium glass skincare bottle with a blank white label on warm gray stone, exact brand accent #B76E79, matte white pump, large diffused softbox from upper left, subtle rim light, centered minimal luxury product composition."
     expected_rewrite_features: "hex color, material, lighting, composition"
+    skill_output_prompt: "Premium glass skincare bottle with a blank white label on warm gray stone, exact brand accent #B76E79, matte white pump, large diffused softbox from upper left, subtle rim light, centered minimal luxury product composition."
 
   - id: dreamina_bilingual_cultural_scene
     source_prompt: "雨后江南书店老板，电影感，人像，high quality"
@@ -118,6 +127,7 @@ cases:
     rewritten_score_target: 17
     rewritten_prompt_candidate: "雨后江南老街，一位年轻书店老板站在木门旁，手里拿着旧书，青石板反光，阴天柔光，棉麻长衫纹理，50mm纪录片人像，低饱和青灰调色，安静克制的文学气质。"
     expected_rewrite_features: "specific cultural setting, material, camera, mood"
+    skill_output_prompt: "雨后江南老街，一位年轻书店老板站在木门旁，手里拿着旧书，青石板反光，阴天柔光，棉麻长衫纹理，50mm纪录片人像，低饱和青灰调色，安静克制的文学气质。"
 
   - id: grok_reference_image_generation
     source_prompt: "use this reference image to make a cinematic portrait"
@@ -130,6 +140,7 @@ cases:
     rewritten_score_target: 16
     rewritten_prompt_candidate: "Use the reference image for identity only. Create a cinematic portrait of the same person in a smoky basement jazz club, ivory satin suit, chrome microphone, amber table lamps, blue rim light, 35mm film style."
     expected_rewrite_features: "reference role assignment, setting, lighting, camera"
+    skill_output_prompt: "Use the reference image for identity only. Create a cinematic portrait of the same person in a smoky basement jazz club, ivory satin suit, chrome microphone, amber table lamps, blue rim light, 35mm film style."
 
   - id: series_identity_drift
     source_prompt: "make six cinematic frames of the same girl traveling through different cities"
@@ -143,6 +154,7 @@ cases:
     rewritten_score_target: 18
     rewritten_prompt_candidate: "Visual bible series of 35mm film stills. Identity lock: same young woman, same auburn bob haircut, same navy coat, same silver pendant, identity drift must never change. Continuity: fixed anchors are winter palette, train-window reflections, restrained gestures. Variation budget: may change city location and weather per frame. Shot slots: Frame 01 station window, Frame 02 rainy street, Frame 03 hotel corridor."
     expected_rewrite_features: "identity lock, variation budget, shot slots, continuity anchors"
+    skill_output_prompt: "Visual bible series of 35mm film stills. Identity lock: same young woman, same auburn bob haircut, same navy coat, same silver pendant, identity drift must never change. Continuity anchors: winter palette, train-window reflections, restrained gestures. Variation budget: change only city location and weather per frame. Shot slots: Frame 01 station window, Frame 02 rainy street, Frame 03 hotel corridor."
 
   - id: product_photo_constraints
     source_prompt: "luxury watch on table, professional, no text, no reflections"
@@ -155,3 +167,4 @@ cases:
     rewritten_score_target: 17
     rewritten_prompt_candidate: "Luxury watch on matte black stone table, brushed steel case, sapphire glass edge highlight, controlled polarizing studio light, clean dial with no visible text markings, soft reflection gradient, precise product photography, uncluttered background."
     expected_rewrite_features: "positive replacements, material geometry, lighting constraints"
+    skill_output_prompt: "Luxury watch on matte black stone table, brushed steel case, sapphire glass edge highlight, controlled polarizing studio light, clean dial with minimal unmarked indices, soft reflection gradient, precise product photography, uncluttered background."

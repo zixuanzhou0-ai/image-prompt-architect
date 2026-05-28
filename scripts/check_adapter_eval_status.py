@@ -25,6 +25,16 @@ MODEL_ADAPTER_HEADINGS = {
     "grok": "Grok",
 }
 
+REQUIRED_SCORED_FIELDS = [
+    "model_version",
+    "adapter_version",
+    "rewritten_prompt",
+    "output_image_path",
+    "task_gate_results",
+    "human_rater",
+    "final_score",
+]
+
 
 def adapter_block(markdown: str, heading_hint: str) -> str:
     pattern = re.compile(rf"^## .*{re.escape(heading_hint)}.*$", re.I | re.M)
@@ -40,15 +50,22 @@ def adapter_block(markdown: str, heading_hint: str) -> str:
 def main() -> int:
     records = json.loads(RECORDS_FILE.read_text(encoding="utf-8"))
     adapters = ADAPTERS_FILE.read_text(encoding="utf-8")
-    scored_models = sorted(
-        {
-            str(record.get("target_model"))
-            for record in records.get("records", [])
-            if record.get("image_score") is not None
-        }
-    )
+    scored_records = [record for record in records.get("records", []) if record.get("image_score") is not None]
+    scored_models = sorted({str(record.get("target_model")) for record in scored_records})
 
     warnings: list[str] = []
+    for record in scored_records:
+        case_id = str(record.get("case_id", "unknown"))
+        for field in REQUIRED_SCORED_FIELDS:
+            value = record.get(field)
+            if value in {None, "", "unknown"}:
+                warnings.append(f"{case_id}: scored image-output record has missing `{field}`")
+        output_path = record.get("output_image_path")
+        if isinstance(output_path, str) and output_path not in {"", "unknown"} and not re.match(r"^https?://", output_path):
+            path = (ROOT / output_path).resolve()
+            if not path.exists():
+                warnings.append(f"{case_id}: output_image_path does not exist: {output_path}")
+
     for model in scored_models:
         heading = MODEL_ADAPTER_HEADINGS.get(model, model)
         block = adapter_block(adapters, heading)
