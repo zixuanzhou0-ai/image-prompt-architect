@@ -22,6 +22,7 @@ jobs:
       - run: python -m pytest
       - run: python scripts/check_trigger_cases.py
       - run: python evals/run_prompt_eval.py
+      - run: git diff --exit-code evals/report.md
       - name: Strict lint good fixtures
         run: |
           python - <<'PY'
@@ -53,6 +54,9 @@ jobs:
                   return "seven-layer"
               return "auto"
 
+          def extra_args(name: str) -> list[str]:
+              return ["--strict-model-params"] if "strict_model_params" in name else []
+
           for fixture in sorted(Path("tests/fixtures").glob("good_*.txt")):
               cmd = [
                   sys.executable,
@@ -63,6 +67,7 @@ jobs:
                   "--model",
                   model_for(fixture.stem),
                   "--strict",
+                  *extra_args(fixture.stem),
               ]
               subprocess.run(cmd, check=True)
           PY
@@ -97,6 +102,9 @@ jobs:
                   return "seven-layer"
               return "auto"
 
+          def extra_args(name: str) -> list[str]:
+              return ["--strict-model-params"] if "strict_model_params" in name else []
+
           failed = []
           for fixture in sorted(Path("tests/fixtures").glob("bad_*.txt")):
               cmd = [
@@ -108,6 +116,7 @@ jobs:
                   "--model",
                   model_for(fixture.stem),
                   "--strict",
+                  *extra_args(fixture.stem),
               ]
               result = subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
               if result.returncode == 0:
@@ -147,6 +156,9 @@ jobs:
                   return "seven-layer"
               return "auto"
 
+          def extra_args(name: str) -> list[str]:
+              return ["--strict-model-params"] if "strict_model_params" in name else []
+
           failed = []
           for fixture in sorted(Path("tests/fixtures").glob("warn_*.txt")):
               cmd = [
@@ -160,6 +172,7 @@ jobs:
                   "--format",
                   "json",
                   "--strict",
+                  *extra_args(fixture.stem),
               ]
               result = subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
               if result.returncode != 0:

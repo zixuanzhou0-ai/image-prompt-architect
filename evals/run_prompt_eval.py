@@ -79,6 +79,12 @@ def model_to_architecture(case_id: str, target_model: str) -> str:
     return "auto"
 
 
+def lint_score(linter, prompt: str, architecture: str, target_model: str):
+    if not prompt:
+        return None
+    return linter.lint(prompt, architecture, target_model)
+
+
 def make_report(cases: list[dict[str, object]]) -> str:
     linter = load_linter()
     lines = [
@@ -87,8 +93,8 @@ def make_report(cases: list[dict[str, object]]) -> str:
         "Generated from `evals/prompt_cases.yml` using structural prompt lint only.",
         "Image-output scoring still requires `evals/image_output_protocol.md`.",
         "",
-        "| Case | Model | Mode | Lint Score | Critical | Warnings | Expected Risks |",
-        "| --- | --- | --- | ---: | ---: | ---: | --- |",
+        "| Case | Model | Mode | Source | Rewrite | Delta | Critical | Warnings | Expected Risks |",
+        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |",
     ]
 
     for case in cases:
@@ -96,14 +102,21 @@ def make_report(cases: list[dict[str, object]]) -> str:
         target_model = str(case.get("target_model", "generic"))
         expected_mode = str(case.get("expected_mode", "unknown"))
         source_prompt = str(case.get("source_prompt", ""))
+        rewritten_prompt = str(case.get("rewritten_prompt_candidate", ""))
         architecture = model_to_architecture(case_id, target_model)
-        result = linter.lint(source_prompt, architecture, target_model)
+        source_result = lint_score(linter, source_prompt, architecture, target_model)
+        rewritten_result = lint_score(linter, rewritten_prompt, architecture, target_model)
         risks = case.get("expected_risks", [])
         risk_text = "; ".join(risks) if isinstance(risks, list) else str(risks)
         risk_text = re.sub(r"\|", "/", risk_text)
+        source_score = source_result.score if source_result else ""
+        rewrite_score = rewritten_result.score if rewritten_result else ""
+        delta = rewritten_result.score - source_result.score if source_result and rewritten_result else ""
+        critical = len(source_result.critical) if source_result else ""
+        warnings = len(source_result.warnings) if source_result else ""
         lines.append(
-            f"| `{case_id}` | `{target_model}` | `{expected_mode}` | {result.score} | "
-            f"{len(result.critical)} | {len(result.warnings)} | {risk_text} |"
+            f"| `{case_id}` | `{target_model}` | `{expected_mode}` | {source_score} | "
+            f"{rewrite_score} | {delta} | {critical} | {warnings} | {risk_text} |"
         )
 
     lines.append("")

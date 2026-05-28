@@ -30,7 +30,7 @@ Each adapter tracks:
 **Image-output eval last run:** none
 **Confidence:** high for API behavior; medium for creative prompt heuristics
 **Primary docs:** https://platform.openai.com/docs/guides/image-generation
-**Local test coverage:** `tests/fixtures/bad_gpt_image_keyword_pile.txt`, `tests/fixtures/warn_gpt_image_edit_no_preserve.txt`, `tests/fixtures/warn_gpt_image_unquoted_text.txt`, `tests/fixtures/warn_gpt_image_pixel_perfect_claim.txt`, `tests/fixtures/warn_gpt_image_reference_without_role.txt`, `tests/fixtures/good_gpt_image_edit_preserve_change.txt`, `tests/fixtures/good_gpt_image_text_quoted.txt`; no image-output eval
+**Local test coverage:** `tests/fixtures/bad_gpt_image_keyword_pile.txt`, `tests/fixtures/warn_gpt_image_edit_no_preserve.txt`, `tests/fixtures/warn_gpt_image_unquoted_text.txt`, `tests/fixtures/warn_gpt_image_pixel_perfect_claim.txt`, `tests/fixtures/warn_gpt_image_reference_without_role.txt`, `tests/fixtures/warn_gpt_image_label_with_unquoted_words.txt`, `tests/fixtures/good_gpt_image_edit_preserve_change.txt`, `tests/fixtures/good_gpt_image_text_quoted.txt`, `tests/fixtures/good_gpt_image_blank_label.txt`; no image-output eval
 **Applies to:** API and ChatGPT-like image workflows
 
 **Source basis:**
@@ -85,7 +85,7 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 ## Grok Imagine - Image Generation
 
 **Docs last checked:** 2026-05-28
-**Fixture coverage last updated:** 2026-05-28
+**Fixture coverage last updated:** 2026-05-29
 **Image-output eval last run:** none
 **Confidence:** medium
 **Primary docs:** https://docs.x.ai/docs/guides/image-generation
@@ -152,7 +152,7 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 **Image-output eval last run:** none
 **Confidence:** low for Dreamina/Jimeng UI-specific behavior; medium for broad bilingual prompt heuristics
 **Primary docs:** local project rules when present; Seedream technical reports are model-family evidence, not Dreamina/Jimeng UI evidence
-**Local test coverage:** `tests/fixtures/good_chinese_dreamina.txt`, `tests/fixtures/good_chinese_seven_layer.txt`, `tests/fixtures/good_chinese_short_labels.txt`, `tests/fixtures/good_bilingual_model_port.txt`; no image-output eval
+**Local test coverage:** `tests/fixtures/good_chinese_dreamina.txt`, `tests/fixtures/good_chinese_seven_layer.txt`, `tests/fixtures/good_chinese_short_labels.txt`, `tests/fixtures/good_chinese_no_spaces.txt`, `tests/fixtures/bad_chinese_filler_only.txt`, `tests/fixtures/bad_chinese_too_short.txt`, `tests/fixtures/good_bilingual_model_port.txt`; no image-output eval
 **Applies to:** mixed/unknown UI and local workflows
 
 **Source basis:**
@@ -188,12 +188,12 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 
 ## Midjourney
 
-**Docs last checked:** 2026-05-28
-**Fixture coverage last updated:** 2026-05-28
+**Docs last checked:** 2026-05-29
+**Fixture coverage last updated:** 2026-05-29
 **Image-output eval last run:** none
 **Confidence:** high for parameter syntax; medium for creative heuristics
 **Primary docs:** https://docs.midjourney.com/docs/parameter-list and https://docs.midjourney.com/docs/no
-**Local test coverage:** `tests/fixtures/good_midjourney.txt`, `tests/fixtures/good_midjourney_oref_profile.txt`, `tests/fixtures/good_midjourney_chaos_alias.txt`, `tests/fixtures/good_midjourney_video.txt`, `tests/fixtures/good_midjourney_loop.txt`, `tests/fixtures/bad_midjourney_negative_block.txt`, `tests/fixtures/bad_midjourney_params_middle.txt`, `tests/fixtures/bad_midjourney_value_punctuation.txt`; no image-output eval
+**Local test coverage:** `tests/fixtures/good_midjourney.txt`, `tests/fixtures/good_midjourney_oref_profile.txt`, `tests/fixtures/good_midjourney_chaos_alias.txt`, `tests/fixtures/good_midjourney_video.txt`, `tests/fixtures/good_midjourney_loop.txt`, `tests/fixtures/bad_midjourney_negative_block.txt`, `tests/fixtures/bad_midjourney_params_middle.txt`, `tests/fixtures/bad_midjourney_value_punctuation.txt`, `tests/fixtures/warn_midjourney_legacy_cw.txt`, `tests/fixtures/warn_midjourney_unknown_future_param.txt`, `tests/fixtures/bad_midjourney_unknown_param_strict_model_params.txt`; no image-output eval
 **Applies to:** Midjourney prompt UI
 
 **Source basis:**
@@ -215,9 +215,10 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 **Parameter/API strategy:**
 
 - Put parameters at the end with spaces before dashes and no punctuation after parameters.
-- Parser-covered parameters include: `--ar`, `--aspect`, `--chaos`, `--c`, `--quality`, `--q`, `--seed`, `--raw`, `--stylize`, `--s`, `--sref`, `--sw`, `--sv`, `--oref`, `--profile`, `--p`, `--iw`, `--weird`, `--w`, `--niji`, `--no`, `--repeat`, `--r`, `--tile`, `--stealth`, `--public`, `--draft`, `--motion`, `--loop`, `--end`, `--bs`, and `--video`.
+- Current parser-covered parameters include: `--ar`, `--aspect`, `--chaos`, `--c`, `--quality`, `--q`, `--seed`, `--raw`, `--stylize`, `--s`, `--sref`, `--sw`, `--sv`, `--oref`, `--profile`, `--p`, `--iw`, `--weird`, `--w`, `--niji`, `--no`, `--repeat`, `--r`, `--tile`, `--stealth`, `--public`, `--draft`, `--motion`, `--loop`, `--end`, `--bs`, and `--video`.
 - Treat `--loop` and `--video` as flag-like. Treat `--motion`, `--end`, and `--bs` as value parameters.
-- Legacy/deprecated parser-covered parameters: `--cref`. Treat legacy parameters as warnings until confirmed against the current UI.
+- Legacy/deprecated parser-covered parameters: `--cref`, `--cw`, `--style`. Treat legacy parameters as warnings until confirmed against the current UI.
+- Unknown parameters are warnings by default; `prompt_lint.py --strict-model-params` upgrades unknown Midjourney parameters to critical failures.
 
 **Reference image strategy:** If using style references, keep them separate from prose when the UI supports it.
 

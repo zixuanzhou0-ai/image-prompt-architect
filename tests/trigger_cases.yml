@@ -4,6 +4,16 @@ should_trigger:
   - "Diagnose why this image prompt is generic."
   - "Build a 6-shot visual bible for this film still series."
   - "Create prompt text for an AI image model using a seven-layer structure."
+  - "Create prompt text for a hero image on my landing page."
+  - "Improve this image prompt for stronger lighting control."
+  - "Rewrite this image-edit prompt so it preserves product geometry."
+  - "Write a prompt to make the lighting brighter in GPT Image."
+  - "Turn this rough idea into a reusable style bible prompt."
+  - "Port this Midjourney prompt to FLUX without negative prompts."
+  - "Lint this prompt and tell me what model adaptation issues it has."
+  - "Create a seven-layer prompt for a product photo."
+  - "Diagnose this prompt for missing camera and material controls."
+  - "Build prompt text for a consistent 4-frame character series."
 
 should_not_trigger:
   - "Generate an image of a cat."
@@ -11,6 +21,15 @@ should_not_trigger:
   - "What do you see in this image?"
   - "Make this image brighter."
   - "Create a hero image for my website."
+  - "Improve this image."
+  - "Make this product photo look more premium."
+  - "Remove glare from this bottle photo."
+  - "Describe the style of this poster."
+  - "Create a visual system for my brand deck."
+  - "Generate a cinematic portrait."
+  - "Make this picture less dark."
+  - "What model made this image?"
+  - "Crop this image to 4:5."
+  - "Design a landing page hero."
 
 note: "Manual review fixture unless Codex trigger simulation is available."
-

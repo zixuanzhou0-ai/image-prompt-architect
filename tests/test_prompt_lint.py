@@ -134,6 +134,41 @@ def test_midjourney_value_punctuation_is_critical():
     assert any("value has trailing punctuation" in item for item in result.critical)
 
 
+def test_midjourney_legacy_cw_warns():
+    result = prompt_lint.lint(fixture("warn_midjourney_legacy_cw.txt"), "compact", "midjourney")
+    assert not result.critical
+    assert any("Legacy or deprecated" in warning for warning in result.warnings)
+
+
+def test_midjourney_unknown_param_warns_by_default():
+    result = prompt_lint.lint(fixture("warn_midjourney_unknown_future_param.txt"), "compact", "midjourney")
+    assert not result.critical
+    assert any("Unknown Midjourney parameter" in warning for warning in result.warnings)
+
+
+def test_midjourney_unknown_param_can_be_strict_model_critical():
+    result = prompt_lint.lint(
+        fixture("warn_midjourney_unknown_future_param.txt"),
+        "compact",
+        "midjourney",
+        strict_model_params=True,
+    )
+    assert any("Unknown Midjourney parameter" in item for item in result.critical)
+
+
+def test_midjourney_unknown_param_strict_model_cli_fails():
+    completed = run_cli(
+        "tests/fixtures/bad_midjourney_unknown_param_strict_model_params.txt",
+        "--architecture",
+        "compact",
+        "--model",
+        "midjourney",
+        "--strict",
+        "--strict-model-params",
+    )
+    assert completed.returncode != 0
+
+
 def test_flux_negative_prompt_is_critical():
     result = prompt_lint.lint(fixture("bad_flux_negative.txt"), "auto", "flux")
     assert any("FLUX" in item for item in result.critical)
@@ -215,6 +250,18 @@ def test_good_gpt_image_quoted_text_has_no_text_warning():
     assert not any("quote exact text" in warning for warning in result.warnings)
 
 
+def test_good_gpt_image_blank_label_has_no_text_warning():
+    result = prompt_lint.lint(fixture("good_gpt_image_blank_label.txt"), "compact", "gpt-image")
+    assert not result.critical
+    assert not any("quote exact text" in warning for warning in result.warnings)
+
+
+def test_gpt_image_label_reads_unquoted_words_warns():
+    result = prompt_lint.lint(fixture("warn_gpt_image_label_with_unquoted_words.txt"), "compact", "gpt-image")
+    assert not result.critical
+    assert any("quote exact text" in warning for warning in result.warnings)
+
+
 def test_chinese_dreamina_prompt_runs():
     result = prompt_lint.lint(fixture("good_chinese_dreamina.txt"), "compact", "dreamina")
     assert result.score >= 6
@@ -237,6 +284,24 @@ def test_chinese_short_label_skeleton_is_rejected():
     assert result.critical
     assert result.section_quality["subject"]["present"]
     assert not result.section_quality["subject"]["valid"]
+
+
+def test_chinese_no_spaces_sections_are_supported():
+    result = prompt_lint.lint(fixture("good_chinese_no_spaces.txt"), "seven-layer", "dreamina")
+    assert not result.critical
+    assert not result.missing
+
+
+def test_chinese_filler_only_sections_are_rejected():
+    result = prompt_lint.lint(fixture("bad_chinese_filler_only.txt"), "seven-layer", "dreamina")
+    assert result.critical
+    assert any("filler-only" in item for item in result.critical)
+
+
+def test_chinese_too_short_sections_are_rejected():
+    result = prompt_lint.lint(fixture("bad_chinese_too_short.txt"), "seven-layer", "dreamina")
+    assert result.critical
+    assert any("too short" in item for item in result.critical)
 
 
 def test_bilingual_model_port_prompt_runs_as_compact():

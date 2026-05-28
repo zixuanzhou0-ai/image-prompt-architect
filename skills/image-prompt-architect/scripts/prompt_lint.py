@@ -92,6 +92,13 @@ GENERIC_FILLER = {
     "cinematic",
     "ultra detailed",
     "professional",
+    "高级感",
+    "电影感",
+    "大片",
+    "好看",
+    "漂亮",
+    "精美",
+    "大师作品",
 }
 
 CONCRETE_NOUNS = {
@@ -126,6 +133,16 @@ CONCRETE_NOUNS = {
     "umbrella",
     "bottle",
     "ceramic",
+    "书店",
+    "老街",
+    "青石板",
+    "旧书",
+    "木门",
+    "棉麻",
+    "长衫",
+    "雨",
+    "窗",
+    "石板",
 }
 
 PLACEHOLDER_RE = re.compile(r"^\s*(?:\.\.\.|tbd|todo|\[.*?\]|<.*?>|-)?\s*$", re.I)
@@ -153,7 +170,6 @@ MJ_VALUE_PARAMS = {
     "--bs",
     "--chaos",
     "--c",
-    "--cw",
     "--end",
     "--iw",
     "--motion",
@@ -172,11 +188,10 @@ MJ_VALUE_PARAMS = {
     "--sw",
     "--weird",
     "--w",
-    "--style",
     "--v",
     "--version",
 }
-MJ_LEGACY_VALUE_PARAMS = {"--cref"}
+MJ_LEGACY_VALUE_PARAMS = {"--cref", "--cw", "--style"}
 MJ_FLAG_PARAMS = {
     "--raw",
     "--turbo",
@@ -268,16 +283,22 @@ def generic_filler_hits(text: str) -> list[str]:
     return sorted(term for term in GENERIC_FILLER if term in haystack)
 
 
+def content_units(text: str) -> int:
+    latin_tokens = re.findall(r"[A-Za-z0-9#:/.-]+", text)
+    cjk_chars = re.findall(r"[\u4e00-\u9fff]", text)
+    return len(latin_tokens) + (len(cjk_chars) // 2)
+
+
 def section_is_valid(content: str) -> SectionQuality:
-    words = re.findall(r"\S+", content)
+    units = content_units(content)
     if PLACEHOLDER_RE.match(content):
-        return SectionQuality(True, False, len(words), "empty or placeholder content")
-    if len(words) < 4:
-        return SectionQuality(True, False, len(words), "section is too short")
+        return SectionQuality(True, False, units, "empty or placeholder content")
+    if units < 4:
+        return SectionQuality(True, False, units, "section is too short")
     filler_hits = generic_filler_hits(content)
     if len(filler_hits) >= 3 and concrete_noun_count(content) == 0:
-        return SectionQuality(True, False, len(words), "filler-only section")
-    return SectionQuality(True, True, len(words), "")
+        return SectionQuality(True, False, units, "filler-only section")
+    return SectionQuality(True, True, units, "")
 
 
 def section_for_key(sections: dict[str, str], key: str, patterns: Iterable[str]) -> tuple[str | None, str | None]:
@@ -354,7 +375,7 @@ def check_conflicts(text: str) -> list[str]:
     return warnings
 
 
-def parse_midjourney_params(text: str) -> MidjourneyParse:
+def parse_midjourney_params(text: str, strict_model_params: bool = False) -> MidjourneyParse:
     tokens = re.findall(r"\S+", text)
     first_param_idx = next((i for i, token in enumerate(tokens) if token.startswith("--")), None)
     if first_param_idx is None:
@@ -406,8 +427,14 @@ def parse_midjourney_params(text: str) -> MidjourneyParse:
             idx += 1
             continue
 
-        warnings.append(f"Unknown Midjourney parameter: {param}")
+        message = f"Unknown Midjourney parameter: {param}"
+        if strict_model_params:
+            critical.append(message)
+        else:
+            warnings.append(message)
         idx += 1
+        if idx < len(tokens) and not tokens[idx].startswith("--"):
+            idx += 1
 
     if trailing:
         critical.append("Midjourney parameters must be a contiguous block at the end; trailing prose found after parameters.")
@@ -419,7 +446,20 @@ def malformed_hex_codes(text: str) -> list[str]:
     return [code for code in re.findall(r"#[0-9A-Za-z]+", text) if not re.fullmatch(r"#[0-9a-fA-F]{6}", code)]
 
 
-def check_model_policy(text: str, model: str) -> tuple[list[str], list[str], dict[str, object]]:
+def gpt_image_needs_quoted_text(text: str) -> bool:
+    haystack = normalize(text)
+    label_or_logo = re.search(r"\b(label|logo)\b", haystack)
+    label_text_cue = re.search(r"\b(read|reads|says|with the words|exactly)\b", haystack)
+    if label_or_logo and label_text_cue:
+        return True
+    if any(term in haystack for term in ("headline", "sign", "text", "typography", "wording", "copy")):
+        return True
+    if any(term in haystack for term in ("blank label", "white label", "unmarked label")):
+        return False
+    return False
+
+
+def check_model_policy(text: str, model: str, strict_model_params: bool = False) -> tuple[list[str], list[str], dict[str, object]]:
     haystack = normalize(text)
     critical: list[str] = []
     warnings: list[str] = []
@@ -427,7 +467,7 @@ def check_model_policy(text: str, model: str) -> tuple[list[str], list[str], dic
     has_negative_block = "negative prompt" in haystack or re.search(r"^\s*(negative|avoid)\s*:", text, flags=re.I | re.M)
 
     if model == "midjourney":
-        parsed = parse_midjourney_params(text)
+        parsed = parse_midjourney_params(text, strict_model_params)
         policy["midjourney_params"] = parsed.params
         policy["trailing_after_params"] = parsed.trailing_text
         critical.extend(parsed.critical)
@@ -454,7 +494,7 @@ def check_model_policy(text: str, model: str) -> tuple[list[str], list[str], dic
             warnings.append("GPT Image: reduce keyword pile and express priorities in natural language.")
         if any(term in haystack for term in ("edit", "replace", "remove", "change")) and not any(term in haystack for term in ("preserve", "keep", "only", "unchanged")):
             warnings.append("GPT Image edit prompts should separate preserve/change instructions.")
-        if any(term in haystack for term in ("text", "headline", "sign", "label")) and not re.search(r'"[^"]+"|“[^”]+”', text):
+        if gpt_image_needs_quoted_text(text) and not re.search(r'"[^"]+"|“[^”]+”', text):
             warnings.append("GPT Image text-rendering prompts should quote exact text.")
         if "pixel-perfect" in haystack or "guarantee exact reproduction" in haystack:
             warnings.append("GPT Image prompts should not promise pixel-perfect or guaranteed exact reproduction.")
@@ -472,7 +512,7 @@ def score_result(coverage: dict[str, bool], critical: list[str], warnings: list[
     return max(0, base - penalty)
 
 
-def lint(text: str, architecture: str, model: str) -> LintResult:
+def lint(text: str, architecture: str, model: str, strict_model_params: bool = False) -> LintResult:
     if architecture == "auto":
         architecture = infer_architecture(text)
 
@@ -505,7 +545,7 @@ def lint(text: str, architecture: str, model: str) -> LintResult:
 
     warnings.extend(check_generic_filler(text))
     warnings.extend(check_conflicts(text))
-    model_critical, model_warnings, model_policy = check_model_policy(text, model)
+    model_critical, model_warnings, model_policy = check_model_policy(text, model, strict_model_params)
     critical.extend(model_critical)
     warnings.extend(model_warnings)
 
@@ -567,10 +607,15 @@ def main() -> int:
     )
     parser.add_argument("--format", choices=["text", "json"], default="text")
     parser.add_argument("--strict", action="store_true", help="Return nonzero for critical failures.")
+    parser.add_argument(
+        "--strict-model-params",
+        action="store_true",
+        help="Treat unknown model-specific parameters as critical failures where supported.",
+    )
     args = parser.parse_args()
 
     text = args.prompt_file.read_text(encoding="utf-8")
-    result = lint(text, args.architecture, args.model)
+    result = lint(text, args.architecture, args.model, args.strict_model_params)
 
     if args.format == "json":
         print(json.dumps(asdict(result), ensure_ascii=False, indent=2))

@@ -15,4 +15,6 @@ The current evals are prompt-level only. Image-output evaluation is not yet auto
 
 For image-output scoring fields and manual capture format, see `image_output_protocol.md`.
 
+`run_prompt_eval.py` scores both `source_prompt` and `rewritten_prompt_candidate` when present, then writes `report.md`. The report is a structural prompt check, not an image-quality result.
+
 `image_output_records.json` currently contains placeholder records only. Do not treat them as evidence of model output quality until `output_image_path`, `image_score`, and `human_rater` are filled from real runs.

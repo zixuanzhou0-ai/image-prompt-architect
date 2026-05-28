@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.6.0 - 2026-05-29
+
+- Added CJK-aware section content validation for continuous Chinese prompt text.
+- Added Chinese no-space, filler-only, and too-short fixtures.
+- Moved Midjourney `--cw` and `--style` to legacy warning handling.
+- Added `--strict-model-params` to make unknown model parameters critical when desired.
+- Refined GPT Image text-rendering warnings to avoid blank-label false positives.
+- Expanded trigger smoke cases to 30 review examples.
+- Added rewrite-aware prompt eval fields and source/rewrite delta reporting.
+- Added CI freshness check for generated `evals/report.md`.
+
 ## 0.5.0 - 2026-05-28
 
 - Added Midjourney `--c` and `--video` support, and corrected `--loop` as flag-like based on current docs.
