@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.13.0 - 2026-05-29
+
+- Added `/image-prompt-architect` slash command support through `commands/image-prompt-architect.md`.
+- Included the slash command in the installable marketplace package under `plugins/image-prompt-architect/`.
+- Updated README and INSTALL to document both `/image-prompt-architect` and `$image-prompt-architect` invocation paths.
+- Kept image-output records placeholder-only; v1.0 remains blocked until real model outputs are captured and scored.
+
 ## 0.12.0 - 2026-05-29
 
 - Added a Codex marketplace manifest at `.agents/plugins/marketplace.json`.
