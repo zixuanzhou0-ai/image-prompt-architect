@@ -1,6 +1,6 @@
 {
   "name": "image-prompt-architect",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Codex skill for AI image prompt design, critique, model adaptation, and cinematic series prompt bibles.",
   "repository": "https://github.com/zixuanzhou0-ai/image-prompt-architect",
   "license": "MIT",

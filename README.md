@@ -6,7 +6,7 @@ Image Prompt Architect is a Codex plugin for designing, rewriting, critiquing, a
 
 It is not an image generator. It is a prompt architecture workflow for users who want better prompt text, model-specific adaptation, cinematic series bibles, or prompt diagnosis.
 
-Current version: `0.13.0` developer preview.
+Current version: `0.14.0` developer preview.
 
 ## What It Does
 
@@ -28,6 +28,7 @@ Current version: `0.13.0` developer preview.
 ```text
 image-prompt-architect/
   .agents/plugins/marketplace.json
+  .claude-plugin/plugin.json
   .codex-plugin/plugin.json
   commands/image-prompt-architect.md
   plugins/image-prompt-architect/
@@ -45,7 +46,7 @@ image-prompt-architect/
 Add this repository as a Codex plugin marketplace source, then install the plugin:
 
 ```bash
-codex plugin marketplace add zixuanzhou0-ai/image-prompt-architect --ref v0.13.0
+codex plugin marketplace add zixuanzhou0-ai/image-prompt-architect --ref v0.14.0
 codex plugin add image-prompt-architect@image-prompt-architect
 ```
 
@@ -55,14 +56,14 @@ Verify:
 codex plugin list --marketplace image-prompt-architect
 ```
 
-For unreleased development snapshots, replace `v0.13.0` with `main`.
+For unreleased development snapshots, replace `v0.14.0` with `main`.
 
 ### Option B: Inspect Or Install Directly
 
 Clone the exact developer-preview files:
 
 ```bash
-git clone --branch v0.13.0 https://github.com/zixuanzhou0-ai/image-prompt-architect.git
+git clone --branch v0.14.0 https://github.com/zixuanzhou0-ai/image-prompt-architect.git
 ```
 
 If your Codex CLI does not support plugin marketplaces, copy or link `skills/image-prompt-architect/` into your Codex skills directory.
@@ -81,6 +82,8 @@ $image-prompt-architect Rewrite this image prompt for Midjourney.
 ```
 
 `/image-prompt-architect` is a plugin command wrapper. `$image-prompt-architect` is the direct skill invocation. Both are supported after installation.
+
+Version `0.14.0` includes both `.codex-plugin` and `.claude-plugin` manifests so Codex Desktop command indexing can discover the slash-command wrapper as well as the skill.
 
 ## Usage Examples
 
@@ -146,9 +149,9 @@ Use `skills/image-prompt-architect/references/evaluation-rubric.md`. A prompt sh
 CI evidence:
 
 - Main badge: see the badge at the top of this README.
-- Fixed release tag CI: check the [GitHub Actions workflow](https://github.com/zixuanzhou0-ai/image-prompt-architect/actions/workflows/test.yml) filtered to `v0.13.0`.
+- Fixed release tag CI: check the [GitHub Actions workflow](https://github.com/zixuanzhou0-ai/image-prompt-architect/actions/workflows/test.yml) filtered to `v0.14.0`.
 - Prompt-level report: [`evals/report.md`](evals/report.md).
-- Image-output records: [`evals/image_output_records.json`](evals/image_output_records.json) is still placeholder-only until real model outputs are captured; v0.13 adds slash command support but does not invent output evidence.
+- Image-output records: [`evals/image_output_records.json`](evals/image_output_records.json) is still placeholder-only until real model outputs are captured; v0.14 improves slash command indexing compatibility but does not invent output evidence.
 - Image-output rubric: [`evals/image_output_rubric.md`](evals/image_output_rubric.md) defines task-specific gates for future real output evals.
 - v1.0 gate: [`docs/V1_RELEASE_GATE.md`](docs/V1_RELEASE_GATE.md) defines the release checklist and example scored record shape.
 

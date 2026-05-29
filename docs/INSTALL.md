@@ -4,6 +4,7 @@ This repository is a Codex plugin project. It uses the standard root layout:
 
 ```text
 .codex-plugin/plugin.json
+.claude-plugin/plugin.json
 skills/image-prompt-architect/SKILL.md
 ```
 
@@ -12,7 +13,7 @@ skills/image-prompt-architect/SKILL.md
 If your Codex CLI supports plugin marketplace sources, add this repository and install the plugin:
 
 ```bash
-codex plugin marketplace add zixuanzhou0-ai/image-prompt-architect --ref v0.13.0
+codex plugin marketplace add zixuanzhou0-ai/image-prompt-architect --ref v0.14.0
 codex plugin add image-prompt-architect@image-prompt-architect
 codex plugin list --marketplace image-prompt-architect
 ```
@@ -20,7 +21,7 @@ codex plugin list --marketplace image-prompt-architect
 To inspect the exact developer-preview files locally:
 
 ```bash
-git clone --branch v0.13.0 https://github.com/zixuanzhou0-ai/image-prompt-architect.git
+git clone --branch v0.14.0 https://github.com/zixuanzhou0-ai/image-prompt-architect.git
 ```
 
 Use `--ref main` only when you intentionally want the latest unreleased state.
@@ -38,6 +39,8 @@ After plugin installation, you can also use the slash command:
 ```text
 /image-prompt-architect Build a series bible for a three-image product campaign.
 ```
+
+`v0.14.0` includes a Claude-compatible plugin manifest beside the Codex manifest so Codex Desktop can index `commands/image-prompt-architect.md` for the slash menu.
 
 ## Smoke Test
 

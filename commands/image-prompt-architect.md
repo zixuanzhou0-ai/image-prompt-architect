@@ -5,7 +5,7 @@ argument-hint: "[prompt or request]"
 
 # Image Prompt Architect
 
-Treat this command as an explicit request to use the `image-prompt-architect` skill.
+Treat this command as an explicit request to use the `image-prompt-architect` skill. If the plugin-prefixed skill name is available, use `image-prompt-architect:image-prompt-architect`.
 
 If `$ARGUMENTS` is empty, ask the user for the prompt text or image-prompt task they want handled.
 

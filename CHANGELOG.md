@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.14.0 - 2026-05-29
+
+- Added Claude-compatible plugin manifests at `.claude-plugin/plugin.json` and `plugins/image-prompt-architect/.claude-plugin/plugin.json` so Codex Desktop command indexing can discover the slash command wrapper.
+- Kept the existing `.codex-plugin/plugin.json` manifests for Codex plugin installation and skill loading.
+- Updated the slash command wrapper to point at the plugin-prefixed skill name when available.
+- Updated README and INSTALL to document the `v0.14.0` install target and command-indexing compatibility.
+- Kept image-output records placeholder-only; v1.0 remains blocked until real model outputs are captured and scored.
+
 ## 0.13.0 - 2026-05-29
 
 - Added `/image-prompt-architect` slash command support through `commands/image-prompt-architect.md`.

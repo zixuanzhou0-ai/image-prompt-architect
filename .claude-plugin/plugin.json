@@ -1,0 +1,8 @@
+{
+  "name": "image-prompt-architect",
+  "description": "Design, rewrite, critique, and port AI image prompt text.",
+  "version": "0.14.0",
+  "author": {
+    "name": "zixuanzhou0-ai"
+  }
+}
