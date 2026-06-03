@@ -70,6 +70,10 @@ If your Codex CLI does not support plugin marketplaces, copy or link `skills/ima
 
 ## Invoke The Skill
 
+For a visual Chinese walkthrough, open [`docs/USAGE.html`](docs/USAGE.html) in a browser. It covers install commands, slash-menu usage, examples, model-specific phrasing, and troubleshooting.
+
+For a Codex App image-generation workflow that combines Image Prompt Architect, Rare Style Explorer, and Eagle import, see [`docs/CODEX_EAGLE_IMAGE_AUTOMATION.md`](docs/CODEX_EAGLE_IMAGE_AUTOMATION.md).
+
 Invoke it explicitly with either the slash command or the skill name:
 
 ```text
