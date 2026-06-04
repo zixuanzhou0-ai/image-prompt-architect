@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.17.0 - 2026-06-04
+
+- Added Image Prompt Architect modes for final render prompt compression, revision prompts from failed outputs, and reference image role planning.
+- Documented the seven-layer internal draft vs final render prompt split for cleaner GPT Image-style output.
+- Added GPT Image clean-render strategy, Midjourney compact render strategy, FLUX API-field separation, Dreamina/Jimeng UI heuristics, and Stable Diffusion wrapper-boundary guidance.
+- Extended `prompt_lint.py` with `quality_risks` and `rewrite_advice` for long prompts, style overload, defect overload, unclear priority, dirty-render risk, and unnamed Stable Diffusion wrapper syntax.
+- Added prompt-level fixtures, contract tests, and eval cases for compression, dirty render repair, reference roles, revision prompts, model ports, prompt-only outputs, and wrapper boundaries.
+- Kept formal `evals/image_output_records.json` placeholder-only; this release improves prompt-level and revision-planning behavior, not scored image-output evidence.
+
 ## 0.16.0 - 2026-06-04
 
 - Added Open Style Atlas `open-style-v0.16` clean render profile defaults.

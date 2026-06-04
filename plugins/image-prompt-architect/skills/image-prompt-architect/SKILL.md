@@ -20,6 +20,9 @@ Choose one mode before drafting.
 - **Critique**: user provides an existing prompt. Output diagnosis, severity, missing controls, contradictions, and a rewritten prompt.
 - **Model port**: user wants a prompt adapted from one model to another. Output target-model risks, converted prompt, parameter/negative handling, and what changed.
 - **Series bible**: user wants multiple images, cinematic stills, a set, or a consistent visual world. Output continuity rules, variation budget, shot slots, and per-shot prompts.
+- **Prompt compression / final render prompt**: user has a long analysis prompt or seven-layer draft and needs the clean prompt to actually paste into a model. Output priority stack, compressed prompt, and dropped/compressed details.
+- **Revision prompt from failure**: user describes a failed image output. Output failure type, preserve/change plan, and a copy-ready repair prompt.
+- **Reference image role planning**: user has one or more reference images. Output what each reference controls, what it must not control, and a prompt with reference roles.
 
 For exact schemas, read `references/output-contract.md`.
 
@@ -27,11 +30,14 @@ For exact schemas, read `references/output-contract.md`.
 
 If multiple modes apply:
 
-1. Choose **Critique** first when the user provides an existing prompt and asks what is wrong.
-2. Choose **Model port** first when source and target models are named.
-3. Choose **Series bible** first when multiple images or continuity are required.
-4. Choose **Standard build** for structured creation or rewrite.
-5. Choose **Quick prompt** only when the user asks for speed or gives a simple one-off request.
+1. Choose **Revision prompt from failure** first when the user describes a generated image failure or asks how to fix a bad output.
+2. Choose **Reference image role planning** first when reference images must control identity, product geometry, pose, composition, palette, or style.
+3. Choose **Critique** when the user provides an existing prompt and asks what is wrong.
+4. Choose **Model port** when source and target models are named.
+5. Choose **Series bible** when multiple images or continuity are required.
+6. Choose **Prompt compression / final render prompt** when the user asks for the final paste-ready prompt, a shorter model prompt, or cleaner GPT Image output from a long draft.
+7. Choose **Standard build** for structured creation or rewrite.
+8. Choose **Quick prompt** only when the user asks for speed or gives a simple one-off request.
 
 Quick mode must still follow model-native syntax when a target model is named.
 
@@ -61,6 +67,7 @@ Before finalizing, apply `references/checklist.md` or `references/evaluation-rub
 - Are lighting, material, camera, style, and constraints explicit?
 - Is the prompt shaped for the target model?
 - Are avoid/negative instructions handled in the model's native way?
+- For GPT Image-like models, is the final render prompt short enough, prioritized, and clean enough to avoid dirty texture/noise overload?
 
 For file-based prompts, optionally run:
 

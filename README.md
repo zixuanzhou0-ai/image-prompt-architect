@@ -6,7 +6,7 @@ Image Prompt Architect is a Codex plugin for designing, rewriting, critiquing, a
 
 It is not an image generator. It is a prompt architecture workflow for users who want better prompt text, model-specific adaptation, cinematic series bibles, or prompt diagnosis.
 
-Current development version: `0.16.0` developer preview.
+Current development version: `0.17.0` developer preview.
 Latest tagged install target: `v0.14.0`.
 Open Style Atlas prompt contract: `open-style-v0.16`.
 
@@ -16,7 +16,10 @@ Open Style Atlas prompt contract: `open-style-v0.16`.
 - Builds cinematic series and style bibles with a multi-system template.
 - Ports prompts between model families such as GPT Image, Grok, Midjourney, FLUX, Dreamina/Seedream, and Stable Diffusion wrappers.
 - Critiques weak prompts and rewrites them.
-- Runs a small lint script to catch missing controls, model-syntax issues, generic filler, and contradictions.
+- Compresses long seven-layer drafts into cleaner final render prompts for GPT Image-like models.
+- Creates narrow revision prompts from failed image-output feedback.
+- Plans reference image roles for identity, product geometry, pose, composition, palette, and style.
+- Runs a small lint script to catch missing controls, model-syntax issues, generic filler, contradictions, dirty-render risk, style overload, and defect overload.
 - Generates Open Style Atlas prompt batches with rare style metadata, clean render prompts, and review-loop scaffolding.
 
 ## What It Does Not Do
@@ -90,7 +93,7 @@ $image-prompt-architect Rewrite this image prompt for Midjourney.
 
 `/image-prompt-architect` is a plugin command wrapper. `$image-prompt-architect` is the direct skill invocation. Both are supported after installation.
 
-Version `v0.14.0` includes both `.codex-plugin` and `.claude-plugin` manifests so Codex Desktop command indexing can discover the slash-command wrapper as well as the skill. The `main` branch adds Open Style Atlas `open-style-v0.16` development features.
+Version `v0.14.0` includes both `.codex-plugin` and `.claude-plugin` manifests so Codex Desktop command indexing can discover the slash-command wrapper as well as the skill. The `main` branch adds Open Style Atlas `open-style-v0.16` development features and Image Prompt Architect `v0.17.0` prompt-compression/revision planning.
 
 ## Usage Examples
 
@@ -111,6 +114,24 @@ Model port:
 
 ```text
 Use Image Prompt Architect to port this Grok prompt to Midjourney and convert the negatives to --no.
+```
+
+Prompt compression:
+
+```text
+Use Image Prompt Architect to compress this seven-layer draft into a clean GPT Image final render prompt.
+```
+
+Revision prompt:
+
+```text
+Use Image Prompt Architect to write a revision prompt. The output looked dirty and the scan texture covered the subject's face.
+```
+
+Reference roles:
+
+```text
+Use Image Prompt Architect to plan reference image roles: ref 1 is product geometry, ref 2 is palette, ref 3 is composition.
 ```
 
 Series bible:

@@ -1,7 +1,7 @@
 interface:
   display_name: "image-prompt-architect"
-  short_description: "Design and critique AI image prompts"
-  default_prompt: "Use $image-prompt-architect to turn my image idea into a structured, model-adapted prompt."
+  short_description: "Design, compress, and repair AI image prompts"
+  default_prompt: "Use $image-prompt-architect to turn my image idea or failed output into a clean, model-adapted prompt."
   brand_color: "#2F6B5F"
 policy:
   allow_implicit_invocation: true

@@ -1,0 +1,1 @@
+Portrait of a ceramic robot in a moonlit studio, LoRA weight 0.8, ControlNet pose guidance, CFG 7, Euler sampler, denoise 0.35, checkpoint realism mix, soft rim light, centered composition, brushed metal texture, quiet editorial mood.

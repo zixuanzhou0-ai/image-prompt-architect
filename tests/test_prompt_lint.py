@@ -312,6 +312,11 @@ def test_gpt_image_chinese_sign_unquoted_warns():
     assert any("quote exact text" in warning for warning in result.warnings)
 
 
+def test_gpt_image_texture_does_not_trigger_text_rendering_warning():
+    result = prompt_lint.lint(fixture("warn_defect_overload_dirty_render.txt"), "compact", "gpt-image")
+    assert not any("quote exact text" in warning for warning in result.warnings)
+
+
 def test_good_gpt_image_chinese_blank_label_has_no_text_warning():
     result = prompt_lint.lint(fixture("good_gpt_image_chinese_blank_label.txt"), "compact", "gpt-image")
     assert not result.critical
@@ -435,6 +440,76 @@ def test_json_output_contains_severity_fields():
     assert "suggestions" in data
     assert "section_quality" in data
     assert "model_policy" in data
+    assert "quality_risks" in data
+    assert "rewrite_advice" in data
+
+
+def test_prompt_compression_mode_keeps_copy_ready_clean():
+    result = prompt_lint.lint(fixture("good_gpt_image_compressed_render_prompt.txt"), "compact", "gpt-image")
+    assert not result.critical
+    assert not result.quality_risks
+    assert result.word_count <= prompt_lint.GPT_IMAGE_FINAL_RENDER_MAX_WORDS
+
+
+def test_gpt_image_long_prompt_quality_risk():
+    result = prompt_lint.lint(fixture("warn_gpt_image_prompt_too_long.txt"), "compact", "gpt-image")
+    assert "prompt_too_long" in result.quality_risks
+    assert any(item["risk"] == "prompt_too_long" for item in result.rewrite_advice)
+
+
+def test_style_overload_quality_risk():
+    result = prompt_lint.lint(fixture("warn_style_overload.txt"), "compact", "gpt-image")
+    assert "style_overload" in result.quality_risks
+    assert result.model_policy["quality_signals"]["style_anchor_count"] > prompt_lint.STYLE_ANCHOR_MAX
+
+
+def test_defect_overload_quality_risk():
+    result = prompt_lint.lint(fixture("warn_defect_overload_dirty_render.txt"), "compact", "gpt-image")
+    assert "defect_overload" in result.quality_risks
+    assert "dirty_render_risk" in result.quality_risks
+    assert result.model_policy["quality_signals"]["defect_term_count"] > prompt_lint.DEFECT_TERM_MAX
+
+
+def test_revision_from_failure_texture_noise():
+    result = prompt_lint.lint(fixture("good_revision_texture_noise_repair.txt"), "compact", "gpt-image")
+    assert not result.critical
+    assert "dirty_render_risk" not in result.quality_risks
+    assert result.model_policy["quality_signals"]["has_clean_render_moderation"]
+
+
+def test_reference_image_role_plan_product_geometry():
+    result = prompt_lint.lint(fixture("good_reference_image_role_plan_product_geometry.txt"), "compact", "gpt-image")
+    assert not result.critical
+    assert not any("reference-image" in warning for warning in result.warnings)
+    assert "product geometry" in fixture("good_reference_image_role_plan_product_geometry.txt")
+
+
+def test_model_port_midjourney_to_gpt_image_removes_params():
+    prompt = fixture("good_model_port_midjourney_to_gpt_image.txt")
+    result = prompt_lint.lint(prompt, "compact", "gpt-image")
+    assert "--" not in prompt
+    assert not result.critical
+
+
+def test_standard_build_does_not_over_explain_when_user_wants_prompt_only():
+    prompt = fixture("good_prompt_only_standard_build.txt")
+    result = prompt_lint.lint(prompt, "compact", "gpt-image")
+    assert not result.critical
+    assert "**" not in prompt
+    assert "Architecture" not in prompt
+
+
+def test_stable_diffusion_wrapper_boundary_warning():
+    result = prompt_lint.lint(fixture("warn_stable_diffusion_wrapper_boundary.txt"), "compact", "stable-diffusion")
+    assert not result.critical
+    assert result.model_policy["wrapper_syntax_terms"]
+    assert any("wrapper/model stack" in warning for warning in result.warnings)
+
+
+def test_clean_render_profile_reduces_defect_language():
+    result = prompt_lint.lint(fixture("good_gpt_image_compressed_render_prompt.txt"), "compact", "gpt-image")
+    assert result.model_policy["quality_signals"]["defect_term_count"] <= 1
+    assert result.model_policy["quality_signals"]["has_clean_render_moderation"]
 
 
 def test_strict_bad_fixture_returns_nonzero():

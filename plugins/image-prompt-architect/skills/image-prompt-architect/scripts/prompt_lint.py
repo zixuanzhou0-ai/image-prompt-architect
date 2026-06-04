@@ -66,8 +66,8 @@ SYSTEM_SECTION_ALIASES = {
 }
 
 COMPACT_REQUIRED = {
-    "subject": [r"subject", r"person", r"character", r"product", r"singer", r"object", r"人物", r"一位", r"男人", r"女人", r"老板", r"产品", r"护肤品", r"玻璃瓶", r"海报"],
-    "setting": [r"setting", r"club", r"room", r"street", r"landscape", r"studio", r"background", r"老街", r"江南", r"雨后", r"木门", r"城市", r"街角", r"台面", r"背景", r"工作室"],
+    "subject": [r"subject", r"person", r"character", r"product", r"singer", r"object", r"tailor", r"conservator", r"人物", r"一位", r"男人", r"女人", r"老板", r"产品", r"护肤品", r"玻璃瓶", r"海报"],
+    "setting": [r"setting", r"club", r"room", r"street", r"landscape", r"studio", r"background", r"train", r"compartment", r"archive", r"greenhouse", r"老街", r"江南", r"雨后", r"木门", r"城市", r"街角", r"台面", r"背景", r"工作室"],
     "visual_style": [r"style", r"cinematic", r"film", r"noir", r"editorial", r"photo", r"illustration", r"电影感", r"人像", r"复古", r"产品摄影", r"极简"],
     "camera_or_composition": [r"camera", r"lens", r"shot", r"composition", r"35mm", r"50mm", r"85mm", r"foreground", r"portrait", r"构图", r"版式", r"居中", r"网格"],
     "lighting_or_mood": [r"light", r"lamp", r"shadow", r"mood", r"melancholy", r"atmosphere", r"smoky", r"overcast", r"克制", r"光", r"柔光", r"柔光箱", r"窗光", r"橱窗光"],
@@ -243,6 +243,149 @@ MJ_FLAG_PARAMS = {
 }
 FLUX_NEGATION_RE = re.compile(r"\b(?:no|without|not|avoid)\s+[^,.;\n]+", re.I)
 FLUX_SOFT_NEGATION_RE = re.compile(r"\b(?:not|no)\s+(?:overly|too|excessively)\s+[^,.;\n]+", re.I)
+TEXT_RENDERING_CUE_RE = re.compile(r"\b(?:headline|sign|subtext|text|typography|wording|copy)\b", re.I)
+GPT_IMAGE_FINAL_RENDER_MAX_WORDS = 180
+MIDJOURNEY_COMPACT_MAX_WORDS = 80
+STYLE_ANCHOR_MAX = 2
+DEFECT_TERM_MAX = 2
+
+STYLE_ANCHOR_TERMS = {
+    "anime",
+    "bauhaus",
+    "baroque",
+    "brutalist",
+    "collage",
+    "cyberpunk",
+    "documentary",
+    "editorial",
+    "etching",
+    "expressionist",
+    "film noir",
+    "gouache",
+    "halftone",
+    "impressionist",
+    "ink wash",
+    "isometric",
+    "linocut",
+    "manga",
+    "minimalist",
+    "oil painting",
+    "photocopy",
+    "photorealistic",
+    "pixel art",
+    "risograph",
+    "surreal",
+    "vhs",
+    "watercolor",
+    "woodcut",
+    "3d render",
+    "赛博朋克",
+    "包豪斯",
+    "拼贴",
+    "水彩",
+    "油画",
+    "木刻",
+    "铜版画",
+    "漫画",
+    "动画",
+    "极简",
+    "超现实",
+    "半调",
+    "复印",
+}
+
+DEFECT_TERMS = {
+    "artifact",
+    "artifacts",
+    "compression artifact",
+    "compression artifacts",
+    "crt",
+    "dirty",
+    "dust",
+    "film grain",
+    "grain",
+    "grainy",
+    "halftone",
+    "muddy",
+    "noise",
+    "noisy",
+    "photocopy",
+    "scan",
+    "scratched",
+    "vhs",
+    "脏",
+    "污渍",
+    "灰尘",
+    "噪点",
+    "噪声",
+    "颗粒",
+    "胶片颗粒",
+    "扫描",
+    "复印",
+    "半调",
+    "压缩伪影",
+    "划痕",
+}
+
+PRIORITY_TERMS = {
+    "priority",
+    "subject readability",
+    "clean subject",
+    "clean silhouette",
+    "preserve subject",
+    "preserve",
+    "main style",
+    "style anchor",
+    "primary style",
+    "主体优先",
+    "主体可读",
+    "主体清晰",
+    "主风格",
+    "优先级",
+    "保持主体",
+}
+
+CLEAN_RENDER_TERMS = {
+    "clean",
+    "controlled",
+    "low noise",
+    "minimal noise",
+    "subtle",
+    "crisp",
+    "clear subject",
+    "clean subject",
+    "clean silhouette",
+    "uncluttered",
+    "干净",
+    "克制",
+    "轻微",
+    "清晰",
+    "低噪点",
+    "主体清晰",
+    "背景克制",
+}
+
+SD_WRAPPER_TERMS = {
+    "lora",
+    "controlnet",
+    "ip-adapter",
+    "ipadapter",
+    "sampler",
+    "cfg",
+    "denoise",
+    "checkpoint",
+    "vae",
+}
+
+SD_WRAPPER_CONTEXT_TERMS = {
+    "webui",
+    "automatic1111",
+    "a1111",
+    "comfyui",
+    "local wrapper",
+    "local workflow",
+    "stable diffusion webui",
+}
 
 
 @dataclass
@@ -275,6 +418,8 @@ class LintResult:
     critical: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     suggestions: list[str] = field(default_factory=list)
+    quality_risks: list[str] = field(default_factory=list)
+    rewrite_advice: list[dict[str, str]] = field(default_factory=list)
 
     @property
     def critical_failures(self) -> list[str]:
@@ -412,6 +557,97 @@ def check_conflicts(text: str) -> list[str]:
     return warnings
 
 
+def unique_term_hits(text: str, terms: Iterable[str]) -> list[str]:
+    haystack = normalize(text)
+    return sorted(term for term in terms if re.search(re.escape(term), haystack, flags=re.I))
+
+
+def term_occurrence_hits(text: str, terms: Iterable[str]) -> list[str]:
+    haystack = normalize(text)
+    hits: list[str] = []
+    for term in terms:
+        hits.extend([term] * len(re.findall(re.escape(term), haystack, flags=re.I)))
+    return hits
+
+
+def add_quality_risk(
+    risks: list[str],
+    advice: list[dict[str, str]],
+    risk: str,
+    recommendation: str,
+) -> None:
+    if risk not in risks:
+        risks.append(risk)
+        advice.append({"risk": risk, "advice": recommendation})
+
+
+def check_quality_risks(
+    text: str,
+    architecture: str,
+    model: str,
+    word_count: int,
+) -> tuple[list[str], list[dict[str, str]], dict[str, object]]:
+    risks: list[str] = []
+    advice: list[dict[str, str]] = []
+    style_hits = unique_term_hits(text, STYLE_ANCHOR_TERMS)
+    defect_hits = term_occurrence_hits(text, DEFECT_TERMS)
+    has_priority = has_any(text, PRIORITY_TERMS)
+    has_clean_moderation = has_any(text, CLEAN_RENDER_TERMS)
+
+    if model == "gpt-image" and word_count > GPT_IMAGE_FINAL_RENDER_MAX_WORDS:
+        add_quality_risk(
+            risks,
+            advice,
+            "prompt_too_long",
+            "Compress the final render prompt to the strongest subject, composition/light, main style, and hard constraints.",
+        )
+    if model == "midjourney" and architecture == "compact" and word_count > MIDJOURNEY_COMPACT_MAX_WORDS:
+        add_quality_risk(
+            risks,
+            advice,
+            "prompt_too_long",
+            "Shorten the Midjourney prompt into compact image phrases and keep parameters at the end.",
+        )
+    if len(style_hits) > STYLE_ANCHOR_MAX:
+        add_quality_risk(
+            risks,
+            advice,
+            "style_overload",
+            "Keep one main style anchor and at most one weak supporting modifier.",
+        )
+    if len(defect_hits) > DEFECT_TERM_MAX:
+        add_quality_risk(
+            risks,
+            advice,
+            "defect_overload",
+            "Reduce grain, scan, VHS, CRT, halftone, dirt, and noise language to one subtle artifact unless degradation is the goal.",
+        )
+    if (len(style_hits) > STYLE_ANCHOR_MAX or len(defect_hits) > DEFECT_TERM_MAX or word_count > GPT_IMAGE_FINAL_RENDER_MAX_WORDS) and not has_priority:
+        add_quality_risk(
+            risks,
+            advice,
+            "unclear_priority",
+            "Add a priority stack that protects subject readability, composition, main style, and hard constraints before texture effects.",
+        )
+    if len(defect_hits) >= 2 and not has_clean_moderation:
+        add_quality_risk(
+            risks,
+            advice,
+            "dirty_render_risk",
+            "Add clean subject silhouette, controlled background complexity, low texture noise, and subtle artifact strength.",
+        )
+
+    signals = {
+        "style_anchor_hits": style_hits,
+        "defect_term_hits": sorted(set(defect_hits)),
+        "style_anchor_count": len(style_hits),
+        "defect_term_count": len(defect_hits),
+        "has_priority_language": has_priority,
+        "has_clean_render_moderation": has_clean_moderation,
+    }
+    return risks, advice, signals
+
+
 def parse_midjourney_params(text: str, strict_model_params: bool = False) -> MidjourneyParse:
     tokens = re.findall(r"\S+", text)
     first_param_idx = next((i for i, token in enumerate(tokens) if token.startswith("--")), None)
@@ -493,7 +729,7 @@ def gpt_image_needs_quoted_text(text: str) -> bool:
     label_text_cue = re.search(r"\b(read|reads|says|with the words|exactly)\b", haystack)
     if label_or_logo and label_text_cue:
         return True
-    if any(term in haystack for term in ("headline", "sign", "text", "typography", "wording", "copy")):
+    if TEXT_RENDERING_CUE_RE.search(haystack):
         return True
     if any(term in haystack for term in ("blank label", "white label", "unmarked label")):
         return False
@@ -553,6 +789,14 @@ def check_model_policy(text: str, model: str, strict_model_params: bool = False)
     elif model == "stable-diffusion":
         if "--no" in haystack:
             warnings.append("Stable Diffusion wrappers usually use a negative prompt field, not Midjourney --no.")
+        wrapper_hits = unique_term_hits(text, SD_WRAPPER_TERMS)
+        has_wrapper_context = any(term in haystack for term in SD_WRAPPER_CONTEXT_TERMS)
+        policy["wrapper_syntax_terms"] = wrapper_hits
+        policy["has_wrapper_context"] = has_wrapper_context
+        if wrapper_hits and not has_wrapper_context:
+            warnings.append(
+                "Stable Diffusion wrapper syntax should name the wrapper/model stack before using LoRA, ControlNet, sampler, CFG, denoise, checkpoint, or VAE terms."
+            )
     return critical, warnings, policy
 
 
@@ -598,6 +842,8 @@ def lint(text: str, architecture: str, model: str, strict_model_params: bool = F
     model_critical, model_warnings, model_policy = check_model_policy(text, model, strict_model_params)
     critical.extend(model_critical)
     warnings.extend(model_warnings)
+    quality_risks, rewrite_advice, quality_signals = check_quality_risks(text, architecture, model, word_count)
+    model_policy["quality_signals"] = quality_signals
 
     if model == "midjourney":
         suggestions.append("Place Midjourney parameters at the end and convert exclusions to --no.")
@@ -620,6 +866,8 @@ def lint(text: str, architecture: str, model: str, strict_model_params: bool = F
         critical=critical,
         warnings=warnings,
         suggestions=sorted(set(suggestions)),
+        quality_risks=quality_risks,
+        rewrite_advice=rewrite_advice,
     )
 
 
@@ -640,10 +888,18 @@ def print_text(result: LintResult) -> None:
         print("Warnings:")
         for warning in result.warnings:
             print(f"- {warning}")
+    if result.quality_risks:
+        print("Quality Risks:")
+        for risk in result.quality_risks:
+            print(f"- {risk}")
     if result.suggestions:
         print("Suggestions:")
         for suggestion in result.suggestions:
             print(f"- {suggestion}")
+    if result.rewrite_advice:
+        print("Rewrite Advice:")
+        for item in result.rewrite_advice:
+            print(f"- {item['risk']}: {item['advice']}")
 
 
 def main() -> int:

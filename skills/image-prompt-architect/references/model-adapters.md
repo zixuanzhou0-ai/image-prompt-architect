@@ -54,6 +54,15 @@ Each adapter tracks:
 **Length strategy:**
 
 - Prefer concise, prioritized natural language over huge keyword piles.
+- For GPT Image / GPT Image 2-style final render prompts, prefer one paragraph around 80-160 words unless the user is coding an API request or doing a complex edit.
+
+**Clean render strategy:**
+
+- Use one main style anchor and at most one weak supporting modifier.
+- Put subject readability, preserve/change instructions, and composition before decorative texture.
+- Avoid stacking grain, scan, VHS, CRT, halftone, photocopy, collage, dust, paper damage, and compression artifacts unless the user explicitly wants a degraded image.
+- When the style is dense, add clean subject silhouette, controlled background complexity, low texture noise, and subtle media artifacts.
+- Do not repeat the same cleanliness constraint many times; one clear priority stack is stronger than a long negative list.
 
 **Negative prompt strategy:**
 
@@ -164,12 +173,15 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 
 - Combine natural-language intent with structured aesthetic keywords when useful.
 - Follow local prompt libraries, checklist, and model notes if present.
+- For Dreamina/Jimeng UI-style work, use a short concept paragraph plus a compact aesthetic keyword line rather than long bilingual duplication.
 
 **Language strategy:** Chinese is useful for culturally specific scenes; English is useful for common technical visual terms.
 
+Use Chinese first for culturally specific intent, and reserve English for camera, material, rendering, or style terms that are clearer as production vocabulary.
+
 **Length strategy:** Use medium-length prompts with clear subject, scene, style, camera, and constraints.
 
-**Negative prompt strategy:** Keep avoid lists short and model-specific.
+**Negative prompt strategy:** Keep avoid lists short and model-specific. Avoid Stable Diffusion-style giant negative blocks unless the local workflow explicitly asks for them.
 
 **Parameter/API strategy:** Do not set a public universal model default unless local instructions require it.
 
@@ -179,6 +191,7 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 
 - Do not claim a public universal default model version.
 - Do not imply Seedream technical report behavior, Dreamina UI behavior, and Jimeng UI behavior are identical.
+- Do not present Dreamina/Jimeng UI heuristics as formally verified model-output evidence.
 
 **Copy-ready output format:**
 
@@ -202,6 +215,13 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 - The `--no` parameter is the native way to tell Midjourney what to exclude.
 
 **Best prompt shape:** Compact image-forward prompt: subject, setting, style, camera, lighting, mood.
+
+**Render strategy:**
+
+- Use a compact phrase sequence rather than explanatory prose.
+- Keep one visual style phrase unless the user asks for experimental blending.
+- Put all parameters at the end; do not add prose after parameters.
+- Suggest `--raw`, `--stylize`, or chaos/weird controls only when the user asks for that degree of style control.
 
 **Language strategy:** English compact prompts are conventional; keep culturally specific terms if needed.
 
@@ -258,6 +278,7 @@ subject, setting, visual style, camera, lighting, mood --ar 16:9 --stylize 150 -
 
 - Natural-language descriptive prompts.
 - Structured prompt content for production workflows and automation.
+- Treat API fields such as width, height, seed, aspect ratio, and safety/output format as wrapper fields, not prompt prose, when the user is coding.
 
 **Language strategy:** Use direct descriptive language. Quote exact text when text rendering matters.
 
@@ -272,6 +293,7 @@ subject, setting, visual style, camera, lighting, mood --ar 16:9 --stylize 150 -
 
 - Put aspect ratio, width, height, and seed/API fields outside prompt prose when coding.
 - Use hex codes for exact brand colors.
+- Separate structured prompt content from the API request body. A JSON-like prompt can be stringified into `prompt`, but wrapper fields should remain wrapper fields.
 
 **Reference image strategy:** Define each reference's role: composition, character, style, palette, product.
 
@@ -323,4 +345,10 @@ Premium glass skincare bottle with matte white pump on a warm gray stone surface
 - Positive prompt plus negative prompt only if the interface supports it.
 - Use LoRA, ControlNet, weights, and sampler terms only when the user names that workflow.
 
-**Do not claim:** Do not apply Stable Diffusion syntax to FLUX or Midjourney.
+**Boundary strategy:**
+
+- If the user says Stable Diffusion generally, ask or state the assumed wrapper before using WebUI, ComfyUI, LoRA, ControlNet, IP-Adapter, sampler, CFG, denoise, or weight syntax.
+- If the user names WebUI, ComfyUI, LoRA, ControlNet, IP-Adapter, or a checkpoint workflow, it is safe to use wrapper-native fields.
+- Do not import local-wrapper habits into GPT Image, FLUX, Midjourney, Grok, or Dreamina without an explicit reason.
+
+**Do not claim:** Do not apply Stable Diffusion syntax to FLUX or Midjourney. Do not promise exact behavior from a wrapper unless the wrapper and model stack are named.
