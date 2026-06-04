@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.16.0 - 2026-06-04
+
+- Added Open Style Atlas `open-style-v0.16` clean render profile defaults.
+- Split sampler output into compressed render prompts and full internal seven-layer prompts.
+- Added background complexity, defect strength, max auxiliary style, and render profile controls.
+- Added structured `generated_review.json` scaffolding through `scripts/review_generated_images.py`.
+- Added failure-label revision prompt generation through `scripts/make_revision_prompts.py`.
+- Extended sampler history to read generated reviews and lower weights for styles that repeatedly cause dirty-render failures.
+- Kept formal `evals/image_output_records.json` placeholder-only; this is a run-level review loop, not v1.0 scored image-output evidence.
+
 ## 0.14.0 - 2026-05-29
 
 - Added Claude-compatible plugin manifests at `.claude-plugin/plugin.json` and `plugins/image-prompt-architect/.claude-plugin/plugin.json` so Codex Desktop command indexing can discover the slash command wrapper.

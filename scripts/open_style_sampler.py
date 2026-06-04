@@ -25,7 +25,7 @@ POOL_PATH = ROOT / "automation" / "open_style_source_pool.json"
 STYLE_LIBRARY_PATH = ROOT / "automation" / "rare_style_library.json"
 EAGLE_IMPORT = ROOT / "scripts" / "eagle_import.py"
 PROMPT_LINT = ROOT / "skills" / "image-prompt-architect" / "scripts" / "prompt_lint.py"
-PROMPT_CONTRACT_VERSION = "open-style-v0.15"
+PROMPT_CONTRACT_VERSION = "open-style-v0.16"
 
 
 BASE_CATEGORIES = {
@@ -91,6 +91,26 @@ SUPPORT_PROBABILITY = {
     "subject-first": 0.35,
     "balanced": 0.75,
     "style-forward": 1.0,
+}
+RENDER_PROFILES = {"clean", "explore", "raw"}
+RENDER_PROFILE_DEFAULT_STYLE = {
+    "clean": "balanced",
+    "explore": "style-forward",
+    "raw": "style-forward",
+}
+BACKGROUND_COMPLEXITY_RULES = {
+    1: "very quiet background, one readable environment, no dense props",
+    2: "controlled background complexity, limited props, background secondary to subject",
+    3: "rich environment allowed, but no tiny clutter competing with the subject",
+}
+DIRTY_RENDER_FAILURES = {
+    "texture_noise_overload",
+    "muddy_materials",
+    "over_detailed_background",
+    "style_overpowering_subject",
+    "media_defect_too_strong",
+    "low_subject_readability",
+    "edge_contamination",
 }
 T = TypeVar("T")
 
@@ -172,6 +192,20 @@ def has_any(text: str, hints: tuple[str, ...]) -> bool:
     return any(hint.lower() in lower for hint in hints)
 
 
+def is_defect_style(style: dict[str, Any] | None) -> bool:
+    if not style:
+        return False
+    haystack = " ".join(
+        [
+            style_category(style) or str(style.get("category", "")),
+            style_name(style) or str(style.get("name", "")),
+            style_tokens(style) or str(style.get("tokens", "")),
+            str(style.get("组合角色", "")) or str(style.get("role", "")),
+        ]
+    )
+    return has_any(haystack, DEFECT_HINTS)
+
+
 def meaningful_terms(style: dict[str, Any]) -> set[str]:
     words = re.findall(r"[a-z0-9]+", style_tokens(style).lower())
     return {word for word in words if len(word) > 2 and word not in GENERIC_WORDS}
@@ -192,6 +226,8 @@ def style_weight(
     style: dict[str, Any],
     freshness: str,
     style_history: Counter[str],
+    style_failure_history: Counter[str] | None = None,
+    render_profile: str = "explore",
     avoid_generic: bool = True,
 ) -> float:
     weight = 1.0
@@ -209,6 +245,13 @@ def style_weight(
     used_count = style_history.get(style_id(style), 0)
     if used_count:
         weight /= 1 + (0.85 * used_count)
+    if render_profile == "clean" and is_defect_style(style):
+        weight *= 0.65
+    if style_failure_history:
+        sid = style_id(style)
+        dirty_failure_count = sum(style_failure_history.get(f"{sid}:{failure}", 0) for failure in DIRTY_RENDER_FAILURES)
+        if dirty_failure_count:
+            weight /= 1 + dirty_failure_count
     return max(weight, 0.01)
 
 
@@ -241,6 +284,8 @@ def pick_unique_style(
     state: dict[str, Any],
     freshness: str,
     style_history: Counter[str],
+    style_failure_history: Counter[str] | None = None,
+    render_profile: str = "explore",
 ) -> dict[str, Any] | None:
     if not items:
         return None
@@ -266,7 +311,7 @@ def pick_unique_style(
     if not candidates:
         candidates = eligible(relax_category=True, relax_similarity=True, relax_used=True)
 
-    weights = [style_weight(style, freshness, style_history) for style in candidates]
+    weights = [style_weight(style, freshness, style_history, style_failure_history, render_profile) for style in candidates]
     picked = weighted_pick(rng, candidates, weights)
     if picked:
         state["used_style_ids"].add(style_id(picked))
@@ -317,9 +362,12 @@ def load_history(enabled: bool) -> dict[str, Any]:
     history = {
         "enabled": enabled,
         "runs_scanned": 0,
+        "reviews_scanned": 0,
         "subjects": Counter(),
         "lighting": Counter(),
         "style_ids": Counter(),
+        "style_failures": Counter(),
+        "failure_types": Counter(),
     }
     if not enabled:
         return history
@@ -331,6 +379,7 @@ def load_history(enabled: bool) -> dict[str, Any]:
         except (OSError, json.JSONDecodeError):
             continue
         history["runs_scanned"] += 1
+        styles_by_index = {}
         for item in manifest.get("prompts", []):
             layers = item.get("layers") or {}
             if layers.get("subject"):
@@ -338,10 +387,30 @@ def load_history(enabled: bool) -> dict[str, Any]:
             if layers.get("lighting"):
                 history["lighting"][layers["lighting"]] += 1
             selection = item.get("style_selection") or {}
+            prompt_style_ids = []
             for key in ("main_style", "auxiliary_style"):
                 sid = ((selection.get(key) or {}).get("style_id") or "").strip()
                 if sid:
                     history["style_ids"][sid] += 1
+                    prompt_style_ids.append(sid)
+            styles_by_index[int(item.get("index", 0) or 0)] = prompt_style_ids
+        review_path = manifest_path.parent / "generated_review.json"
+        if review_path.exists():
+            try:
+                review = read_json(review_path)
+            except (OSError, json.JSONDecodeError):
+                continue
+            history["reviews_scanned"] += 1
+            for item in review.get("reviews", []):
+                failures = [str(failure) for failure in item.get("failures", []) if failure]
+                if not failures:
+                    continue
+                for failure in failures:
+                    history["failure_types"][failure] += 1
+                review_style_ids = [str(sid) for sid in item.get("style_ids", []) if sid] or styles_by_index.get(int(item.get("index", 0) or 0), [])
+                for sid in review_style_ids:
+                    for failure in failures:
+                        history["style_failures"][f"{sid}:{failure}"] += 1
     return history
 
 
@@ -356,12 +425,15 @@ def select_styles(
     style_family: str | None,
     freshness: str,
     style_strength: str,
+    render_profile: str,
+    max_aux_styles: int,
 ) -> dict[str, Any]:
     if not styles:
         fallback = pick_text(rng, pool.get("style_languages", ["original visual style"]))
         return {
             "selection_mode": "fallback-source-pool",
             "style_strength": style_strength,
+            "render_profile": render_profile,
             "freshness": freshness,
             "main_style": {
                 "style_id": "fallback-style-language",
@@ -381,6 +453,7 @@ def select_styles(
             "history_dedupe": {
                 "enabled": history["enabled"],
                 "runs_scanned": history["runs_scanned"],
+                "reviews_scanned": history["reviews_scanned"],
                 "subject_recent_count": history["subjects"].get(subject, 0),
                 "lighting_recent_count": history["lighting"].get(lighting, 0),
                 "main_style_recent_count": 0,
@@ -389,27 +462,53 @@ def select_styles(
         }
 
     pools = style_pools(styles, style_family)
-    main = pick_unique_style(rng, pools["base"], style_state, freshness, history["style_ids"])
+    main = pick_unique_style(
+        rng,
+        pools["base"],
+        style_state,
+        freshness,
+        history["style_ids"],
+        history["style_failures"],
+        render_profile,
+    )
     auxiliary = None
-    if rng.random() <= SUPPORT_PROBABILITY[style_strength]:
+    if max_aux_styles > 0 and rng.random() <= SUPPORT_PROBABILITY[style_strength]:
         auxiliary_candidates = [style for style in pools["auxiliary"] if style_id(style) != style_id(main or {})]
-        auxiliary = pick_unique_style(rng, auxiliary_candidates, style_state, freshness, history["style_ids"])
+        auxiliary = pick_unique_style(
+            rng,
+            auxiliary_candidates,
+            style_state,
+            freshness,
+            history["style_ids"],
+            history["style_failures"],
+            render_profile,
+        )
 
     main_record = style_record(main)
     auxiliary_record = style_record(auxiliary)
     return {
         "selection_mode": f"style-family:{style_family}" if style_family else "mixed",
         "style_strength": style_strength,
+        "render_profile": render_profile,
         "freshness": freshness,
         "main_style": main_record,
         "auxiliary_style": auxiliary_record,
         "history_dedupe": {
             "enabled": history["enabled"],
             "runs_scanned": history["runs_scanned"],
+            "reviews_scanned": history["reviews_scanned"],
             "subject_recent_count": history["subjects"].get(subject, 0),
             "lighting_recent_count": history["lighting"].get(lighting, 0),
             "main_style_recent_count": history["style_ids"].get((main_record or {}).get("style_id", ""), 0),
             "auxiliary_style_recent_count": history["style_ids"].get((auxiliary_record or {}).get("style_id", ""), 0),
+            "main_style_dirty_failure_count": sum(
+                history["style_failures"].get(f"{(main_record or {}).get('style_id', '')}:{failure}", 0)
+                for failure in DIRTY_RENDER_FAILURES
+            ),
+            "auxiliary_style_dirty_failure_count": sum(
+                history["style_failures"].get(f"{(auxiliary_record or {}).get('style_id', '')}:{failure}", 0)
+                for failure in DIRTY_RENDER_FAILURES
+            ),
         },
     }
 
@@ -432,6 +531,97 @@ def format_style_layer(selection: dict[str, Any], style_strength: str) -> str:
     return f"{main_phrase}{aux_phrase}；{priority}"
 
 
+def short_style_anchor(style: dict[str, Any] | None) -> str:
+    if not style:
+        return ""
+    anchors = unique_parts([style.get("name", ""), style.get("visual_dna", ""), style.get("tokens", "")])
+    return " / ".join(anchors[:3])
+
+
+def simplify_material(material: str) -> str:
+    parts = [part.strip() for part in re.split(r"，|,|;", material) if part.strip()]
+    return ", ".join(parts[:2]) if parts else material
+
+
+def style_ids_from_selection(selection: dict[str, Any]) -> list[str]:
+    result = []
+    for key in ("main_style", "auxiliary_style"):
+        sid = ((selection.get(key) or {}).get("style_id") or "").strip()
+        if sid:
+            result.append(sid)
+    return result
+
+
+def build_internal_prompt(index: int, layers: dict[str, str], style_layer: str, aspect_ratio: str, avoid: str) -> str:
+    return f"""Open Style Atlas image {index:02d}. {layers['tone']}.
+
+[Subject]
+{layers['subject']}. Acting and expression: {layers['expression']}.
+
+[Environment]
+{layers['environment']}; the space must shape the story and remain readable.
+
+[Lighting and Atmosphere]
+{layers['lighting']}.
+
+[Material and Texture]
+{layers['material']}.
+
+[Composition and Camera]
+{layers['composition_camera']}.
+
+[Style]
+{style_layer}.
+
+[Context, Intent, and Tone]
+{layers['tone']}; make it feel like one original frame from an unknown visual world.
+
+[Output Constraints]
+Aspect ratio {aspect_ratio}. Must include the subject, the chosen environment, and visible rare-style DNA. Avoid {avoid}.
+"""
+
+
+def compress_prompt_for_render(
+    layers: dict[str, str],
+    style_selection: dict[str, Any],
+    aspect_ratio: str,
+    render_profile: str,
+    background_complexity: int,
+    defect_strength: float,
+) -> str:
+    main_style = style_selection.get("main_style") or {}
+    auxiliary_style = style_selection.get("auxiliary_style")
+    main_anchor = short_style_anchor(main_style)
+    auxiliary_anchor = short_style_anchor(auxiliary_style)
+    material = layers["material"]
+    defect_selected = is_defect_style(main_style) or is_defect_style(auxiliary_style)
+    if render_profile == "clean" and defect_selected:
+        material = simplify_material(material)
+
+    background_rule = BACKGROUND_COMPLEXITY_RULES[background_complexity]
+    aux_clause = f" Auxiliary style only as subtle surface/color influence: {auxiliary_anchor}." if auxiliary_anchor else ""
+    if render_profile == "clean":
+        clean_clause = (
+            "Clean render, crisp subject silhouette, low texture noise, controlled background complexity, "
+            "subtle media artifacts only, no random text, no dirty scan marks, no texture bleeding over subject edges."
+        )
+        if defect_selected:
+            clean_clause += f" Media defect strength stays below {defect_strength:.2f}: light artifact only, not damaged."
+        style_priority = "Subject readability overrides style; style shapes color, material, lighting, and composition without obscuring the subject."
+    else:
+        clean_clause = "Keep the subject readable, avoid random text, and prevent visual clutter from hiding the main action."
+        style_priority = "Make the main rare style visibly present without adding extra style families."
+
+    return (
+        f"Create one original image. Clear, readable subject: {layers['subject']}. Expression: {layers['expression']}. "
+        f"Set in {layers['environment']}; {background_rule}. "
+        f"Lighting: {layers['lighting']}. Camera/composition: {layers['composition_camera']}. "
+        f"Material focus: {material}. "
+        f"Main style: {main_anchor}.{aux_clause} {style_priority} "
+        f"{clean_clause} Aspect ratio {aspect_ratio}."
+    )
+
+
 def build_prompt(
     pool: dict[str, Any],
     styles: list[dict[str, Any]],
@@ -442,6 +632,10 @@ def build_prompt(
     style_family: str | None,
     freshness: str,
     style_strength: str,
+    render_profile: str,
+    background_complexity: int,
+    defect_strength: float,
+    max_aux_styles: int,
 ) -> dict[str, Any]:
     subject = pick_text(rng, pool["subjects"], history["subjects"] if history["enabled"] else None)
     environment = pick_text(rng, pool["environments"])
@@ -463,53 +657,46 @@ def build_prompt(
         style_family,
         freshness,
         style_strength,
+        render_profile,
+        max_aux_styles,
     )
     style_layer = format_style_layer(style_selection, style_strength)
+    layers = {
+        "subject": subject,
+        "environment": environment,
+        "lighting": lighting,
+        "material": material,
+        "composition_camera": composition,
+        "style": style_layer,
+        "expression": expression,
+        "tone": tone,
+    }
 
     title = f"{index:02d}_{slugify(subject)}"
-    prompt = f"""Open Style Atlas image {index:02d}. {tone}.
-
-[Subject]
-{subject}. Acting and expression: {expression}.
-
-[Environment]
-{environment}; the space must shape the story and remain readable.
-
-[Lighting and Atmosphere]
-{lighting}.
-
-[Material and Texture]
-{material}.
-
-[Composition and Camera]
-{composition}.
-
-[Style]
-{style_layer}.
-
-[Context, Intent, and Tone]
-{tone}; make it feel like one original frame from an unknown visual world.
-
-[Output Constraints]
-Aspect ratio {ratio}. Must include the subject, the chosen environment, and visible rare-style DNA. Avoid {avoid}.
-"""
+    internal_prompt = build_internal_prompt(index, layers, style_layer, ratio, avoid)
+    render_prompt = (
+        internal_prompt
+        if render_profile == "raw"
+        else compress_prompt_for_render(layers, style_selection, ratio, render_profile, background_complexity, defect_strength)
+    )
 
     return {
         "index": index,
         "title": title,
         "aspect_ratio": ratio,
-        "layers": {
-            "subject": subject,
-            "environment": environment,
-            "lighting": lighting,
-            "material": material,
-            "composition_camera": composition,
-            "style": style_layer,
-            "expression": expression,
-            "tone": tone,
-        },
+        "layers": layers,
         "style_selection": style_selection,
-        "prompt": prompt,
+        "internal_prompt": internal_prompt,
+        "render_prompt": render_prompt,
+        "prompt": render_prompt,
+        "render_profile": render_profile,
+        "style_budget": {
+            "main_style_strength": "0.45-0.65" if render_profile == "clean" else "0.55-0.75",
+            "auxiliary_style_strength": "0.10-0.25" if render_profile == "clean" else "0.20-0.40",
+            "defect_strength": defect_strength,
+            "background_complexity": background_complexity,
+            "texture_density": "low-to-medium" if render_profile == "clean" else "medium",
+        },
     }
 
 
@@ -547,12 +734,30 @@ def build_prompt_with_gate(
     style_family: str | None,
     freshness: str,
     style_strength: str,
+    render_profile: str,
+    background_complexity: int,
+    defect_strength: float,
+    max_aux_styles: int,
 ) -> dict[str, Any]:
     last_item = None
     tmp_file = tmp_dir / f"_lint_{index:02d}.txt"
     for _ in range(max_attempts):
-        item = build_prompt(pool, styles, index, rng, style_state, history, style_family, freshness, style_strength)
-        item["lint_score"] = lint_score(item["prompt"], tmp_file)
+        item = build_prompt(
+            pool,
+            styles,
+            index,
+            rng,
+            style_state,
+            history,
+            style_family,
+            freshness,
+            style_strength,
+            render_profile,
+            background_complexity,
+            defect_strength,
+            max_aux_styles,
+        )
+        item["lint_score"] = lint_score(item["internal_prompt"], tmp_file)
         last_item = item
         if item["lint_score"] >= min_score:
             return item
@@ -576,14 +781,22 @@ def write_batch(
     style_family: str | None,
     freshness: str,
     style_strength: str,
+    render_profile: str,
+    background_complexity: int,
+    defect_strength: float,
+    max_aux_styles: int,
     history: dict[str, Any],
 ) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     prompts_dir = out_dir / "prompts"
+    internal_prompts_dir = out_dir / "prompts_internal"
     images_dir = out_dir / "images"
     prompts_dir.mkdir(exist_ok=True)
+    internal_prompts_dir.mkdir(exist_ok=True)
     images_dir.mkdir(exist_ok=True)
     for stale_prompt in prompts_dir.glob("*.txt"):
+        stale_prompt.unlink()
+    for stale_prompt in internal_prompts_dir.glob("*.txt"):
         stale_prompt.unlink()
 
     rng = random.Random(seed)
@@ -603,13 +816,18 @@ def write_batch(
             style_family,
             freshness,
             style_strength,
+            render_profile,
+            background_complexity,
+            defect_strength,
+            max_aux_styles,
         )
         for i in range(1, count + 1)
     ]
     for tmp in out_dir.glob("_lint_*.txt"):
         tmp.unlink(missing_ok=True)
     for item in prompts:
-        (prompts_dir / f"{item['title']}.txt").write_text(item["prompt"], encoding="utf-8")
+        (prompts_dir / f"{item['title']}.txt").write_text(item["render_prompt"], encoding="utf-8")
+        (internal_prompts_dir / f"{item['title']}.txt").write_text(item["internal_prompt"], encoding="utf-8")
 
     manifest = {
         "batch_id": out_dir.name,
@@ -623,9 +841,14 @@ def write_batch(
         "style_family": style_family,
         "freshness": freshness,
         "style_strength": style_strength,
+        "render_profile": render_profile,
+        "background_complexity": background_complexity,
+        "defect_strength": defect_strength,
+        "max_aux_styles": max_aux_styles,
         "history_dedupe": {
             "enabled": history["enabled"],
             "runs_scanned": history["runs_scanned"],
+            "reviews_scanned": history["reviews_scanned"],
         },
         "prompts": [
             {
@@ -634,8 +857,13 @@ def write_batch(
                 "aspect_ratio": item["aspect_ratio"],
                 "lint_score": item.get("lint_score"),
                 "prompt_file": relative_to_run(prompts_dir / f"{item['title']}.txt", out_dir),
+                "render_prompt_file": relative_to_run(prompts_dir / f"{item['title']}.txt", out_dir),
+                "internal_prompt_file": relative_to_run(internal_prompts_dir / f"{item['title']}.txt", out_dir),
+                "render_prompt_chars": len(item["render_prompt"]),
+                "internal_prompt_chars": len(item["internal_prompt"]),
                 "layers": item["layers"],
                 "style_selection": item["style_selection"],
+                "style_budget": item["style_budget"],
             }
             for item in prompts
         ],
@@ -660,7 +888,7 @@ def write_batch(
     import_cmd = (
         f'python "{EAGLE_IMPORT}" "{images_dir}\\*.png" "{images_dir}\\*.jpg" '
         f'--folder-name "{eagle_folder}" '
-        f'--tag "Codex Image,AI generated,Open Style Atlas,seven-layer,rare-style,v0.15" '
+        f'--tag "Codex Image,AI generated,Open Style Atlas,seven-layer,rare-style,v0.16" '
         f'--annotation-file "{out_dir / "manifest.json"}"'
     )
     (out_dir / "import_to_eagle.ps1").write_text(import_cmd + "\n", encoding="utf-8")
@@ -678,7 +906,7 @@ def import_images(batch_dir: Path, eagle_folder: str) -> int:
         "--folder-name",
         eagle_folder,
         "--tag",
-        "Codex Image,AI generated,Open Style Atlas,seven-layer,rare-style,v0.15",
+        "Codex Image,AI generated,Open Style Atlas,seven-layer,rare-style,v0.16",
         "--annotation-file",
         str(batch_dir / "manifest.json"),
     ]
@@ -686,7 +914,7 @@ def import_images(batch_dir: Path, eagle_folder: str) -> int:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Prepare Open Style Atlas v0.15 prompt batches.")
+    parser = argparse.ArgumentParser(description="Prepare Open Style Atlas v0.16 prompt batches.")
     parser.add_argument("--count", type=int, default=3)
     parser.add_argument("--seed", type=int)
     parser.add_argument("--out", type=Path)
@@ -694,7 +922,11 @@ def main() -> None:
     parser.add_argument("--style-library", type=Path, default=STYLE_LIBRARY_PATH)
     parser.add_argument("--style-family", choices=sorted(STYLE_FAMILIES))
     parser.add_argument("--freshness", choices=["normal", "high"], default="high")
-    parser.add_argument("--style-strength", choices=sorted(SUPPORT_PROBABILITY), default="style-forward")
+    parser.add_argument("--style-strength", choices=sorted(SUPPORT_PROBABILITY))
+    parser.add_argument("--render-profile", choices=sorted(RENDER_PROFILES), default="clean")
+    parser.add_argument("--background-complexity", type=int, choices=sorted(BACKGROUND_COMPLEXITY_RULES), default=2)
+    parser.add_argument("--defect-strength", type=float, default=0.15)
+    parser.add_argument("--max-aux-styles", type=int, choices=[0, 1], default=1)
     parser.add_argument("--no-history", action="store_true")
     parser.add_argument("--eagle-folder", default="AI风格探索")
     parser.add_argument("--min-lint-score", type=int, default=8)
@@ -709,6 +941,9 @@ def main() -> None:
     pool = read_json(args.pool)
     style_library = load_style_library(args.style_library)
     history = load_history(not args.no_history)
+    if not 0 <= args.defect_strength <= 0.5:
+        parser.error("--defect-strength must be between 0.0 and 0.5")
+    style_strength = args.style_strength or RENDER_PROFILE_DEFAULT_STYLE[args.render_profile]
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     out_dir = args.out or ROOT / "runs" / f"{stamp}-open-style-auto"
     write_batch(
@@ -722,7 +957,11 @@ def main() -> None:
         args.max_attempts,
         args.style_family,
         args.freshness,
-        args.style_strength,
+        style_strength,
+        args.render_profile,
+        args.background_complexity,
+        args.defect_strength,
+        args.max_aux_styles,
         history,
     )
     print(out_dir.resolve())

@@ -6,7 +6,9 @@ Image Prompt Architect is a Codex plugin for designing, rewriting, critiquing, a
 
 It is not an image generator. It is a prompt architecture workflow for users who want better prompt text, model-specific adaptation, cinematic series bibles, or prompt diagnosis.
 
-Current version: `0.14.0` developer preview.
+Current development version: `0.16.0` developer preview.
+Latest tagged install target: `v0.14.0`.
+Open Style Atlas prompt contract: `open-style-v0.16`.
 
 ## What It Does
 
@@ -15,6 +17,7 @@ Current version: `0.14.0` developer preview.
 - Ports prompts between model families such as GPT Image, Grok, Midjourney, FLUX, Dreamina/Seedream, and Stable Diffusion wrappers.
 - Critiques weak prompts and rewrites them.
 - Runs a small lint script to catch missing controls, model-syntax issues, generic filler, and contradictions.
+- Generates Open Style Atlas prompt batches with rare style metadata, clean render prompts, and review-loop scaffolding.
 
 ## What It Does Not Do
 
@@ -87,7 +90,7 @@ $image-prompt-architect Rewrite this image prompt for Midjourney.
 
 `/image-prompt-architect` is a plugin command wrapper. `$image-prompt-architect` is the direct skill invocation. Both are supported after installation.
 
-Version `0.14.0` includes both `.codex-plugin` and `.claude-plugin` manifests so Codex Desktop command indexing can discover the slash-command wrapper as well as the skill.
+Version `v0.14.0` includes both `.codex-plugin` and `.claude-plugin` manifests so Codex Desktop command indexing can discover the slash-command wrapper as well as the skill. The `main` branch adds Open Style Atlas `open-style-v0.16` development features.
 
 ## Usage Examples
 
@@ -158,6 +161,13 @@ CI evidence:
 - Image-output records: [`evals/image_output_records.json`](evals/image_output_records.json) is still placeholder-only until real model outputs are captured; v0.14 improves slash command indexing compatibility but does not invent output evidence.
 - Image-output rubric: [`evals/image_output_rubric.md`](evals/image_output_rubric.md) defines task-specific gates for future real output evals.
 - v1.0 gate: [`docs/V1_RELEASE_GATE.md`](docs/V1_RELEASE_GATE.md) defines the release checklist and example scored record shape.
+
+Open Style Atlas evidence:
+
+- Sampler: [`scripts/open_style_sampler.py`](scripts/open_style_sampler.py).
+- Review template: [`scripts/review_generated_images.py`](scripts/review_generated_images.py).
+- Revision prompts: [`scripts/make_revision_prompts.py`](scripts/make_revision_prompts.py).
+- Automation docs: [`docs/OPEN_STYLE_ATLAS_AUTOMATION.md`](docs/OPEN_STYLE_ATLAS_AUTOMATION.md).
 
 ## Review Loop
 
