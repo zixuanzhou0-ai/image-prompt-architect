@@ -114,6 +114,9 @@ Output:
 **Failure Type**
 <dirty render / text error / subject drift / overstyle / weak style / background clutter / low subject readability>
 
+**Observed Cause**
+<what the generated image visibly did wrong, without adding new creative goals>
+
 **Preserve**
 <what should stay unchanged from the previous prompt or image>
 
@@ -122,9 +125,13 @@ Output:
 
 **Revision Prompt**
 <copy-ready repair prompt>
+
+**Next Check**
+<one sentence naming what to inspect after regeneration>
 ```
 
 Revision prompts should be narrow. Fix the failure before adding new creative ideas.
+When the user gives concrete image-output feedback, use the failure labels and repair rules in `image-feedback-loop.md`.
 
 ## Reference Image Role Planning
 

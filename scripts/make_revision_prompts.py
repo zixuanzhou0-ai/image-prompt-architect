@@ -5,21 +5,16 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
 
-FAILURE_REPAIR_RULES = {
-    "texture_noise_overload": "Reduce heavy grain, scan noise, dirty speckles, and compression artifacts; keep only light texture in the background.",
-    "muddy_materials": "Clarify primary materials, separate glass/metal/fabric with clean highlights, and avoid muddy mixed textures.",
-    "over_detailed_background": "Simplify the background, remove dense small props, lower background contrast, and keep one readable environment.",
-    "style_overpowering_subject": "Preserve subject identity and action first; let style influence color, surface, lighting, and composition only.",
-    "media_defect_too_strong": "Keep media artifacts very subtle, limited to background and shadows; do not degrade the subject or edges.",
-    "low_subject_readability": "Make the subject occupy 35-60% of the frame, improve edge separation, and reduce background contrast.",
-    "weak_style_visibility": "Make the main style visible through 2-3 clear anchors: palette, material treatment, and composition language.",
-    "random_text_or_symbols": "Remove random text, fake letters, logos, and symbol clutter; keep labels blank unless exact quoted text is requested.",
-    "edge_contamination": "Clean up subject edges, prevent texture or background patterns from bleeding over the outline, and add subtle separation light.",
-}
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from feedback_taxonomy import FAILURE_REPAIR_RULES, known_failures, repair_text_for_failures as taxonomy_repair_text  # noqa: E402
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -43,12 +38,11 @@ def style_name(prompt: dict[str, Any], key: str) -> str:
 
 
 def repair_text_for_failures(failures: list[str]) -> str:
-    repairs = [FAILURE_REPAIR_RULES[failure] for failure in failures if failure in FAILURE_REPAIR_RULES]
-    return " ".join(repairs)
+    return taxonomy_repair_text(failures)
 
 
 def build_revision_prompt(review: dict[str, Any], prompt: dict[str, Any]) -> str:
-    failures = [failure for failure in review.get("failures", []) if failure in FAILURE_REPAIR_RULES]
+    failures = known_failures(review.get("failures", []))
     repair_text = repair_text_for_failures(failures)
     main_style = style_name(prompt, "main_style")
     auxiliary_style = style_name(prompt, "auxiliary_style")
@@ -74,7 +68,7 @@ def generate_revision_prompts(run_dir: Path) -> dict[str, Any]:
 
     generated = []
     for item in review.get("reviews", []):
-        failures = [failure for failure in item.get("failures", []) if failure in FAILURE_REPAIR_RULES]
+        failures = known_failures(item.get("failures", []))
         if not failures:
             continue
         index = int(item["index"])

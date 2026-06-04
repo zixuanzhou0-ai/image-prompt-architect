@@ -6,6 +6,7 @@ SKILL = ROOT / "skills" / "image-prompt-architect" / "SKILL.md"
 OUTPUT_CONTRACT = ROOT / "skills" / "image-prompt-architect" / "references" / "output-contract.md"
 SEVEN_LAYER = ROOT / "skills" / "image-prompt-architect" / "references" / "seven-layer-framework.md"
 MODEL_ADAPTERS = ROOT / "skills" / "image-prompt-architect" / "references" / "model-adapters.md"
+IMAGE_FEEDBACK = ROOT / "skills" / "image-prompt-architect" / "references" / "image-feedback-loop.md"
 
 
 def read(path: Path) -> str:
@@ -26,8 +27,10 @@ def test_output_contract_has_compression_revision_and_reference_schemas():
     assert "**Priority Stack**" in text
     assert "**Dropped / Compressed**" in text
     assert "## Revision Prompt From Failure" in text
+    assert "**Observed Cause**" in text
     assert "**Preserve**" in text
     assert "**Change**" in text
+    assert "**Next Check**" in text
     assert "## Reference Image Role Planning" in text
     assert "product geometry" in text
 
@@ -43,7 +46,17 @@ def test_seven_layer_framework_defines_internal_and_final_prompt_split():
 def test_model_adapters_document_clean_render_and_wrapper_boundaries():
     text = read(MODEL_ADAPTERS)
     assert "Clean render strategy" in text
+    assert "Revision prompt strategy" in text
     assert "GPT Image / GPT Image 2-style final render prompts" in text
     assert "Render strategy" in text
     assert "Boundary strategy" in text
     assert "Dreamina/Jimeng UI-style work" in text
+
+
+def test_image_feedback_loop_reference_documents_taxonomy():
+    text = read(IMAGE_FEEDBACK)
+    assert "Image Feedback Loop" in text
+    assert "texture_noise_overload" in text
+    assert "text_accuracy_failure" in text
+    assert "reference_role_confusion" in text
+    assert "scripts/feedback_taxonomy.py" in text

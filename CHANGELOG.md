@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.18.0 - 2026-06-04
+
+- Added a shared image feedback taxonomy for Open Style Atlas batch review and single-prompt feedback review.
+- Added `scripts/create_prompt_feedback_review.py` for creating `prompt_feedback_review.json` from one prompt/image pair.
+- Added `scripts/make_feedback_revision.py` for generating `revision_prompt.txt` from single-image review failures.
+- Updated Open Style Atlas review/revision scripts to use shared score keys, failure labels, and deterministic repair rules.
+- Expanded the Skill revision contract with observed cause, preserve/change, revision prompt, and next-check fields.
+- Added `references/image-feedback-loop.md` with failure labels, repair rules, and feedback-loop workflow guidance.
+- Kept formal `evals/image_output_records.json` placeholder-only; v0.18 creates reusable feedback interfaces, not scored image-output evidence.
+
 ## 0.17.0 - 2026-06-04
 
 - Added Image Prompt Architect modes for final render prompt compression, revision prompts from failed outputs, and reference image role planning.

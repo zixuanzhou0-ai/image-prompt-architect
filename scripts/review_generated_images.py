@@ -5,30 +5,16 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
 
-SCORE_KEYS = [
-    "subject_readability",
-    "style_visibility",
-    "clean_render",
-    "composition",
-    "material_clarity",
-    "background_control",
-]
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
 
-FAILURE_LABELS = [
-    "texture_noise_overload",
-    "muddy_materials",
-    "over_detailed_background",
-    "style_overpowering_subject",
-    "media_defect_too_strong",
-    "low_subject_readability",
-    "weak_style_visibility",
-    "random_text_or_symbols",
-    "edge_contamination",
-]
+from feedback_taxonomy import FAILURE_LABELS, SCORE_KEYS  # noqa: E402
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -85,7 +71,7 @@ def build_review_template(run_dir: Path) -> dict[str, Any]:
     return {
         "batch_id": manifest.get("batch_id", run_dir.name),
         "prompt_contract_version": manifest.get("prompt_contract_version"),
-        "review_schema_version": "open-style-review-v0.1",
+        "review_schema_version": "open-style-review-v0.2",
         "score_scale": "0=fail, 1=partial, 2=good",
         "allowed_failure_labels": FAILURE_LABELS,
         "reviews": reviews,

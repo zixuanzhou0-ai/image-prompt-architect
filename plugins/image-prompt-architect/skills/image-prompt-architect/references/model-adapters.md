@@ -64,6 +64,12 @@ Each adapter tracks:
 - When the style is dense, add clean subject silhouette, controlled background complexity, low texture noise, and subtle media artifacts.
 - Do not repeat the same cleanliness constraint many times; one clear priority stack is stronger than a long negative list.
 
+**Revision prompt strategy:**
+
+- Keep repair prompts short and direct: preserve first, then change only failed areas.
+- Prioritize subject readability, clean edges, exact quoted text, product geometry, and assigned reference roles before style texture.
+- For dirty-render failures, remove stacked grain/scan/VHS/CRT/halftone/photocopy language or keep one subtle artifact.
+
 **Negative prompt strategy:**
 
 - Use "avoid" or "do not change" instructions in ordinary language.
@@ -175,6 +181,8 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 - Follow local prompt libraries, checklist, and model notes if present.
 - For Dreamina/Jimeng UI-style work, use a short concept paragraph plus a compact aesthetic keyword line rather than long bilingual duplication.
 
+**Revision prompt strategy:** Use Chinese for the repair intent and keep English only for camera, material, render, or style terms. Keep avoid lists short.
+
 **Language strategy:** Chinese is useful for culturally specific scenes; English is useful for common technical visual terms.
 
 Use Chinese first for culturally specific intent, and reserve English for camera, material, rendering, or style terms that are clearer as production vocabulary.
@@ -222,6 +230,8 @@ Use Chinese first for culturally specific intent, and reserve English for camera
 - Keep one visual style phrase unless the user asks for experimental blending.
 - Put all parameters at the end; do not add prose after parameters.
 - Suggest `--raw`, `--stylize`, or chaos/weird controls only when the user asks for that degree of style control.
+
+**Revision prompt strategy:** Rewrite as a compact prompt, keep one style phrase, move exclusions into concise `--no` terms, and keep parameters at the end.
 
 **Language strategy:** English compact prompts are conventional; keep culturally specific terms if needed.
 
@@ -279,6 +289,8 @@ subject, setting, visual style, camera, lighting, mood --ar 16:9 --stylize 150 -
 - Natural-language descriptive prompts.
 - Structured prompt content for production workflows and automation.
 - Treat API fields such as width, height, seed, aspect ratio, and safety/output format as wrapper fields, not prompt prose, when the user is coding.
+
+**Revision prompt strategy:** Convert failures into positive replacements, such as clean surfaces, empty backgrounds, clear materials, and controlled lighting. Keep API fields outside prompt prose.
 
 **Language strategy:** Use direct descriptive language. Quote exact text when text rendering matters.
 

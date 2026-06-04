@@ -335,3 +335,97 @@ cases:
     skill_output_source: "manual_capture"
     skill_output_date: "2026-06-04"
     skill_output_notes: "Added for v0.17 Stable Diffusion wrapper-boundary coverage."
+
+  - id: feedback_dirty_render_repair
+    source_prompt: "the generated image is dirty, with scan noise and texture bleeding over the face"
+    target_model: "gpt-image"
+    expected_mode: "revision"
+    expected_risks:
+      - "texture_noise_overload"
+      - "edge_contamination"
+    source_score_estimate: 6
+    rewritten_score_target: 17
+    rewritten_prompt_candidate: "Revise the previous image. Preserve the original subject, pose, composition intent, and main style. Change only the failed areas: reduce heavy grain and scan noise, clean up subject edges, prevent texture from bleeding across the face or hands, and keep at most one subtle background artifact. Do not introduce new subjects or unrelated style changes."
+    expected_rewrite_features: "preserve change split, clean subject, low texture noise"
+    skill_output_prompt: "Revise the previous image. Preserve the original subject, pose, composition intent, and main style. Change only the failed areas: reduce heavy grain and scan noise, clean up subject edges, prevent texture from bleeding across the face or hands, and keep at most one subtle background artifact. Do not introduce new subjects or unrelated style changes."
+    skill_output_source: "manual_capture"
+    skill_output_date: "2026-06-04"
+    skill_output_notes: "Added for v0.18 feedback taxonomy coverage."
+
+  - id: feedback_text_error_repair
+    source_prompt: "poster output has wrong letters and extra symbols"
+    target_model: "gpt-image"
+    expected_mode: "revision"
+    expected_risks:
+      - "text_accuracy_failure"
+      - "random_text_or_symbols"
+    source_score_estimate: 6
+    rewritten_score_target: 17
+    rewritten_prompt_candidate: 'Revise the poster. Preserve the layout, illustration, paper texture, and color palette. Change only the typography: render only the exact headline "ROSE HOUR" and exact footer "FRIDAY 9 PM"; remove all extra letters, fake words, logos, and random symbols.'
+    expected_rewrite_features: "quoted exact text, layout, typography"
+    skill_output_prompt: 'Revise the poster. Preserve the layout, illustration, paper texture, and color palette. Change only the typography: render only the exact headline "ROSE HOUR" and exact footer "FRIDAY 9 PM"; remove all extra letters, fake words, logos, and random symbols.'
+    skill_output_source: "manual_capture"
+    skill_output_date: "2026-06-04"
+    skill_output_notes: "Added for v0.18 text accuracy feedback coverage."
+
+  - id: feedback_reference_role_failure
+    source_prompt: "the generated image copied the reference background and logo even though the reference was only for product shape"
+    target_model: "gpt-image"
+    expected_mode: "revision"
+    expected_risks:
+      - "reference_role_confusion"
+      - "product_geometry_drift"
+    source_score_estimate: 6
+    rewritten_score_target: 17
+    rewritten_prompt_candidate: "Revise the image. Preserve the intended product shape, pump height, label placement, camera angle, and clean studio composition. Use reference image 1 for product geometry only. Do not preserve the reference background, text, logo, lighting, or artifacts. Keep a blank label unless exact quoted text is requested."
+    expected_rewrite_features: "reference role assignment, product geometry, clean subject"
+    skill_output_prompt: "Revise the image. Preserve the intended product shape, pump height, label placement, camera angle, and clean studio composition. Use reference image 1 for product geometry only. Do not preserve the reference background, text, logo, lighting, or artifacts. Keep a blank label unless exact quoted text is requested."
+    skill_output_source: "manual_capture"
+    skill_output_date: "2026-06-04"
+    skill_output_notes: "Added for v0.18 reference role feedback coverage."
+
+  - id: feedback_product_geometry_drift
+    source_prompt: "the bottle shape changed and the label moved"
+    target_model: "gpt-image"
+    expected_mode: "revision"
+    expected_risks:
+      - "product_geometry_drift"
+    source_score_estimate: 7
+    rewritten_score_target: 17
+    rewritten_prompt_candidate: "Revise the product image. Preserve the original bottle silhouette, proportions, cap shape, pump height, label placement, glass edge highlights, and camera angle. Change only the lighting and background cleanup if needed. Keep product geometry locked and avoid warping the label or bottle edges."
+    expected_rewrite_features: "product geometry, camera, material"
+    skill_output_prompt: "Revise the product image. Preserve the original bottle silhouette, proportions, cap shape, pump height, label placement, glass edge highlights, and camera angle. Change only the lighting and background cleanup if needed. Keep product geometry locked and avoid warping the label or bottle edges."
+    skill_output_source: "manual_capture"
+    skill_output_date: "2026-06-04"
+    skill_output_notes: "Added for v0.18 product geometry feedback coverage."
+
+  - id: feedback_identity_drift
+    source_prompt: "the character face and clothing changed after revision"
+    target_model: "gpt-image"
+    expected_mode: "revision"
+    expected_risks:
+      - "identity_drift"
+    source_score_estimate: 7
+    rewritten_score_target: 17
+    rewritten_prompt_candidate: "Revise the image. Preserve the same character identity: face structure, age, expression, hairstyle, clothing, pose, and distinctive silver pendant. Change only the failed background contrast and lighting balance. Do not redesign the character or introduce new wardrobe details."
+    expected_rewrite_features: "identity anchors, preserve change split, lighting"
+    skill_output_prompt: "Revise the image. Preserve the same character identity: face structure, age, expression, hairstyle, clothing, pose, and distinctive silver pendant. Change only the failed background contrast and lighting balance. Do not redesign the character or introduce new wardrobe details."
+    skill_output_source: "manual_capture"
+    skill_output_date: "2026-06-04"
+    skill_output_notes: "Added for v0.18 identity drift feedback coverage."
+
+  - id: feedback_style_overload_repair
+    source_prompt: "the output combined watercolor, oil painting, VHS, CRT, risograph, cyberpunk and looks messy"
+    target_model: "gpt-image"
+    expected_mode: "revision"
+    expected_risks:
+      - "style_overload"
+      - "media_defect_too_strong"
+    source_score_estimate: 5
+    rewritten_score_target: 17
+    rewritten_prompt_candidate: "Revise the image. Preserve the subject, composition, and lighting. Keep one main style anchor: quiet editorial realism. Remove watercolor, oil painting, VHS, CRT, risograph, and cyberpunk mixing. Use only one subtle paper texture in the background, with clean subject edges and controlled material detail."
+    expected_rewrite_features: "one main style anchor, clean subject, controlled background"
+    skill_output_prompt: "Revise the image. Preserve the subject, composition, and lighting. Keep one main style anchor: quiet editorial realism. Remove watercolor, oil painting, VHS, CRT, risograph, and cyberpunk mixing. Use only one subtle paper texture in the background, with clean subject edges and controlled material detail."
+    skill_output_source: "manual_capture"
+    skill_output_date: "2026-06-04"
+    skill_output_notes: "Added for v0.18 style overload feedback coverage."

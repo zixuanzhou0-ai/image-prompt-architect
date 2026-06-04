@@ -21,7 +21,7 @@ Choose one mode before drafting.
 - **Model port**: user wants a prompt adapted from one model to another. Output target-model risks, converted prompt, parameter/negative handling, and what changed.
 - **Series bible**: user wants multiple images, cinematic stills, a set, or a consistent visual world. Output continuity rules, variation budget, shot slots, and per-shot prompts.
 - **Prompt compression / final render prompt**: user has a long analysis prompt or seven-layer draft and needs the clean prompt to actually paste into a model. Output priority stack, compressed prompt, and dropped/compressed details.
-- **Revision prompt from failure**: user describes a failed image output. Output failure type, preserve/change plan, and a copy-ready repair prompt.
+- **Revision prompt from failure**: user describes a failed image output or gives visual feedback. Output failure type, observed cause, preserve/change plan, copy-ready repair prompt, and next check.
 - **Reference image role planning**: user has one or more reference images. Output what each reference controls, what it must not control, and a prompt with reference roles.
 
 For exact schemas, read `references/output-contract.md`.
@@ -58,6 +58,14 @@ Read `references/model-adapters.md` when:
 
 Do not overclaim model behavior. If a model behavior is not documented or not locally tested, present it as a heuristic.
 
+## Image Feedback Loop
+
+Read `references/image-feedback-loop.md` when the user reports a generated-image failure, provides review notes, or asks for a revision prompt from an output.
+
+- Treat feedback as observed output evidence, not as a reason to invent new creative direction.
+- Preserve the original subject, composition intent, exact quoted text, product geometry, and assigned reference roles unless the failure specifically concerns them.
+- Change only the failed areas first; then compress the prompt if length, style overload, or dirty-render language contributed to the issue.
+
 ## Quality Gate
 
 Before finalizing, apply `references/checklist.md` or `references/evaluation-rubric.md`:
@@ -81,6 +89,7 @@ python skills/image-prompt-architect/scripts/prompt_lint.py prompt.txt --archite
 - `references/seven-layer-framework.md`: single-image structure.
 - `references/system-template-framework.md`: cinematic series and continuity systems.
 - `references/model-adapters.md`: versioned model adapter matrix.
+- `references/image-feedback-loop.md`: failure labels and revision-prompt workflow.
 - `references/checklist.md`: quick quality gate.
 - `references/evaluation-rubric.md`: scoring rubric.
 - `references/examples.md`: worked examples and reusable skeletons.

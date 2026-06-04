@@ -6,7 +6,7 @@ Image Prompt Architect is a Codex plugin for designing, rewriting, critiquing, a
 
 It is not an image generator. It is a prompt architecture workflow for users who want better prompt text, model-specific adaptation, cinematic series bibles, or prompt diagnosis.
 
-Current development version: `0.17.0` developer preview.
+Current development version: `0.18.0` developer preview.
 Latest tagged install target: `v0.14.0`.
 Open Style Atlas prompt contract: `open-style-v0.16`.
 
@@ -20,6 +20,7 @@ Open Style Atlas prompt contract: `open-style-v0.16`.
 - Creates narrow revision prompts from failed image-output feedback.
 - Plans reference image roles for identity, product geometry, pose, composition, palette, and style.
 - Runs a small lint script to catch missing controls, model-syntax issues, generic filler, contradictions, dirty-render risk, style overload, and defect overload.
+- Creates single-image feedback review files and revision prompts from observed output failures.
 - Generates Open Style Atlas prompt batches with rare style metadata, clean render prompts, and review-loop scaffolding.
 
 ## What It Does Not Do
@@ -93,7 +94,7 @@ $image-prompt-architect Rewrite this image prompt for Midjourney.
 
 `/image-prompt-architect` is a plugin command wrapper. `$image-prompt-architect` is the direct skill invocation. Both are supported after installation.
 
-Version `v0.14.0` includes both `.codex-plugin` and `.claude-plugin` manifests so Codex Desktop command indexing can discover the slash-command wrapper as well as the skill. The `main` branch adds Open Style Atlas `open-style-v0.16` development features and Image Prompt Architect `v0.17.0` prompt-compression/revision planning.
+Version `v0.14.0` includes both `.codex-plugin` and `.claude-plugin` manifests so Codex Desktop command indexing can discover the slash-command wrapper as well as the skill. The `main` branch adds Open Style Atlas `open-style-v0.16` development features and Image Prompt Architect `v0.18.0` feedback-bridge tooling.
 
 ## Usage Examples
 
@@ -134,6 +135,12 @@ Reference roles:
 Use Image Prompt Architect to plan reference image roles: ref 1 is product geometry, ref 2 is palette, ref 3 is composition.
 ```
 
+Feedback review:
+
+```text
+Use Image Prompt Architect to turn this failed image feedback into a revision prompt: the subject edges are dirty, the label text is wrong, and the reference background leaked into the output.
+```
+
 Series bible:
 
 ```text
@@ -147,6 +154,8 @@ Run from the repository root:
 ```bash
 python skills/image-prompt-architect/scripts/prompt_lint.py tests/fixtures/good_seven_layer.txt --architecture seven-layer --model generic
 python skills/image-prompt-architect/scripts/prompt_lint.py tests/fixtures/bad_flux_negative.txt --model flux --format json
+python scripts/create_prompt_feedback_review.py --prompt-file tests/fixtures/good_gpt_image_compressed_render_prompt.txt --model gpt-image --case-id demo --out runs/demo_prompt_feedback_review.json --overwrite
+python scripts/make_feedback_revision.py runs/demo_prompt_feedback_review.json
 python -m pytest
 python evals/run_prompt_eval.py
 python evals/check_image_output_records.py
@@ -160,6 +169,7 @@ If you have the Codex creator/validator tools available locally, also run the sk
 - It cannot guarantee exact reproducibility across image models.
 - Model adapters are dated heuristics with source links, not permanent laws.
 - The linter is structural and syntax-oriented; it does not replace image-output evaluation.
+- Feedback review scripts standardize human/visual review notes; they do not inspect images automatically.
 
 ## Troubleshooting
 
@@ -188,6 +198,8 @@ Open Style Atlas evidence:
 - Sampler: [`scripts/open_style_sampler.py`](scripts/open_style_sampler.py).
 - Review template: [`scripts/review_generated_images.py`](scripts/review_generated_images.py).
 - Revision prompts: [`scripts/make_revision_prompts.py`](scripts/make_revision_prompts.py).
+- Single-prompt feedback review: [`scripts/create_prompt_feedback_review.py`](scripts/create_prompt_feedback_review.py).
+- Single-prompt feedback revision: [`scripts/make_feedback_revision.py`](scripts/make_feedback_revision.py).
 - Automation docs: [`docs/OPEN_STYLE_ATLAS_AUTOMATION.md`](docs/OPEN_STYLE_ATLAS_AUTOMATION.md).
 
 ## Review Loop

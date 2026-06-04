@@ -28,3 +28,9 @@ Image-output scoring still requires `evals/image_output_protocol.md`.
 | `model_port_midjourney_to_gpt_image` | `gpt-image` | `model-port` | `manual_capture` | 0 | 9 | 9 | 9 | 9 | 3/3 | - | Midjourney parameters must be removed; avoid language should become natural |
 | `standard_build_should_not_over_explain` | `gpt-image` | `standard` | `manual_capture` | 1 | 6 | 5 | 6 | 5 | 3/3 | - | user wants prompt only; avoid explanatory headings in final prompt |
 | `stable_diffusion_wrapper_boundary` | `stable-diffusion` | `model-port` | `manual_capture` | 0 | 2 | 2 | 2 | 2 | 3/3 | - | wrapper not named; local syntax boundary unclear |
+| `feedback_dirty_render_repair` | `gpt-image` | `revision` | `manual_capture` | 0 | 7 | 7 | 7 | 7 | 3/3 | - | texture_noise_overload; edge_contamination |
+| `feedback_text_error_repair` | `gpt-image` | `revision` | `manual_capture` | 0 | 0 | 0 | 0 | 0 | 3/3 | - | text_accuracy_failure; random_text_or_symbols |
+| `feedback_reference_role_failure` | `gpt-image` | `revision` | `manual_capture` | 1 | 5 | 4 | 5 | 4 | 3/3 | - | reference_role_confusion; product_geometry_drift |
+| `feedback_product_geometry_drift` | `gpt-image` | `revision` | `manual_capture` | 0 | 7 | 7 | 7 | 7 | 3/3 | - | product_geometry_drift |
+| `feedback_identity_drift` | `gpt-image` | `revision` | `manual_capture` | 0 | 7 | 7 | 7 | 7 | 3/3 | - | identity_drift |
+| `feedback_style_overload_repair` | `gpt-image` | `revision` | `manual_capture` | 0 | 10 | 10 | 10 | 10 | 3/3 | - | style_overload; media_defect_too_strong |

@@ -3,7 +3,9 @@
 This workflow keeps generating varied images with the seven-layer standard.
 Version `open-style-v0.16` adds a clean render profile, separates internal
 seven-layer specs from model-facing render prompts, and introduces structured
-image review/revision scaffolding.
+image review/revision scaffolding. Image Prompt Architect `v0.18` moves the
+failure labels and repair rules into a shared feedback taxonomy used by both
+batch review and single-prompt feedback review.
 
 ## What It Does
 
@@ -93,7 +95,7 @@ python scripts\review_generated_images.py "<run folder>"
 ```
 
 Fill `generated_review.json` with 0/1/2 scores, failure labels, notes, and keep decisions.
-Supported failure labels include:
+Supported failure labels come from `scripts/feedback_taxonomy.py` and include:
 
 - `texture_noise_overload`
 - `muddy_materials`
@@ -104,6 +106,13 @@ Supported failure labels include:
 - `weak_style_visibility`
 - `random_text_or_symbols`
 - `edge_contamination`
+- `text_accuracy_failure`
+- `identity_drift`
+- `product_geometry_drift`
+- `reference_role_confusion`
+- `composition_drift`
+- `prompt_too_long`
+- `style_overload`
 
 Generate repair prompts from the failure labels:
 
@@ -113,6 +122,13 @@ python scripts\make_revision_prompts.py "<run folder>"
 
 The script writes `revisions/<index>_revision.txt` and backfills empty
 `revision_prompt` fields in `generated_review.json`.
+
+For a single non-batch prompt, use:
+
+```powershell
+python scripts\create_prompt_feedback_review.py --prompt-file "<prompt.txt>" --model gpt-image --case-id "<case id>" --image-path "<image.png>"
+python scripts\make_feedback_revision.py "<prompt_feedback_review.json>"
+```
 
 ## Import A Finished Batch
 
