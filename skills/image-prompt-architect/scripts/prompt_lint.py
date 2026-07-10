@@ -66,10 +66,10 @@ SYSTEM_SECTION_ALIASES = {
 }
 
 COMPACT_REQUIRED = {
-    "subject": [r"subject", r"person", r"character", r"product", r"singer", r"object", r"tailor", r"conservator", r"人物", r"一位", r"男人", r"女人", r"老板", r"产品", r"护肤品", r"玻璃瓶", r"海报"],
-    "setting": [r"setting", r"club", r"room", r"street", r"landscape", r"studio", r"background", r"train", r"compartment", r"archive", r"greenhouse", r"老街", r"江南", r"雨后", r"木门", r"城市", r"街角", r"台面", r"背景", r"工作室"],
+    "subject": [r"subject", r"person", r"woman", r"man", r"adult", r"model", r"character", r"product", r"singer", r"object", r"\u4eba\u7269", r"\u4e00\u4f4d", r"\u7537\u4eba", r"\u5973\u4eba", r"\u7f8e\u5973", r"\u4ed5\u5973", r"\u5e74\u8f7b\u7f8e\u5973", r"\u8001\u677f", r"\u4ea7\u54c1", r"\u62a4\u80a4\u54c1", r"\u73bb\u7483\u74f6", r"\u6d77\u62a5"],
+    "setting": [r"setting", r"club", r"room", r"street", r"station", r"platform", r"train platform", r"snowy train platform", r"landscape", r"lake", r"lakeside", r"stone bank", r"garden", r"studio", r"background", r"\u6e56\u8fb9", r"\u6e56\u9762", r"\u77f3\u5cb8", r"\u6811\u836b", r"\u80cc\u666f", r"\u8001\u8857", r"\u6c5f\u5357", r"\u96e8\u540e", r"\u6728\u95e8", r"\u57ce\u5e02", r"\u8857\u89d2", r"\u53f0\u9762", r"\u5de5\u4f5c\u5ba4"],
     "visual_style": [r"style", r"cinematic", r"film", r"noir", r"editorial", r"photo", r"illustration", r"电影感", r"人像", r"复古", r"产品摄影", r"极简"],
-    "camera_or_composition": [r"camera", r"lens", r"shot", r"composition", r"35mm", r"50mm", r"85mm", r"foreground", r"portrait", r"构图", r"版式", r"居中", r"网格"],
+    "camera_or_composition": [r"camera", r"lens", r"shot", r"composition", r"35mm", r"50mm", r"85mm", r"foreground", r"portrait", r"mobile", r"phone", r"medium shot", r"high angle", r"\u6784\u56fe", r"\u955c\u5934", r"\u4e2d\u666f", r"\u4fef\u62cd", r"\u624b\u673a", r"\u524d\u666f", r"\u7248\u5f0f", r"\u5c45\u4e2d", r"\u7f51\u683c"],
     "lighting_or_mood": [r"light", r"lamp", r"shadow", r"mood", r"melancholy", r"atmosphere", r"smoky", r"overcast", r"克制", r"光", r"柔光", r"柔光箱", r"窗光", r"橱窗光"],
 }
 
@@ -77,7 +77,7 @@ COMPACT_SECTION_ALIASES = {
     "subject": [r"subject", r"主体", r"人物"],
     "setting": [r"setting", r"environment", r"场景", r"环境"],
     "visual_style": [r"visual style", r"style", r"风格"],
-    "camera_or_composition": [r"camera", r"composition", r"构图", r"镜头"],
+    "camera_or_composition": [r"camera", r"lens", r"shot", r"composition", r"35mm", r"50mm", r"85mm", r"foreground", r"portrait", r"mobile", r"phone", r"medium shot", r"high angle", r"\u6784\u56fe", r"\u955c\u5934", r"\u4e2d\u666f", r"\u4fef\u62cd", r"\u624b\u673a", r"\u524d\u666f", r"\u7248\u5f0f", r"\u5c45\u4e2d", r"\u7f51\u683c"],
     "lighting_or_mood": [r"lighting", r"mood", r"atmosphere", r"光影", r"情绪", r"氛围"],
 }
 
@@ -200,6 +200,21 @@ CAMERA_CONFLICTS = [
     ("extreme close-up", "full body wide shot", "extreme close-up conflicts with full-body wide shot"),
 ]
 
+
+STYLE_ANCHOR_HINT_RE = re.compile(
+    r"\b(?:in the style of|style of|inspired by|influenced by|evoking|after|by)\s+([A-Z][A-Za-z0-9'&.-]+(?:\s+[A-Z][A-Za-z0-9'&.-]+){0,4})",
+    re.I,
+)
+STYLE_VISIBLE_TRAIT_RE = re.compile(
+    r"\b(?:silhouette|fabric|tailoring|garment|coat|dress|wardrobe|material|texture|lens|camera|film|grain|palette|color|lighting|shadow|composition|mood|narrative|gesture|medium|brushwork|surface|scan|bokeh|contrast|sharpness|volume|asymmetry|structure|light)\b",
+    re.I,
+)
+STYLE_COPY_RISK_RE = re.compile(
+    r"\b(?:exact\s+(?:scene|movie still|shot|poster)|official\s+.*\bcampaign|replica\s+of\s+.*\bcollection|copy\s+.*\bstyle)\b",
+    re.I,
+)
+STYLE_NAME_STACK_RE = re.compile(r"\b[A-Z][A-Za-z'&.-]+\s+[A-Z][A-Za-z'&.-]+\b")
+
 MJ_VALUE_PARAMS = {
     "--ar",
     "--aspect",
@@ -241,151 +256,233 @@ MJ_FLAG_PARAMS = {
     "--loop",
     "--video",
 }
+
+
+MJ_UNSAFE_NO_RE = re.compile(
+    r"--no\s+((?:(?!--[a-z])[\S\s])*)",
+    re.I,
+)
+MJ_MINOR_RE = re.compile(
+    r"\b(?:child|kid|minor|underage|teen|teenage|schoolgirl|schoolboy|little girl|young girl)\b|\u513f\u7ae5|\u672a\u6210\u5e74|\u5c11\u5973|\u5973\u5b69|\u841d\u8389|\u5c0f\u5973\u5b69",
+    re.I,
+)
+MJ_SEXUAL_CONTEXT_RE = re.compile(
+    r"\b(?:nude|nudity|naked|topless|genitals?|porn(?:ographic)?|sexual|erotic|fetish|sexy|seductive|sensual|lingerie|underwear|provocative|see-through|transparent|semi-transparent)\b|\u88f8\u9732|\u5168\u88f8|\u8272\u60c5|\u6027\u884c\u4e3a|\u6027\u5668\u5b98|\u6027\u611f|\u8bf1\u60d1|\u60c5\u6b32|\u5185\u8863|\u900f\u89c6|\u534a\u900f\u660e|\u8584\u900f",
+    re.I,
+)
+MJ_PERSON_RE = re.compile(r"\b(?:person|woman|man|girl|boy|model|portrait|celebrity|politician)\b|\u4eba\u7269|\u5973\u4eba|\u7537\u4eba|\u5973\u5b69|\u7537\u5b69|\u771f\u4eba|\u540d\u4eba|\u516c\u4f17\u4eba\u7269", re.I)
+
+MJ_HARD_RULES = [
+    (
+        "adult content",
+        [
+            r"\bnudity\b",
+            r"\bnude\b",
+            r"\bnaked\b",
+            r"\btopless\b",
+            r"\bgenitals?\b",
+            r"\bporn(?:ographic)?\b",
+            r"\bsexual acts?\b",
+            r"\berotic\b",
+            r"\bfetish\b",
+            r"\u88f8\u9732",
+            r"\u5168\u88f8",
+            r"\u8272\u60c5",
+            r"\u6027\u884c\u4e3a",
+            r"\u6027\u5668\u5b98",
+            r"\u604b\u7269",
+        ],
+        "Rewrite as modest PG-13 wardrobe, gesture, lighting, and narrative mood.",
+    ),
+    (
+        "gore or graphic violence",
+        [
+            r"\bgore\b",
+            r"\bgraphic violence\b",
+            r"\bdismember(?:ed|ment)?\b",
+            r"\bsevered\b",
+            r"\bdetached (?:body parts?|limbs?)\b",
+            r"\bmutilat(?:ed|ion)\b",
+            r"\bcannibal(?:ism)?\b",
+            r"\bshooting\b",
+            r"\bbombing\b",
+            r"\bexecution\b",
+            r"\bbloody wound\b",
+            r"\u8840\u8165",
+            r"\u65ad\u80a2",
+            r"\u80a2\u89e3",
+            r"\u5185\u810f",
+            r"\u7206\u70b8\u88ad\u51fb",
+            r"\u67aa\u51fb",
+        ],
+        "Use non-graphic tension, dramatic light, damaged objects, or aftermath without gore.",
+    ),
+    (
+        "hate, harassment, or abuse",
+        [
+            r"\bhate speech\b",
+            r"\bracist\b",
+            r"\bhomophobic\b",
+            r"\btransphobic\b",
+            r"\bslur\b",
+            r"\bdehumaniz(?:e|ing)\b",
+            r"\bkill all\b",
+            r"\u4ec7\u6068\u8a00\u8bba",
+            r"\u79cd\u65cf\u6b67\u89c6",
+            r"\u6050\u540c",
+            r"\u4fae\u8fb1.*\u7fa4\u4f53",
+            r"\u6d88\u706d.*\u7fa4\u4f53",
+        ],
+        "Remove attacks on people or protected groups; describe non-abusive visual conflict instead.",
+    ),
+    (
+        "deception or misinformation",
+        [
+            r"\bmisinformation\b",
+            r"\bdisinformation\b",
+            r"\bfake news\b",
+            r"\bdeepfake\b",
+            r"\bforged\b",
+            r"\belection campaign\b",
+            r"\bpolitical campaign\b",
+            r"\binfluence an election\b",
+            r"\u865a\u5047\u65b0\u95fb",
+            r"\u6df1\u5ea6\u4f2a\u9020",
+            r"\u4f2a\u9020",
+            r"\u8bef\u5bfc\u9009\u4e3e",
+            r"\u653f\u6cbb\u7ade\u9009",
+        ],
+        "Avoid deceptive or political-persuasion framing; make it fictional, editorial, or clearly non-misleading.",
+    ),
+]
+
+MJ_BOUNDARY_RULES = [
+    (
+        "young-coded subject",
+        [r"\byoung beauty\b", r"\bbeautiful girl\b", r"\byoung girl\b", r"\bteenage girl\b", r"\bschoolgirl\b", r"\u5e74\u8f7b\u7f8e\u5973", r"\u5c11\u5973", r"\u5c0f\u7f8e\u5973", r"\u5c0f\u5973\u5b69"],
+        "Use `adult woman`, `young adult woman`, or `adult Chinese woman`.",
+    ),
+    (
+        "transparent or sheer wardrobe wording",
+        [r"\bsemi-transparent\b", r"\btransparent\b", r"\bsee-through\b", r"\bsheer\b", r"\u534a\u900f\u660e", r"\u900f\u89c6", r"\u8584\u900f"],
+        "Use `lightweight silk shawl layered over modest clothing`.",
+    ),
+    (
+        "body-focused wardrobe wording",
+        [r"\bstrapless\b", r"\bbodice\b", r"\bcleavage\b", r"\bbare shoulders?\b", r"\bshoulder and neck\b", r"\u62b9\u80f8", r"\u80a9\u9888", r"\u80f8"],
+        "Use `structured bodice under layered Tang-style Hanfu` and describe silhouette/fabric instead of body exposure.",
+    ),
+    (
+        "sensual gaze or mood wording",
+        [r"\bsensual\b", r"\bseductive\b", r"\bdreamy gaze\b", r"\bprovocative\b", r"\u8ff7\u79bb", r"\u8bf1\u60d1", r"\u64a9\u4eba"],
+        "Use `serene lowered gaze` or `introspective classical mood`.",
+    ),
+]
+
+MJ_SIMPLE_BLOOD_RE = re.compile(r"\b(?:blood|bloody)\b|\u9c9c\u8840", re.I)
+MJ_PUBLIC_FIGURE_RE = re.compile(
+    r"\b(?:public figure|real person|celebrity|politician|president|donald trump|joe biden|xi jinping|elon musk|taylor swift)\b|\u516c\u4f17\u4eba\u7269|\u771f\u5b9e\u4eba\u7269|\u540d\u4eba|\u653f\u6cbb\u4eba\u7269|\u603b\u7edf",
+    re.I,
+)
+MJ_REAL_PERSON_HARM_RE = re.compile(
+    r"\b(?:nude|sexual|scandal|defame|humiliat(?:e|ing)|arrest|crime|misleading|fake|fraud)\b|\u88f8\u9732|\u6027\u5316|\u4e11\u95fb|\u8bfd\u8c24|\u7f9e\u8fb1|\u72af\u7f6a|\u8bef\u5bfc|\u8bc8\u9a97",
+    re.I,
+)
+
+
+def pattern_hits(text: str, patterns: Iterable[str]) -> list[str]:
+    return [pattern for pattern in patterns if re.search(pattern, text, flags=re.I)]
+
+
+def midjourney_no_values(text: str) -> str:
+    match = MJ_UNSAFE_NO_RE.search(text)
+    if not match:
+        return ""
+    return re.split(r"\s--[a-z]", match.group(1), maxsplit=1, flags=re.I)[0]
+
+
+def check_midjourney_safety(text: str, mode: str) -> tuple[list[str], list[str], dict[str, object], list[str]]:
+    mode = mode if mode in {"off", "warn", "strict"} else "strict"
+    if mode == "off":
+        return [], [], {"mode": mode, "status": "skipped"}, []
+
+    critical: list[str] = []
+    warnings: list[str] = []
+    suggestions: list[str] = []
+    hard_hits: list[dict[str, object]] = []
+    boundary_hits: list[dict[str, object]] = []
+
+    for category, patterns, suggestion in MJ_HARD_RULES:
+        hits = pattern_hits(text, patterns)
+        if hits:
+            hard_hits.append({"category": category, "patterns": hits})
+            message = f"MidJourney safety: {category} conflicts with PG-13/SFW rules."
+            if mode == "strict":
+                critical.append(message)
+            else:
+                warnings.append(message)
+            suggestions.append(suggestion)
+
+    minor_hit = MJ_MINOR_RE.search(text)
+    sexual_hit = MJ_SEXUAL_CONTEXT_RE.search(text)
+    if minor_hit and sexual_hit:
+        hard_hits.append({"category": "sexualized minor or underage-coded subject", "patterns": [minor_hit.group(0), sexual_hit.group(0)]})
+        message = "MidJourney safety: minor or underage-coded subject appears with sexualized/transparent/body-focused language."
+        if mode == "strict":
+            critical.append(message)
+        else:
+            warnings.append(message)
+        suggestions.append("Use an adult subject and modest PG-13 wardrobe, or remove the sexualized/body-focused context.")
+
+    public_hit = MJ_PUBLIC_FIGURE_RE.search(text)
+    harm_hit = MJ_REAL_PERSON_HARM_RE.search(text)
+    if public_hit and harm_hit:
+        hard_hits.append({"category": "harmful real-person or public-figure depiction", "patterns": [public_hit.group(0), harm_hit.group(0)]})
+        message = "MidJourney safety: real person/public figure appears with harmful, misleading, or sexualized context."
+        if mode == "strict":
+            critical.append(message)
+        else:
+            warnings.append(message)
+        suggestions.append("Use a fictional adult character and remove defamatory, sexualized, or misleading context.")
+    elif public_hit:
+        boundary_hits.append({"category": "public figure / real person", "patterns": [public_hit.group(0)]})
+        warnings.append("MidJourney safety: real people and public figures may receive stricter moderation; keep the depiction respectful and non-misleading.")
+        suggestions.append("Use a fictional character or make the image clearly editorial/non-deceptive.")
+
+    for category, patterns, suggestion in MJ_BOUNDARY_RULES:
+        hits = pattern_hits(text, patterns)
+        if hits:
+            boundary_hits.append({"category": category, "patterns": hits})
+            warnings.append(f"MidJourney moderation risk: {category}; rewrite into clearer PG-13 visual language.")
+            suggestions.append(suggestion)
+
+    blood_match = MJ_SIMPLE_BLOOD_RE.search(text)
+    if blood_match and not any(hit["category"] == "gore or graphic violence" for hit in hard_hits):
+        boundary_hits.append({"category": "blood wording", "patterns": [blood_match.group(0)]})
+        warnings.append("MidJourney moderation risk: simple blood wording can be over-read as gore; use color words like crimson if violence is not intended.")
+        suggestions.append("Use non-graphic color language such as `crimson`, `deep red`, or `red-stained fabric` where appropriate.")
+
+    no_values = midjourney_no_values(text)
+    if no_values and (MJ_SEXUAL_CONTEXT_RE.search(no_values) or MJ_SIMPLE_BLOOD_RE.search(no_values)):
+        boundary_hits.append({"category": "unsafe term inside --no", "patterns": [no_values.strip()]})
+        warnings.append("MidJourney moderation risk: do not put adult/gore/suggestive terms inside `--no`; rewrite the positive prompt safely instead.")
+        suggestions.append("Use positive safe constraints such as `modest layered clothing`, `non-graphic scene`, or `respectful fictional subject`.")
+
+    phone_texture = re.search(r"\b(?:mobile|phone|smartphone|low-resolution|low-res|compression)\b|\u624b\u673a|\u4f4e\u6e05|\u538b\u7f29", text, flags=re.I)
+    if phone_texture and boundary_hits and MJ_PERSON_RE.search(text):
+        warnings.append("MidJourney moderation risk: low-resolution mobile realism combined with body/wardrobe ambiguity can look less clearly PG-13.")
+        suggestions.append("Keep `casual mobile-photo texture`, but separate it from modest wardrobe and non-suggestive pose language.")
+
+    policy = {
+        "mode": mode,
+        "hard_hits": hard_hits,
+        "boundary_hits": boundary_hits,
+        "official_standard": "MidJourney PG-13/SFW; moderation is black-box and not guaranteed.",
+    }
+    return critical, warnings, policy, sorted(set(suggestions))
+
 FLUX_NEGATION_RE = re.compile(r"\b(?:no|without|not|avoid)\s+[^,.;\n]+", re.I)
 FLUX_SOFT_NEGATION_RE = re.compile(r"\b(?:not|no)\s+(?:overly|too|excessively)\s+[^,.;\n]+", re.I)
-TEXT_RENDERING_CUE_RE = re.compile(r"\b(?:headline|sign|subtext|text|typography|wording|copy)\b", re.I)
-GPT_IMAGE_FINAL_RENDER_MAX_WORDS = 180
-MIDJOURNEY_COMPACT_MAX_WORDS = 80
-STYLE_ANCHOR_MAX = 2
-DEFECT_TERM_MAX = 2
-
-STYLE_ANCHOR_TERMS = {
-    "anime",
-    "bauhaus",
-    "baroque",
-    "brutalist",
-    "collage",
-    "cyberpunk",
-    "documentary",
-    "editorial",
-    "etching",
-    "expressionist",
-    "film noir",
-    "gouache",
-    "halftone",
-    "impressionist",
-    "ink wash",
-    "isometric",
-    "linocut",
-    "manga",
-    "minimalist",
-    "oil painting",
-    "photocopy",
-    "photorealistic",
-    "pixel art",
-    "risograph",
-    "surreal",
-    "vhs",
-    "watercolor",
-    "woodcut",
-    "3d render",
-    "赛博朋克",
-    "包豪斯",
-    "拼贴",
-    "水彩",
-    "油画",
-    "木刻",
-    "铜版画",
-    "漫画",
-    "动画",
-    "极简",
-    "超现实",
-    "半调",
-    "复印",
-}
-
-DEFECT_TERMS = {
-    "artifact",
-    "artifacts",
-    "compression artifact",
-    "compression artifacts",
-    "crt",
-    "dirty",
-    "dust",
-    "film grain",
-    "grain",
-    "grainy",
-    "halftone",
-    "muddy",
-    "noise",
-    "noisy",
-    "photocopy",
-    "scan",
-    "scratched",
-    "vhs",
-    "脏",
-    "污渍",
-    "灰尘",
-    "噪点",
-    "噪声",
-    "颗粒",
-    "胶片颗粒",
-    "扫描",
-    "复印",
-    "半调",
-    "压缩伪影",
-    "划痕",
-}
-
-PRIORITY_TERMS = {
-    "priority",
-    "subject readability",
-    "clean subject",
-    "clean silhouette",
-    "preserve subject",
-    "preserve",
-    "main style",
-    "style anchor",
-    "primary style",
-    "主体优先",
-    "主体可读",
-    "主体清晰",
-    "主风格",
-    "优先级",
-    "保持主体",
-}
-
-CLEAN_RENDER_TERMS = {
-    "clean",
-    "controlled",
-    "low noise",
-    "minimal noise",
-    "subtle",
-    "crisp",
-    "clear subject",
-    "clean subject",
-    "clean silhouette",
-    "uncluttered",
-    "干净",
-    "克制",
-    "轻微",
-    "清晰",
-    "低噪点",
-    "主体清晰",
-    "背景克制",
-}
-
-SD_WRAPPER_TERMS = {
-    "lora",
-    "controlnet",
-    "ip-adapter",
-    "ipadapter",
-    "sampler",
-    "cfg",
-    "denoise",
-    "checkpoint",
-    "vae",
-}
-
-SD_WRAPPER_CONTEXT_TERMS = {
-    "webui",
-    "automatic1111",
-    "a1111",
-    "comfyui",
-    "local wrapper",
-    "local workflow",
-    "stable diffusion webui",
-}
 
 
 @dataclass
@@ -418,8 +515,6 @@ class LintResult:
     critical: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     suggestions: list[str] = field(default_factory=list)
-    quality_risks: list[str] = field(default_factory=list)
-    rewrite_advice: list[dict[str, str]] = field(default_factory=list)
 
     @property
     def critical_failures(self) -> list[str]:
@@ -541,6 +636,38 @@ def infer_architecture(text: str) -> str:
     return "system" if sum(system.values()) > sum(seven.values()) else "seven-layer"
 
 
+
+def check_style_anchors(text: str) -> tuple[list[str], list[str]]:
+    warnings: list[str] = []
+    suggestions: list[str] = []
+    anchors = list(STYLE_ANCHOR_HINT_RE.finditer(text))
+
+    if len(anchors) > 3:
+        warnings.append("Style anchors: too many named anchors; keep 2-3 primary anchors or split into a test matrix.")
+        suggestions.append("Group anchors by role and remove weak or redundant references.")
+
+    naked: list[str] = []
+    for match in anchors:
+        start = max(0, match.start() - 80)
+        end = min(len(text), match.end() + 160)
+        window = text[start:end]
+        if not STYLE_VISIBLE_TRAIT_RE.search(window):
+            naked.append(match.group(0))
+    if naked:
+        warnings.append("Style anchors: named reference appears without nearby visible traits: " + "; ".join(naked[:3]))
+        suggestions.append("Translate each named anchor into visible traits such as silhouette, fabric, lens, color, grain, light, composition, or material.")
+
+    if STYLE_COPY_RISK_RE.search(text):
+        warnings.append("Style anchors: exact-copy wording can create IP or model-policy risk; use inspired-by/evoking language plus visual traits.")
+        suggestions.append("Avoid exact scene, official campaign, poster, or collection replica language.")
+
+    name_stack_count = len(STYLE_NAME_STACK_RE.findall(text))
+    if name_stack_count >= 4 and (anchors or "style" in text.lower() or "inspired" in text.lower()):
+        warnings.append("Style anchors: prompt looks like a name stack; visible traits may be diluted.")
+        suggestions.append("Keep the strongest references and describe what each one controls.")
+
+    return warnings, suggestions
+
 def check_generic_filler(text: str) -> list[str]:
     hits = generic_filler_hits(text)
     if len(hits) >= 4 and concrete_noun_count(text) < 4:
@@ -555,97 +682,6 @@ def check_conflicts(text: str) -> list[str]:
         if left in haystack and right in haystack:
             warnings.append(message)
     return warnings
-
-
-def unique_term_hits(text: str, terms: Iterable[str]) -> list[str]:
-    haystack = normalize(text)
-    return sorted(term for term in terms if re.search(re.escape(term), haystack, flags=re.I))
-
-
-def term_occurrence_hits(text: str, terms: Iterable[str]) -> list[str]:
-    haystack = normalize(text)
-    hits: list[str] = []
-    for term in terms:
-        hits.extend([term] * len(re.findall(re.escape(term), haystack, flags=re.I)))
-    return hits
-
-
-def add_quality_risk(
-    risks: list[str],
-    advice: list[dict[str, str]],
-    risk: str,
-    recommendation: str,
-) -> None:
-    if risk not in risks:
-        risks.append(risk)
-        advice.append({"risk": risk, "advice": recommendation})
-
-
-def check_quality_risks(
-    text: str,
-    architecture: str,
-    model: str,
-    word_count: int,
-) -> tuple[list[str], list[dict[str, str]], dict[str, object]]:
-    risks: list[str] = []
-    advice: list[dict[str, str]] = []
-    style_hits = unique_term_hits(text, STYLE_ANCHOR_TERMS)
-    defect_hits = term_occurrence_hits(text, DEFECT_TERMS)
-    has_priority = has_any(text, PRIORITY_TERMS)
-    has_clean_moderation = has_any(text, CLEAN_RENDER_TERMS)
-
-    if model == "gpt-image" and word_count > GPT_IMAGE_FINAL_RENDER_MAX_WORDS:
-        add_quality_risk(
-            risks,
-            advice,
-            "prompt_too_long",
-            "Compress the final render prompt to the strongest subject, composition/light, main style, and hard constraints.",
-        )
-    if model == "midjourney" and architecture == "compact" and word_count > MIDJOURNEY_COMPACT_MAX_WORDS:
-        add_quality_risk(
-            risks,
-            advice,
-            "prompt_too_long",
-            "Shorten the Midjourney prompt into compact image phrases and keep parameters at the end.",
-        )
-    if len(style_hits) > STYLE_ANCHOR_MAX:
-        add_quality_risk(
-            risks,
-            advice,
-            "style_overload",
-            "Keep one main style anchor and at most one weak supporting modifier.",
-        )
-    if len(defect_hits) > DEFECT_TERM_MAX:
-        add_quality_risk(
-            risks,
-            advice,
-            "defect_overload",
-            "Reduce grain, scan, VHS, CRT, halftone, dirt, and noise language to one subtle artifact unless degradation is the goal.",
-        )
-    if (len(style_hits) > STYLE_ANCHOR_MAX or len(defect_hits) > DEFECT_TERM_MAX or word_count > GPT_IMAGE_FINAL_RENDER_MAX_WORDS) and not has_priority:
-        add_quality_risk(
-            risks,
-            advice,
-            "unclear_priority",
-            "Add a priority stack that protects subject readability, composition, main style, and hard constraints before texture effects.",
-        )
-    if len(defect_hits) >= 2 and not has_clean_moderation:
-        add_quality_risk(
-            risks,
-            advice,
-            "dirty_render_risk",
-            "Add clean subject silhouette, controlled background complexity, low texture noise, and subtle artifact strength.",
-        )
-
-    signals = {
-        "style_anchor_hits": style_hits,
-        "defect_term_hits": sorted(set(defect_hits)),
-        "style_anchor_count": len(style_hits),
-        "defect_term_count": len(defect_hits),
-        "has_priority_language": has_priority,
-        "has_clean_render_moderation": has_clean_moderation,
-    }
-    return risks, advice, signals
 
 
 def parse_midjourney_params(text: str, strict_model_params: bool = False) -> MidjourneyParse:
@@ -729,14 +765,14 @@ def gpt_image_needs_quoted_text(text: str) -> bool:
     label_text_cue = re.search(r"\b(read|reads|says|with the words|exactly)\b", haystack)
     if label_or_logo and label_text_cue:
         return True
-    if TEXT_RENDERING_CUE_RE.search(haystack):
+    if re.search(r"\b(?:headline|sign|text|typography|wording|copy)\b", haystack):
         return True
     if any(term in haystack for term in ("blank label", "white label", "unmarked label")):
         return False
     return False
 
 
-def check_model_policy(text: str, model: str, strict_model_params: bool = False) -> tuple[list[str], list[str], dict[str, object]]:
+def check_model_policy(text: str, model: str, strict_model_params: bool = False, mj_safety: str = "strict") -> tuple[list[str], list[str], dict[str, object]]:
     haystack = normalize(text)
     critical: list[str] = []
     warnings: list[str] = []
@@ -751,6 +787,11 @@ def check_model_policy(text: str, model: str, strict_model_params: bool = False)
         warnings.extend(parsed.warnings)
         if has_negative_block:
             critical.append("Midjourney should use --no at the end instead of a separate Negative Prompt block.")
+        safety_critical, safety_warnings, safety_policy, safety_suggestions = check_midjourney_safety(text, mj_safety)
+        policy["midjourney_safety"] = safety_policy
+        policy["midjourney_safety_suggestions"] = safety_suggestions
+        critical.extend(safety_critical)
+        warnings.extend(safety_warnings)
     elif model == "flux":
         bad_hex = malformed_hex_codes(text)
         negation_hits = FLUX_NEGATION_RE.findall(text)
@@ -789,14 +830,6 @@ def check_model_policy(text: str, model: str, strict_model_params: bool = False)
     elif model == "stable-diffusion":
         if "--no" in haystack:
             warnings.append("Stable Diffusion wrappers usually use a negative prompt field, not Midjourney --no.")
-        wrapper_hits = unique_term_hits(text, SD_WRAPPER_TERMS)
-        has_wrapper_context = any(term in haystack for term in SD_WRAPPER_CONTEXT_TERMS)
-        policy["wrapper_syntax_terms"] = wrapper_hits
-        policy["has_wrapper_context"] = has_wrapper_context
-        if wrapper_hits and not has_wrapper_context:
-            warnings.append(
-                "Stable Diffusion wrapper syntax should name the wrapper/model stack before using LoRA, ControlNet, sampler, CFG, denoise, checkpoint, or VAE terms."
-            )
     return critical, warnings, policy
 
 
@@ -806,7 +839,7 @@ def score_result(coverage: dict[str, bool], critical: list[str], warnings: list[
     return max(0, base - penalty)
 
 
-def lint(text: str, architecture: str, model: str, strict_model_params: bool = False) -> LintResult:
+def lint(text: str, architecture: str, model: str, strict_model_params: bool = False, mj_safety: str = "strict") -> LintResult:
     if architecture == "auto":
         architecture = infer_architecture(text)
 
@@ -838,15 +871,19 @@ def lint(text: str, architecture: str, model: str, strict_model_params: bool = F
         suggestions.append("Add a separate Output Constraints block for aspect ratio, exact text, and avoid/replacement strategy.")
 
     warnings.extend(check_generic_filler(text))
+    style_warnings, style_suggestions = check_style_anchors(text)
+    warnings.extend(style_warnings)
+    suggestions.extend(style_suggestions)
     warnings.extend(check_conflicts(text))
-    model_critical, model_warnings, model_policy = check_model_policy(text, model, strict_model_params)
+    model_critical, model_warnings, model_policy = check_model_policy(text, model, strict_model_params, mj_safety)
     critical.extend(model_critical)
     warnings.extend(model_warnings)
-    quality_risks, rewrite_advice, quality_signals = check_quality_risks(text, architecture, model, word_count)
-    model_policy["quality_signals"] = quality_signals
 
     if model == "midjourney":
-        suggestions.append("Place Midjourney parameters at the end and convert exclusions to --no.")
+        suggestions.append("Place Midjourney parameters at the end and convert ordinary visual exclusions to --no.")
+        safety_suggestions = model_policy.get("midjourney_safety_suggestions", [])
+        if isinstance(safety_suggestions, list):
+            suggestions.extend(str(item) for item in safety_suggestions)
     if model == "flux":
         suggestions.append("Rewrite avoid/negative ideas as positive replacements for FLUX.")
 
@@ -866,8 +903,6 @@ def lint(text: str, architecture: str, model: str, strict_model_params: bool = F
         critical=critical,
         warnings=warnings,
         suggestions=sorted(set(suggestions)),
-        quality_risks=quality_risks,
-        rewrite_advice=rewrite_advice,
     )
 
 
@@ -888,18 +923,10 @@ def print_text(result: LintResult) -> None:
         print("Warnings:")
         for warning in result.warnings:
             print(f"- {warning}")
-    if result.quality_risks:
-        print("Quality Risks:")
-        for risk in result.quality_risks:
-            print(f"- {risk}")
     if result.suggestions:
         print("Suggestions:")
         for suggestion in result.suggestions:
             print(f"- {suggestion}")
-    if result.rewrite_advice:
-        print("Rewrite Advice:")
-        for item in result.rewrite_advice:
-            print(f"- {item['risk']}: {item['advice']}")
 
 
 def main() -> int:
@@ -912,6 +939,7 @@ def main() -> int:
         default="generic",
     )
     parser.add_argument("--format", choices=["text", "json"], default="text")
+    parser.add_argument("--mj-safety", choices=["off", "warn", "strict"], default="strict", help="MidJourney PG-13/SFW safety lint level.")
     parser.add_argument("--strict", action="store_true", help="Return nonzero for critical failures.")
     parser.add_argument(
         "--strict-model-params",
@@ -921,7 +949,7 @@ def main() -> int:
     args = parser.parse_args()
 
     text = args.prompt_file.read_text(encoding="utf-8")
-    result = lint(text, args.architecture, args.model, args.strict_model_params)
+    result = lint(text, args.architecture, args.model, args.strict_model_params, args.mj_safety)
 
     if args.format == "json":
         print(json.dumps(asdict(result), ensure_ascii=False, indent=2))

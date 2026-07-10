@@ -20,24 +20,30 @@ Choose one mode before drafting.
 - **Critique**: user provides an existing prompt. Output diagnosis, severity, missing controls, contradictions, and a rewritten prompt.
 - **Model port**: user wants a prompt adapted from one model to another. Output target-model risks, converted prompt, parameter/negative handling, and what changed.
 - **Series bible**: user wants multiple images, cinematic stills, a set, or a consistent visual world. Output continuity rules, variation budget, shot slots, and per-shot prompts.
-- **Prompt compression / final render prompt**: user has a long analysis prompt or seven-layer draft and needs the clean prompt to actually paste into a model. Output priority stack, compressed prompt, and dropped/compressed details.
-- **Revision prompt from failure**: user describes a failed image output or gives visual feedback. Output failure type, observed cause, preserve/change plan, copy-ready repair prompt, and next check.
-- **Reference image role planning**: user has one or more reference images. Output what each reference controls, what it must not control, and a prompt with reference roles.
 
 For exact schemas, read `references/output-contract.md`.
+
+
+## Style Mode Gate
+
+Before drafting, decide whether the user wants a **plain prompt** or a **stylized prompt**. Read `references/style-mode.md` when the request mentions style, references, directors, films, artists, fashion, camera/film/lens looks, materials, "more advanced style," or when the user asks for recommendations.
+
+- If the user clearly asks for a plain/ordinary prompt, do not add extra style anchors.
+- If the user clearly asks for stylization, ask for their preferred references first: cinema/director, camera/film/lens, fashion/styling, artist/movement, literature/mood, material/craft, color grade, or reference images.
+- If the user wants stylization but has no references, search the web for 2-4 fitting directions before recommending. Do not use a fixed local name list or prior chat examples as default style choices.
+- Style anchors are optional controls, not decorative suffixes. Translate every named anchor into visible traits and place those traits in the correct prompt layer.
+- For stylized outputs, include `Style Anchors Used` outside the copy-ready prompt so the user can see what each anchor controls.
+- For fast one-off requests where the user does not ask for style exploration, default to the plain prompt and offer style as an iteration knob.
 
 ## Mode Precedence
 
 If multiple modes apply:
 
-1. Choose **Revision prompt from failure** first when the user describes a generated image failure or asks how to fix a bad output.
-2. Choose **Reference image role planning** first when reference images must control identity, product geometry, pose, composition, palette, or style.
-3. Choose **Critique** when the user provides an existing prompt and asks what is wrong.
-4. Choose **Model port** when source and target models are named.
-5. Choose **Series bible** when multiple images or continuity are required.
-6. Choose **Prompt compression / final render prompt** when the user asks for the final paste-ready prompt, a shorter model prompt, or cleaner GPT Image output from a long draft.
-7. Choose **Standard build** for structured creation or rewrite.
-8. Choose **Quick prompt** only when the user asks for speed or gives a simple one-off request.
+1. Choose **Critique** first when the user provides an existing prompt and asks what is wrong.
+2. Choose **Model port** first when source and target models are named.
+3. Choose **Series bible** first when multiple images or continuity are required.
+4. Choose **Standard build** for structured creation or rewrite.
+5. Choose **Quick prompt** only when the user asks for speed or gives a simple one-off request.
 
 Quick mode must still follow model-native syntax when a target model is named.
 
@@ -58,13 +64,15 @@ Read `references/model-adapters.md` when:
 
 Do not overclaim model behavior. If a model behavior is not documented or not locally tested, present it as a heuristic.
 
-## Image Feedback Loop
+### MidJourney Compliance Preflight
 
-Read `references/image-feedback-loop.md` when the user reports a generated-image failure, provides review notes, or asks for a revision prompt from an output.
+When the target platform is MidJourney, perform an MJ compliance preflight before drafting the final prompt. Read `references/midjourney-safety.md` together with `references/model-adapters.md`.
 
-- Treat feedback as observed output evidence, not as a reason to invent new creative direction.
-- Preserve the original subject, composition intent, exact quoted text, product geometry, and assigned reference roles unless the failure specifically concerns them.
-- Change only the failed areas first; then compress the prompt if length, style overload, or dirty-render language contributed to the issue.
+- Default to a PG-13/SFW `MJ Safe Prompt` that preserves the user's artistic anchors: subject identity, cultural period, narrative mood, environment, lighting, color, camera, materials, and foreground/background staging.
+- Do not use evasive spellings, coded language, or prohibited terms inside `--no` to bypass moderation. Rewrite the image positively and safely.
+- Hard-block prompts whose core request depends on nudity, sexualized minors, gore, hate/harassment, deception, or harmful depictions of real people. Offer a safe alternate direction instead of a MidJourney-ready unsafe prompt.
+- For borderline wording, rewrite rather than flatten: replace sexualized or ambiguous body/clothing language with modest wardrobe construction, fabric layering, camera, light, and narrative mood.
+- Unless the user explicitly asks for an art-forward variant, output only the safe copy-ready prompt plus short preservation/risk notes.
 
 ## Quality Gate
 
@@ -75,7 +83,6 @@ Before finalizing, apply `references/checklist.md` or `references/evaluation-rub
 - Are lighting, material, camera, style, and constraints explicit?
 - Is the prompt shaped for the target model?
 - Are avoid/negative instructions handled in the model's native way?
-- For GPT Image-like models, is the final render prompt short enough, prioritized, and clean enough to avoid dirty texture/noise overload?
 
 For file-based prompts, optionally run:
 
@@ -89,7 +96,7 @@ python skills/image-prompt-architect/scripts/prompt_lint.py prompt.txt --archite
 - `references/seven-layer-framework.md`: single-image structure.
 - `references/system-template-framework.md`: cinematic series and continuity systems.
 - `references/model-adapters.md`: versioned model adapter matrix.
-- `references/image-feedback-loop.md`: failure labels and revision-prompt workflow.
+- `references/midjourney-safety.md`: MidJourney PG-13/SFW compliance, moderation-risk rewriting, and art-preservation rules.
 - `references/checklist.md`: quick quality gate.
 - `references/evaluation-rubric.md`: scoring rubric.
 - `references/examples.md`: worked examples and reusable skeletons.

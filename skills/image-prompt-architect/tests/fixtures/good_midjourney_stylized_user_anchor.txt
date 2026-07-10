@@ -1,0 +1,7 @@
+Style Mode: stylized
+Style Brief: user supplied a fashion and camera direction.
+Style Anchors Used:
+- Fashion anchor: sculptural couture -> asymmetrical volume, raw-edged black wool, dramatic high collar
+- Camera anchor: compact documentary film look -> 35mm lens behavior, muted cyan shadows, fine grain
+
+adult woman on a quiet snowy train platform at dusk, holding a folded handwritten letter, wearing a sculptural asymmetrical winter coat with raw-edged black wool layers and a dramatic high collar, pale winter light, muted cyan-blue shadows, compact documentary camera feel, 35mm lens behavior, fine film grain, restrained romantic melancholy --ar 16:9 --raw --stylize 100 --quality 1 --no text, logo, watermark

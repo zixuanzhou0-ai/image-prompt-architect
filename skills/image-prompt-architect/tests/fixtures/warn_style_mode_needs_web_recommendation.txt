@@ -1,0 +1,4 @@
+Style Mode: stylized
+Style Brief: user asked for a more stylized prompt but gave no references; search the web for 2-4 fitting visual directions before drafting.
+
+adult fashion portrait in a winter train station with cinematic mood and refined clothing --ar 16:9 --raw --stylize 80

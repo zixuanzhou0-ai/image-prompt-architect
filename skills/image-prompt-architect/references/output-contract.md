@@ -12,6 +12,26 @@ Exceptions:
 - API request wrappers when the user explicitly asks for code/API use;
 - separate parameter fields when the target interface requires fields.
 
+
+## Style Mode Addendum
+
+When `references/style-mode.md` selects a plain prompt, keep the existing mode contract unchanged.
+
+When it selects a stylized prompt, add these sections outside the copy-ready prompt:
+
+```markdown
+**Style Mode**
+<plain | stylized, with one short reason>
+
+**Style Brief**
+<the selected style direction, including user-supplied references or web-recommended direction>
+
+**Style Anchors Used**
+- <anchor role>: <reference or direction> -> <visible traits placed in the prompt>
+```
+
+Do not put the explanatory sections inside the copy-ready prompt. If the user has not chosen a style direction yet, ask the style-mode question instead of inventing one.
+
 ## Quick Prompt
 
 Use when the user asks for one prompt quickly.
@@ -29,32 +49,6 @@ Output:
 Do not include long explanations unless the user asks to learn the structure.
 Omit model notes in quick mode unless model syntax matters.
 
-## Prompt Compression / Final Render Prompt
-
-Use when the user already has a long prompt, seven-layer draft, style bible note, or analysis block and needs the shortest clean prompt that should be pasted into the target model.
-
-Output:
-
-```markdown
-**Priority Stack**
-1. <subject/readability priority>
-2. <composition/light priority>
-3. <main style priority>
-4. <constraints/edit priority>
-
-**Final Render Prompt**
-<copy-ready prompt, usually 80-160 words for GPT Image-like models, with no headings inside the prompt>
-
-**Dropped / Compressed**
-- <redundant style anchor, weak texture detail, duplicate background prop, or low-priority artifact removed>
-```
-
-Rules:
-
-- Keep one main style anchor and at most one weak modifier for GPT Image-like models.
-- If the source uses grain, scan, VHS, CRT, halftone, photocopy, dust, or compression artifacts, keep only the artifact that matters and mark it subtle unless the user explicitly wants a dirty image.
-- Preserve hard constraints such as exact text, product geometry, identity, aspect ratio, and must-include elements.
-
 ## Standard Build
 
 Use when the user asks to create or rewrite a prompt with structure.
@@ -64,6 +58,15 @@ Output:
 ```markdown
 **Architecture**
 <seven-layer | system | hybrid | compact natural language, with one-sentence reason>
+
+**Style Mode**
+<plain | stylized, only when style-mode routing matters>
+
+**Style Brief**
+<only for stylized prompts>
+
+**Style Anchors Used**
+- <only for stylized prompts>
 
 **Tagged Prompt**
 <labeled layers or systems>
@@ -103,53 +106,6 @@ Output:
 **Iteration Plan**
 <2-4 edits to try after the next image>
 ```
-
-## Revision Prompt From Failure
-
-Use when the user describes a failed generated image or gives image-output feedback such as dirty texture, weak style, wrong text, subject drift, background clutter, or style overpowering the subject.
-
-Output:
-
-```markdown
-**Failure Type**
-<dirty render / text error / subject drift / overstyle / weak style / background clutter / low subject readability>
-
-**Observed Cause**
-<what the generated image visibly did wrong, without adding new creative goals>
-
-**Preserve**
-<what should stay unchanged from the previous prompt or image>
-
-**Change**
-<what must be corrected, reduced, emphasized, or replaced>
-
-**Revision Prompt**
-<copy-ready repair prompt>
-
-**Next Check**
-<one sentence naming what to inspect after regeneration>
-```
-
-Revision prompts should be narrow. Fix the failure before adding new creative ideas.
-When the user gives concrete image-output feedback, use the failure labels and repair rules in `image-feedback-loop.md`.
-
-## Reference Image Role Planning
-
-Use when one or more reference images are part of the workflow.
-
-Output:
-
-```markdown
-**Reference Role Plan**
-| Reference | Controls | Must Not Control |
-| --- | --- | --- |
-| ref 1 | <identity / product geometry / pose / composition / palette / style> | <text / background / logo / unwanted artifacts> |
-
-**Prompt**
-<copy-ready prompt that names each reference role in plain language>
-```
-
-When product shape or identity matters, make that role explicit before style or palette. If a reference image contains unwanted text, logo, background clutter, or lighting, say not to preserve it.
 
 ## Model Port
 

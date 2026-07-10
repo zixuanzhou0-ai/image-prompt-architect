@@ -45,6 +45,7 @@ Each adapter tracks:
 - Clear natural language with explicit priorities.
 - Use sections when preserving/changing/editing instructions need clarity.
 - For text rendering, quote exact text and specify placement, typography, layout, and what must remain unchanged.
+- For stylized prompts, describe style anchors in ordinary language and assign reference images explicit roles instead of using Midjourney-style parameters.
 
 **Language strategy:**
 
@@ -54,21 +55,6 @@ Each adapter tracks:
 **Length strategy:**
 
 - Prefer concise, prioritized natural language over huge keyword piles.
-- For GPT Image / GPT Image 2-style final render prompts, prefer one paragraph around 80-160 words unless the user is coding an API request or doing a complex edit.
-
-**Clean render strategy:**
-
-- Use one main style anchor and at most one weak supporting modifier.
-- Put subject readability, preserve/change instructions, and composition before decorative texture.
-- Avoid stacking grain, scan, VHS, CRT, halftone, photocopy, collage, dust, paper damage, and compression artifacts unless the user explicitly wants a degraded image.
-- When the style is dense, add clean subject silhouette, controlled background complexity, low texture noise, and subtle media artifacts.
-- Do not repeat the same cleanliness constraint many times; one clear priority stack is stronger than a long negative list.
-
-**Revision prompt strategy:**
-
-- Keep repair prompts short and direct: preserve first, then change only failed areas.
-- Prioritize subject readability, clean edges, exact quoted text, product geometry, and assigned reference roles before style texture.
-- For dirty-render failures, remove stacked grain/scan/VHS/CRT/halftone/photocopy language or keep one subtle artifact.
 
 **Negative prompt strategy:**
 
@@ -83,6 +69,7 @@ Each adapter tracks:
 **Reference image strategy:**
 
 - State what each reference image controls: identity, style, composition, product shape, or palette.
+- In stylized mode, use references for style, identity, composition, or material separately when possible.
 
 **Do not claim:**
 
@@ -179,27 +166,24 @@ Create an image of ... Preserve ... Change ... Render the exact text "...". Avoi
 
 - Combine natural-language intent with structured aesthetic keywords when useful.
 - Follow local prompt libraries, checklist, and model notes if present.
-- For Dreamina/Jimeng UI-style work, use a short concept paragraph plus a compact aesthetic keyword line rather than long bilingual duplication.
-
-**Revision prompt strategy:** Use Chinese for the repair intent and keep English only for camera, material, render, or style terms. Keep avoid lists short.
+- In stylized mode, keep Chinese narrative specificity and mix in English production keywords for camera, fashion, material, and color when useful.
 
 **Language strategy:** Chinese is useful for culturally specific scenes; English is useful for common technical visual terms.
 
-Use Chinese first for culturally specific intent, and reserve English for camera, material, rendering, or style terms that are clearer as production vocabulary.
-
 **Length strategy:** Use medium-length prompts with clear subject, scene, style, camera, and constraints.
 
-**Negative prompt strategy:** Keep avoid lists short and model-specific. Avoid Stable Diffusion-style giant negative blocks unless the local workflow explicitly asks for them.
+**Negative prompt strategy:** Keep avoid lists short and model-specific.
 
 **Parameter/API strategy:** Do not set a public universal model default unless local instructions require it.
 
 **Reference image strategy:** State whether references control identity, pose, style, or layout.
 
+**Style anchor strategy:** Ask for user-preferred style references first. If none are supplied and the user wants stylization, search for fitting directions before recommending. Do not rely on a fixed list of names.
+
 **Do not claim:**
 
 - Do not claim a public universal default model version.
 - Do not imply Seedream technical report behavior, Dreamina UI behavior, and Jimeng UI behavior are identical.
-- Do not present Dreamina/Jimeng UI heuristics as formally verified model-output evidence.
 
 **Copy-ready output format:**
 
@@ -209,64 +193,83 @@ Use Chinese first for culturally specific intent, and reserve English for camera
 
 ## Midjourney
 
-**Docs last checked:** 2026-05-29
-**Fixture coverage last updated:** 2026-05-29
+**Docs last checked:** 2026-07-03
+**Fixture coverage last updated:** 2026-07-03
 **Image-output eval last run:** none
-**Confidence:** high for parameter syntax; medium for creative heuristics
-**Primary docs:** https://docs.midjourney.com/docs/parameter-list and https://docs.midjourney.com/docs/no
-**Local test coverage:** `tests/fixtures/good_midjourney.txt`, `tests/fixtures/good_midjourney_oref_profile.txt`, `tests/fixtures/good_midjourney_chaos_alias.txt`, `tests/fixtures/good_midjourney_video.txt`, `tests/fixtures/good_midjourney_loop.txt`, `tests/fixtures/bad_midjourney_negative_block.txt`, `tests/fixtures/bad_midjourney_params_middle.txt`, `tests/fixtures/bad_midjourney_value_punctuation.txt`, `tests/fixtures/warn_midjourney_legacy_cw.txt`, `tests/fixtures/warn_midjourney_legacy_style.txt`, `tests/fixtures/warn_midjourney_unknown_future_param.txt`, `tests/fixtures/bad_midjourney_unknown_param_strict_model_params.txt`; no image-output eval
+**Confidence:** high for parameter syntax; medium for safety heuristics and creative prompt shaping
+**Primary docs:** https://docs.midjourney.com/docs/community-guidelines, https://docs.midjourney.com/docs/terms-of-service, https://docs.midjourney.com/docs/prompts, https://docs.midjourney.com/docs/parameter-list, https://docs.midjourney.com/docs/no
+**Local test coverage:** `tests/fixtures/good_midjourney_safe_hanfu.txt`, `tests/fixtures/warn_midjourney_borderline_hanfu_clothing.txt`, `tests/fixtures/warn_midjourney_user_hanfu_cn.txt`, `tests/fixtures/bad_midjourney_adult_content.txt`, `tests/fixtures/bad_midjourney_gore_violence.txt`, `tests/fixtures/bad_midjourney_hate_harassment.txt`, `tests/fixtures/bad_midjourney_public_figure_misinfo.txt`, `tests/fixtures/bad_midjourney_negative_block.txt`, `tests/fixtures/bad_midjourney_params_middle.txt`, `tests/fixtures/bad_midjourney_value_punctuation.txt`; no image-output eval
 **Applies to:** Midjourney prompt UI
 
 **Source basis:**
 
+- Midjourney docs state that content should remain PG-13/SFW and prohibit adult content, gore, harassment/hate, deception/misinformation, and harmful real-person depictions.
 - Midjourney docs state parameters belong at the end of the prompt.
-- The `--no` parameter is the native way to tell Midjourney what to exclude.
+- The `--no` parameter is the native way to tell Midjourney what to exclude, but it should not be used to smuggle unsafe terms into a prompt.
+- Midjourney prompt docs recommend short, specific phrases, positive wording, and concrete numbers/details.
 
-**Best prompt shape:** Compact image-forward prompt: subject, setting, style, camera, lighting, mood.
+**Best prompt shape:**
 
-**Render strategy:**
+- Run the MJ compliance preflight first.
+- Produce a compact image-forward `MJ Safe Prompt`: adult subject identity, setting, wardrobe/materials, camera, lighting, mood, then parameters.
+- Preserve art anchors: narrative mood, cultural period, environment, light, color, camera, materials, and foreground/background staging.
+- Move intensity into safe art channels such as lighting, fabric, gesture, composition, and story context rather than body exposure or sexualized language.
+- In stylized mode, use short cross-domain style anchors only after translating them into visible traits: fashion anchors into silhouette/material/tailoring, camera anchors into lens/color/grain, narrative anchors into mood/light/composition.
 
-- Use a compact phrase sequence rather than explanatory prose.
-- Keep one visual style phrase unless the user asks for experimental blending.
-- Put all parameters at the end; do not add prose after parameters.
-- Suggest `--raw`, `--stylize`, or chaos/weird controls only when the user asks for that degree of style control.
+**Language strategy:** English compact prompts are conventional; keep culturally specific terms if needed. Translate ambiguous Chinese body/clothing language into clear PG-13 wardrobe construction.
 
-**Revision prompt strategy:** Rewrite as a compact prompt, keep one style phrase, move exclusions into concise `--no` terms, and keep parameters at the end.
+**Length strategy:** Short to medium. Avoid long conversational prose, contradictory phrasing, and stacked body/wardrobe cues that make moderation intent ambiguous.
 
-**Language strategy:** English compact prompts are conventional; keep culturally specific terms if needed.
+**Safety strategy:**
 
-**Length strategy:** Short to medium. Avoid long explanatory prose.
+- Hard-block prompts whose core request depends on nudity, sexual acts, sexualized minors, gore, hate/harassment, deception/misinformation, or harmful/sexualized real-person depictions.
+- Rewrite borderline wording instead of deleting the art: `young beauty` -> `adult woman`; `semi-transparent shawl` -> `lightweight silk shawl layered over modest clothing`; `strapless bodice` -> `structured bodice under layered Hanfu`; `sensual/dreamy gaze` -> `serene lowered gaze`.
+- If mobile-photo or low-resolution aesthetics appear with suggestive wardrobe/body language, separate the camera texture from modest wardrobe cues.
+- Do not use coded language, misspellings, homophones, or unsafe terms in `--no` to bypass moderation.
 
 **Negative prompt strategy:**
 
-- Convert negative block to `--no item, item`.
+- Convert ordinary visual exclusions to `--no item, item` at the end.
+- Keep `--no` for safe visual cleanup: text, watermark, logo, modern clothing, modern cars, extra fingers.
 - Avoid ambiguous multiword exclusions that can be parsed independently; specify desired alternatives in the positive prompt.
+- Do not include adult, gore, hate, or deception terms inside `--no`; use positive safe replacements.
 
 **Parameter/API strategy:**
 
 - Put parameters at the end with spaces before dashes and no punctuation after parameters.
-- Current official parser-covered params: `--ar`, `--aspect`, `--chaos`, `--c`, `--quality`, `--q`, `--seed`, `--raw`, `--stylize`, `--s`, `--sref`, `--sw`, `--sv`, `--oref`, `--profile`, `--p`, `--iw`, `--weird`, `--w`, `--niji`, `--no`, `--repeat`, `--r`, `--tile`, `--stealth`, `--public`, `--draft`, `--motion`, `--loop`, `--end`, `--bs`, and `--video`.
+- Current parser-covered params: `--ar`, `--aspect`, `--chaos`, `--c`, `--quality`, `--q`, `--seed`, `--raw`, `--stylize`, `--s`, `--sref`, `--sw`, `--sv`, `--oref`, `--profile`, `--p`, `--iw`, `--weird`, `--w`, `--niji`, `--no`, `--repeat`, `--r`, `--tile`, `--stealth`, `--public`, `--draft`, `--motion`, `--loop`, `--end`, `--bs`, `--v`, and `--version`.
 - Parser-supported aliases: `--c` for chaos, `--p` for profile, `--q` for quality, `--r` for repeat, `--s` for stylize, `--w` for weird.
 - Flag-like params: `--loop`, `--video`, `--raw`, `--turbo`, `--fast`, `--relax`, `--tile`, `--stealth`, `--public`, `--draft`, `--niji`.
-- Value params include `--motion`, `--end`, `--bs`, `--oref`, `--profile`, `--iw`, `--sref`, `--sw`, `--sv`, and ordinary numeric/style controls.
 - Legacy warning params: `--cref`, `--cw`, `--style`. Treat legacy parameters as warnings until confirmed against the current UI.
 - Unknown params: warning by default; `prompt_lint.py --strict-model-params` upgrades unknown Midjourney parameters to critical failures.
 
 **Reference image strategy:** If using style references, keep them separate from prose when the UI supports it.
 
-**Do not claim:** Do not output a Stable Diffusion-style `Negative Prompt:` block for Midjourney.
+**Style anchor strategy:**
+
+- Do not put all style anchors at the end. Place fashion/styling near wardrobe, camera/lens near camera, film/color near style, and cinema/literary mood near tone.
+- Named people, films, titles, brands, or works must not stand alone. Pair them with visible traits and use "inspired by" or "evoking" language when appropriate.
+- Keep 2-3 primary anchors unless the user explicitly requests a test matrix or collage.
+- If the user wants stylization but has no references, search the web for current or historically relevant directions before recommending.
+
+**Do not claim:**
+
+- Do not output a Stable Diffusion-style `Negative Prompt:` block for Midjourney.
+- Do not claim that any prompt is guaranteed to pass Midjourney's black-box moderation.
+- Do not preserve unsafe wording for aesthetic reasons; preserve the art through safer visual channels.
 
 **Explanatory output format:**
 
 ```text
-Prompt: subject, setting, visual style, camera, lighting, mood
-Parameters: --ar 16:9 --stylize 150 --chaos 8 --seed 1234 --raw --no text, watermark, modern cars
+MJ Safe Prompt: adult subject, setting, wardrobe/materials, camera, lighting, narrative mood --ar 2:3 --stylize 80 --raw --no text, watermark, logo
+Art Preservation Notes: preserved lighting, cultural setting, camera texture, materials, and narrative anchors.
+Risk Tradeoffs: rewrote ambiguous body or clothing language into PG-13 wardrobe and mood language.
 ```
 
 **Copy-ready output format:**
 
 ```text
-subject, setting, visual style, camera, lighting, mood --ar 16:9 --stylize 150 --chaos 8 --seed 1234 --raw --no text, watermark, modern cars
+adult Chinese woman in modest layered Tang-style Hanfu seated on a lakeside stone bank, golden round silk fan, warm sunset backlight, calm lake reflections, peony basket foreground, casual mobile-photo texture, serene lowered gaze, classical court-lady story mood --ar 2:3 --stylize 80 --raw --no text, watermark, logo, modern clothing
 ```
 
 ## FLUX.2 / BFL API
@@ -288,9 +291,7 @@ subject, setting, visual style, camera, lighting, mood --ar 16:9 --stylize 150 -
 
 - Natural-language descriptive prompts.
 - Structured prompt content for production workflows and automation.
-- Treat API fields such as width, height, seed, aspect ratio, and safety/output format as wrapper fields, not prompt prose, when the user is coding.
-
-**Revision prompt strategy:** Convert failures into positive replacements, such as clean surfaces, empty backgrounds, clear materials, and controlled lighting. Keep API fields outside prompt prose.
+- In stylized mode, convert references into positive visual descriptions rather than Midjourney-style name stacks.
 
 **Language strategy:** Use direct descriptive language. Quote exact text when text rendering matters.
 
@@ -300,12 +301,12 @@ subject, setting, visual style, camera, lighting, mood --ar 16:9 --stylize 150 -
 
 - Prefer positive replacements: "empty pathway" instead of "no crowds."
 - Only include a negative field if the specific wrapper/model supports it.
+- Avoid negative-style blocks; describe the desired style direction directly.
 
 **Parameter/API strategy:**
 
 - Put aspect ratio, width, height, and seed/API fields outside prompt prose when coding.
 - Use hex codes for exact brand colors.
-- Separate structured prompt content from the API request body. A JSON-like prompt can be stringified into `prompt`, but wrapper fields should remain wrapper fields.
 
 **Reference image strategy:** Define each reference's role: composition, character, style, palette, product.
 
@@ -357,10 +358,4 @@ Premium glass skincare bottle with matte white pump on a warm gray stone surface
 - Positive prompt plus negative prompt only if the interface supports it.
 - Use LoRA, ControlNet, weights, and sampler terms only when the user names that workflow.
 
-**Boundary strategy:**
-
-- If the user says Stable Diffusion generally, ask or state the assumed wrapper before using WebUI, ComfyUI, LoRA, ControlNet, IP-Adapter, sampler, CFG, denoise, or weight syntax.
-- If the user names WebUI, ComfyUI, LoRA, ControlNet, IP-Adapter, or a checkpoint workflow, it is safe to use wrapper-native fields.
-- Do not import local-wrapper habits into GPT Image, FLUX, Midjourney, Grok, or Dreamina without an explicit reason.
-
-**Do not claim:** Do not apply Stable Diffusion syntax to FLUX or Midjourney. Do not promise exact behavior from a wrapper unless the wrapper and model stack are named.
+**Do not claim:** Do not apply Stable Diffusion syntax to FLUX or Midjourney.

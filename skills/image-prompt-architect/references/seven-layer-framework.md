@@ -2,8 +2,6 @@
 
 Use this framework for one image that needs precise control.
 
-The seven-layer framework is an internal control scaffold. Do not assume every layer should appear at full length in the final model prompt.
-
 ## The Seven Layers
 
 1. **Subject Layer**
@@ -32,6 +30,21 @@ The seven-layer framework is an internal control scaffold. Do not assume every l
    - Controls period context, cultural cues, symbolic meaning, emotional temperature, and intended viewer response.
    - This replaces the narrower "era and artistic tone" label.
 
+
+## Style Anchor Placement
+
+Use `references/style-mode.md` when style anchors are requested. Do not stack all style words at the end. Put each anchor where it controls the image:
+
+- **Subject layer:** fashion/styling anchors, garment identity, silhouette, pose, accessories.
+- **Material layer:** fabric, craft, surface, skin, metal, paper, grain, wear, tactile texture.
+- **Composition and Camera layer:** camera body, lens, focal length, shot scale, angle, depth of field.
+- **Style layer:** film stock, color grade, art medium, movement, rendering language.
+- **Context, Intent, and Tone layer:** director, film, literary mood, era, symbolic emotion, narrative intent.
+
+Named anchors must be translated into visible traits. For example, use `designer/reference + silhouette + fabric + tailoring detail`, `camera/film + lens behavior + color traits + grain/sharpness`, or `director/film + mood + light + composition`.
+
+Keep the anchor budget small: 2-3 primary style anchors are usually enough. More than that should be treated as a deliberate collage or test matrix.
+
 ## Output Constraints Block
 
 Keep this outside the seven creative layers:
@@ -53,48 +66,6 @@ Model-native handling:
 - Midjourney: convert avoid items to `--no`.
 - FLUX: rewrite avoid items as positive replacements.
 - GPT Image: use natural-language avoid/preserve instructions.
-
-## Internal Draft vs Final Render Prompt
-
-Use two drafts when the target model is sensitive to long or over-styled prompts.
-
-**Internal Analysis Draft** keeps the full seven-layer reasoning:
-
-```text
-[Subject]
-[Environment]
-[Lighting]
-[Material]
-[Composition]
-[Style]
-[Context, Intent, and Tone]
-[Output Constraints]
-```
-
-**Final Render Prompt** compresses the draft into the model-facing text:
-
-```text
-<subject + action>, in <environment>, lit by <light>, with <material/camera>, in <main style>, <tone>. Constraints: <aspect/text/avoid/preserve>.
-```
-
-Compression rules:
-
-- Keep 1-2 highest-priority facts from each layer.
-- For GPT Image-like models, prefer 80-160 words and one clean paragraph unless the edit/preserve split needs short sections.
-- Keep one main style anchor and at most one weak modifier.
-- If the style or material layer uses grain, scan, VHS, CRT, halftone, photocopy, dirt, compression artifacts, or similar defect language, reduce it to one subtle artifact unless the user explicitly requests a degraded image.
-- Preserve subject readability, clean subject edges, composition, and exact text/product/identity constraints before decorative texture.
-- Remove duplicate mood words, generic praise, extra background props, and competing medium references.
-
-Recommended render priority stack:
-
-```text
-Priority 1: subject readability
-Priority 2: composition and lighting
-Priority 3: main style
-Priority 4: material detail
-Priority 5: auxiliary style or media defects
-```
 
 ## Recommended Sentence Structure
 
